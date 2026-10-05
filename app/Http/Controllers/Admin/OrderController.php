@@ -62,7 +62,7 @@ class OrderController extends Controller
             WhatsApp::notifyCustomer($order->customer_phone, $message);
         }
 
-        return back()->with('success', 'Order status updated.');
+        return back()->with('success', t('admin.flash.order_status_updated', 'Order status updated.'));
     }
 
     public function updatePayment(Request $request, Order $order)
@@ -73,13 +73,13 @@ class OrderController extends Controller
 
         $order->update(['payment_status' => $data['payment_status']]);
 
-        return back()->with('success', 'Payment status updated.');
+        return back()->with('success', t('admin.flash.payment_status_updated', 'Payment status updated.'));
     }
 
     public function destroy(Order $order)
     {
         $order->delete();
 
-        return back()->with('success', 'Order deleted.');
+        return back()->with('success', t('admin.flash.order_deleted', 'Order deleted.'));
     }
 }

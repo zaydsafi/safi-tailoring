@@ -26,6 +26,6 @@ class MessageController extends Controller
     {
         $message->delete();
 
-        return back()->with('success', 'Message deleted.');
+        return back()->with('success', t('admin.flash.message_deleted', 'Message deleted.'));
     }
 }

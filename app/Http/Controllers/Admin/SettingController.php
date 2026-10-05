@@ -51,6 +51,6 @@ class SettingController extends Controller
             Setting::set($flag, $request->boolean($flag) ? '1' : '0');
         }
 
-        return back()->with('success', 'Settings saved.');
+        return back()->with('success', t('admin.flash.settings_saved', 'Settings saved.'));
     }
 }

@@ -49,7 +49,7 @@ class CategoryController extends Controller
 
         Category::create($data);
 
-        return redirect()->route('admin.categories.index')->with('success', 'Category created.');
+        return redirect()->route('admin.categories.index')->with('success', t('admin.flash.category_created', 'Category created.'));
     }
 
     public function edit(Category $category)
@@ -88,13 +88,13 @@ class CategoryController extends Controller
 
         $category->update($data);
 
-        return redirect()->route('admin.categories.index')->with('success', 'Category updated.');
+        return redirect()->route('admin.categories.index')->with('success', t('admin.flash.category_updated', 'Category updated.'));
     }
 
     public function destroy(Category $category)
     {
         if ($category->products()->exists()) {
-            return back()->with('error', 'This category has products. Move or delete them first.');
+            return back()->with('error', t('admin.flash.category_has_products', 'This category has products. Move or delete them first.'));
         }
 
         if ($category->image) {
@@ -103,7 +103,7 @@ class CategoryController extends Controller
 
         $category->delete();
 
-        return back()->with('success', 'Category deleted.');
+        return back()->with('success', t('admin.flash.category_deleted', 'Category deleted.'));
     }
 
     private function cleanTranslationData(array $data): array

@@ -1,22 +1,22 @@
 @extends('layouts.admin')
 
-@section('title', 'Categories')
+@section('title', t('admin.categories.title', 'Categories'))
 
 @section('content')
     <div class="mb-6 flex items-center justify-between">
-        <p class="text-sm text-brand-500">{{ $categories->total() }} categor{{ $categories->total() === 1 ? 'y' : 'ies' }}</p>
-        <a href="{{ route('admin.categories.create') }}" class="rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-800">+ Add Category</a>
+        <p class="text-sm text-brand-500">{{ $categories->total() === 1 ? t('admin.categories.count_one', '1 category') : t('admin.categories.count_many', ':count categories', ['count' => $categories->total()]) }}</p>
+        <a href="{{ route('admin.categories.create') }}" class="rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-800">{{ t('admin.categories.add', '+ Add Category') }}</a>
     </div>
 
     <div class="overflow-x-auto rounded-2xl border border-brand-100 bg-white shadow-sm">
         <table class="w-full min-w-[640px] text-sm">
             <thead>
                 <tr class="border-b border-brand-100 bg-brand-50 text-left text-xs font-semibold uppercase tracking-wide text-brand-500">
-                    <th class="px-4 py-3">Category</th>
-                    <th class="px-4 py-3">Products</th>
-                    <th class="px-4 py-3">Sort</th>
-                    <th class="px-4 py-3">Status</th>
-                    <th class="px-4 py-3 text-right">Actions</th>
+                    <th class="px-4 py-3">{{ t('admin.categories.category', 'Category') }}</th>
+                    <th class="px-4 py-3">{{ t('admin.categories.products', 'Products') }}</th>
+                    <th class="px-4 py-3">{{ t('admin.categories.sort', 'Sort') }}</th>
+                    <th class="px-4 py-3">{{ t('admin.common.status', 'Status') }}</th>
+                    <th class="px-4 py-3 text-right">{{ t('admin.common.actions', 'Actions') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-brand-50">
@@ -37,22 +37,22 @@
                         <td class="px-4 py-3">{{ $category->sort_order }}</td>
                         <td class="px-4 py-3">
                             <span class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $category->is_active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-500' }}">
-                                {{ $category->is_active ? 'Active' : 'Hidden' }}
+                                {{ $category->is_active ? t('admin.categories.active', 'Active') : t('admin.categories.hidden', 'Hidden') }}
                             </span>
                         </td>
                         <td class="px-4 py-3">
                             <div class="flex justify-end gap-2">
-                                <a href="{{ route('admin.categories.edit', $category) }}" class="rounded-lg border border-brand-200 px-3 py-1.5 text-xs font-semibold text-brand-700 transition hover:bg-brand-50">Edit</a>
-                                <form method="POST" action="{{ route('admin.categories.destroy', $category) }}" onsubmit="return confirm('Delete category &quot;{{ $category->name }}&quot;?')">
+                                <a href="{{ route('admin.categories.edit', $category) }}" class="rounded-lg border border-brand-200 px-3 py-1.5 text-xs font-semibold text-brand-700 transition hover:bg-brand-50">{{ t('admin.common.edit', 'Edit') }}</a>
+                                <form method="POST" action="{{ route('admin.categories.destroy', $category) }}" onsubmit="return confirm('{!! t('admin.categories.confirm_delete', 'Delete category &quot;:name&quot;?', ['name' => e($category->name)]) !!}')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50">Delete</button>
+                                    <button type="submit" class="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-600 transition hover:bg-red-50">{{ t('admin.common.delete', 'Delete') }}</button>
                                 </form>
                             </div>
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="5" class="px-4 py-10 text-center text-brand-400">No categories yet. Create your first one.</td></tr>
+                    <tr><td colspan="5" class="px-4 py-10 text-center text-brand-400">{{ t('admin.categories.no_results', 'No categories yet. Create your first one.') }}</td></tr>
                 @endforelse
             </tbody>
         </table>

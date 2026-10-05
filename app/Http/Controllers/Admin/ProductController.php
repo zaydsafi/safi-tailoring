@@ -47,7 +47,7 @@ class ProductController extends Controller
 
         $this->syncGallery($request, $product);
 
-        return redirect()->route('admin.products.index')->with('success', 'Product created.');
+        return redirect()->route('admin.products.index')->with('success', t('admin.flash.product_created', 'Product created.'));
     }
 
     public function edit(Product $product)
@@ -76,7 +76,7 @@ class ProductController extends Controller
 
         $this->syncGallery($request, $product);
 
-        return redirect()->route('admin.products.index')->with('success', 'Product updated.');
+        return redirect()->route('admin.products.index')->with('success', t('admin.flash.product_updated', 'Product updated.'));
     }
 
     public function destroy(Product $product)
@@ -91,7 +91,7 @@ class ProductController extends Controller
 
         $product->delete();
 
-        return back()->with('success', 'Product deleted.');
+        return back()->with('success', t('admin.flash.product_deleted', 'Product deleted.'));
     }
 
     private function validated(Request $request, ?int $ignoreId = null): array

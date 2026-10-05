@@ -40,7 +40,7 @@ class UserController extends Controller
     {
         User::create($this->validated($request));
 
-        return redirect()->route('admin.users.index')->with('success', 'User created.');
+        return redirect()->route('admin.users.index')->with('success', t('admin.flash.user_created', 'User created.'));
     }
 
     public function edit(User $user)
@@ -53,11 +53,11 @@ class UserController extends Controller
         $data = $this->validated($request, $user);
 
         if ($request->user()->is($user) && $data['role'] !== $user->role) {
-            return back()->withInput()->with('error', 'You cannot change your own role.');
+            return back()->withInput()->with('error', t('admin.flash.cannot_change_own_role', 'You cannot change your own role.'));
         }
 
         if ($user->isAdmin() && $data['role'] !== 'admin' && User::where('role', 'admin')->count() === 1) {
-            return back()->withInput()->with('error', 'You cannot demote the only administrator account.');
+            return back()->withInput()->with('error', t('admin.flash.cannot_demote_last_admin', 'You cannot demote the only administrator account.'));
         }
 
         if (blank($data['password'] ?? null)) {
@@ -66,32 +66,32 @@ class UserController extends Controller
 
         $user->update($data);
 
-        return redirect()->route('admin.users.index')->with('success', 'User updated.');
+        return redirect()->route('admin.users.index')->with('success', t('admin.flash.user_updated', 'User updated.'));
     }
 
     public function destroy(Request $request, User $user)
     {
         if ($request->user()->is($user)) {
-            return back()->with('error', 'You cannot delete your own account.');
+            return back()->with('error', t('admin.flash.cannot_delete_own_account', 'You cannot delete your own account.'));
         }
 
         if ($user->isAdmin() && User::where('role', 'admin')->count() === 1) {
-            return back()->with('error', 'You cannot delete the only administrator account.');
+            return back()->with('error', t('admin.flash.cannot_delete_last_admin', 'You cannot delete the only administrator account.'));
         }
 
         $user->delete();
 
-        return back()->with('success', 'User deleted. Their past orders are kept for records.');
+        return back()->with('success', t('admin.flash.user_deleted', 'User deleted. Their past orders are kept for records.'));
     }
 
     public function block(Request $request, User $user)
     {
         if ($user->isAdmin()) {
-            return back()->with('error', 'Admin accounts cannot be blocked.');
+            return back()->with('error', t('admin.flash.admin_cannot_be_blocked', 'Admin accounts cannot be blocked.'));
         }
 
         if ($user->isBlocked()) {
-            return back()->with('error', 'This account is already blocked.');
+            return back()->with('error', t('admin.flash.already_blocked', 'This account is already blocked.'));
         }
 
         $data = $request->validate([
@@ -104,13 +104,13 @@ class UserController extends Controller
             'remember_token' => null,
         ])->save();
 
-        return back()->with('success', $user->name . '\'s account has been blocked. They can no longer sign in.');
+        return back()->with('success', t('admin.flash.account_blocked', ":name's account has been blocked. They can no longer sign in.", ['name' => $user->name]));
     }
 
     public function unblock(User $user)
     {
         if (! $user->isBlocked()) {
-            return back()->with('error', 'This account is not blocked.');
+            return back()->with('error', t('admin.flash.not_blocked', 'This account is not blocked.'));
         }
 
         $user->forceFill([
@@ -118,7 +118,7 @@ class UserController extends Controller
             'blocked_reason' => null,
         ])->save();
 
-        return back()->with('success', $user->name . '\'s account has been unblocked. They can sign in again.');
+        return back()->with('success', t('admin.flash.account_unblocked', ":name's account has been unblocked. They can sign in again.", ['name' => $user->name]));
     }
 
     private function validated(Request $request, ?User $user = null): array

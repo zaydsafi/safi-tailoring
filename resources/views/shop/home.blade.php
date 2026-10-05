@@ -26,11 +26,11 @@
                     <p class="text-3xl font-bold text-gold-400 mb-1">100%</p>
                     <p class="text-sm text-brand-100">{{ t('home.stat_stitching', 'Hand-finished stitching') }}</p>
                 </div>
-                <div class="bg-brand-800 rounded-2xl p-6 border border-white/10 mt-8">
+                <div class="bg-brand-800 rounded-2xl p-6 border border-white/10">
                     <p class="text-3xl font-bold text-gold-400 mb-1">{{ t('home.stat_custom', 'Custom') }}</p>
                     <p class="text-sm text-brand-100">{{ t('home.stat_measurements', 'Made to your measurements') }}</p>
                 </div>
-                <div class="bg-brand-800 rounded-2xl p-6 border border-white/10 -mt-8">
+                <div class="bg-brand-800 rounded-2xl p-6 border border-white/10">
                     <p class="text-3xl font-bold text-gold-400 mb-1">{{ t('home.stat_days', '2–5 days') }}</p>
                     <p class="text-sm text-brand-100">{{ t('home.stat_tailoring_time', 'Typical tailoring time') }}</p>
                 </div>

@@ -51,7 +51,7 @@ class TranslationController extends Controller
 
         Translation::create($data);
 
-        return redirect()->route('admin.translations.index')->with('success', 'Translation created.');
+        return redirect()->route('admin.translations.index')->with('success', t('admin.flash.translation_created', 'Translation created.'));
     }
 
     public function edit(Translation $translation)
@@ -67,14 +67,14 @@ class TranslationController extends Controller
 
         $translation->update($data);
 
-        return redirect()->route('admin.translations.index')->with('success', 'Translation updated.');
+        return redirect()->route('admin.translations.index')->with('success', t('admin.flash.translation_updated', 'Translation updated.'));
     }
 
     public function destroy(Translation $translation)
     {
         $translation->delete();
 
-        return redirect()->route('admin.translations.index')->with('success', 'Translation deleted.');
+        return redirect()->route('admin.translations.index')->with('success', t('admin.flash.translation_deleted', 'Translation deleted.'));
     }
 
     private function validated(Request $request, ?int $ignoreId = null): array

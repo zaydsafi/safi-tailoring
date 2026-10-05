@@ -52,7 +52,7 @@ class DashboardController extends Controller
         foreach (range(0, 13) as $i) {
             $date = $start->copy()->addDays($i);
             $key = $date->toDateString();
-            $labels[] = $date->format('M j');
+            $labels[] = $date->locale(app()->getLocale())->translatedFormat('M j');
             $revenue[] = round((float) ($daily[$key]->revenue ?? 0), 2);
             $orders[] = (int) ($daily[$key]->orders ?? 0);
         }
@@ -63,7 +63,7 @@ class DashboardController extends Controller
         $statusCounts = [];
 
         foreach (Order::STATUSES as $status => $label) {
-            $statusLabels[] = $label;
+            $statusLabels[] = t('orders.status_' . $status, $label);
             $statusCounts[] = (int) ($counts[$status] ?? 0);
         }
 

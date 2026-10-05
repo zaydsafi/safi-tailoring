@@ -47,10 +47,18 @@ if (!function_exists('t')) {
     /**
      * Translate via the DB-backed translations table, falling back to the
      * English default supplied by the caller and finally to the key itself.
+     * Placeholders written as :name in the translated string are replaced
+     * from the $replace array.
      */
-    function t(string $key, ?string $default = null): string
+    function t(string $key, ?string $default = null, array $replace = []): string
     {
-        return (string) (Translation::value($key) ?? $default ?? $key);
+        $value = (string) (Translation::value($key) ?? $default ?? $key);
+
+        foreach ($replace as $name => $replacement) {
+            $value = str_replace(':' . $name, (string) $replacement, $value);
+        }
+
+        return $value;
     }
 }
 

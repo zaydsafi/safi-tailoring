@@ -13,6 +13,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Middleware\AdminLocale;
 use App\Http\Middleware\SetLocale;
 use App\Support\Locales;
 use Illuminate\Support\Facades\Route;
@@ -100,13 +101,29 @@ Route::post('/webhooks/hesabpay', [PaymentController::class, 'webhook'])->name('
 
 /*
 |--------------------------------------------------------------------------
-| Admin panel (English only)
+| Admin panel (English / Pashto / Persian — switcher in the admin header)
 |--------------------------------------------------------------------------
 */
-Route::get('/admin/login', [Admin\AuthController::class, 'showLogin'])->name('admin.login')->middleware('guest');
-Route::post('/admin/login', [Admin\AuthController::class, 'login'])->name('admin.login.store')->middleware('guest');
+Route::get('/admin/lang/{locale}', function (string $locale) {
+    if (array_key_exists($locale, Locales::SUPPORTED)) {
+        session(['admin_locale' => $locale]);
+    }
 
-Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
+    $previous = url()->previous();
+
+    // Only go back if we came from an admin page (and not the switcher itself);
+    // otherwise (fresh session, external referer) land on the admin dashboard.
+    if (str_starts_with(parse_url($previous, PHP_URL_PATH) ?? '/', '/admin') && $previous !== url()->current()) {
+        return redirect($previous);
+    }
+
+    return redirect(route('admin.dashboard'));
+})->name('admin.lang');
+
+Route::get('/admin/login', [Admin\AuthController::class, 'showLogin'])->name('admin.login')->middleware(['guest', AdminLocale::class]);
+Route::post('/admin/login', [Admin\AuthController::class, 'login'])->name('admin.login.store')->middleware(['guest', AdminLocale::class]);
+
+Route::middleware(['admin', AdminLocale::class])->prefix('admin')->name('admin.')->group(function () {
     Route::post('/logout', [Admin\AuthController::class, 'logout'])->name('logout');
     Route::get('/', [Admin\DashboardController::class, 'index'])->name('dashboard');
 

@@ -23,14 +23,14 @@ class AuthController extends Controller
 
         if (!Auth::attempt($credentials, $request->boolean('remember'))) {
             throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
+                'email' => t('admin.auth.invalid_credentials', 'These credentials do not match our records.'),
             ]);
         }
 
         if (!auth()->user()->isAdmin()) {
             Auth::logout();
             throw ValidationException::withMessages([
-                'email' => 'This login is for administrators only.',
+                'email' => t('admin.auth.admins_only', 'This login is for administrators only.'),
             ]);
         }
 
@@ -45,6 +45,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('admin.login')->with('success', 'Signed out.');
+        return redirect()->route('admin.login')->with('success', t('admin.flash.signed_out', 'Signed out.'));
     }
 }
