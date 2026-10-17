@@ -127,33 +127,38 @@ Route::middleware(['admin', AdminLocale::class])->prefix('admin')->name('admin.'
     Route::post('/logout', [Admin\AuthController::class, 'logout'])->name('logout');
     Route::get('/', [Admin\DashboardController::class, 'index'])->name('dashboard');
 
-    Route::resource('categories', Admin\CategoryController::class)->except(['show']);
-    Route::resource('products', Admin\ProductController::class)->except(['show']);
+    Route::resource('roles', Admin\RoleController::class)->except(['show']);
 
-    Route::get('/orders', [Admin\OrderController::class, 'index'])->name('orders.index');
-    Route::get('/orders/{order}', [Admin\OrderController::class, 'show'])->name('orders.show');
-    Route::patch('/orders/{order}/status', [Admin\OrderController::class, 'updateStatus'])->name('orders.status');
-    Route::patch('/orders/{order}/payment', [Admin\OrderController::class, 'updatePayment'])->name('orders.payment');
-    Route::delete('/orders/{order}', [Admin\OrderController::class, 'destroy'])->name('orders.destroy');
+    Route::resource('categories', Admin\CategoryController::class)->except(['show'])->middleware('perm:categories');
+    Route::resource('products', Admin\ProductController::class)->except(['show'])->middleware('perm:products');
 
-    Route::resource('users', Admin\UserController::class)->except(['show']);
-    Route::patch('/users/{user}/block', [Admin\UserController::class, 'block'])->name('users.block');
-    Route::patch('/users/{user}/unblock', [Admin\UserController::class, 'unblock'])->name('users.unblock');
+    Route::get('/orders', [Admin\OrderController::class, 'index'])->name('orders.index')->middleware('perm:orders');
+    Route::get('/orders/{order}', [Admin\OrderController::class, 'show'])->name('orders.show')->middleware('perm:orders');
+    Route::patch('/orders/{order}/status', [Admin\OrderController::class, 'updateStatus'])->name('orders.status')->middleware('perm:orders');
+    Route::patch('/orders/{order}/payment', [Admin\OrderController::class, 'updatePayment'])->name('orders.payment')->middleware('perm:orders');
+    Route::delete('/orders/{order}', [Admin\OrderController::class, 'destroy'])->name('orders.destroy')->middleware('perm:orders');
 
-    Route::get('/customers/{customer}', [Admin\CustomerController::class, 'show'])->name('customers.show');
+    Route::resource('users', Admin\UserController::class)->except(['show'])->middleware('perm:users');
+    Route::patch('/users/{user}/block', [Admin\UserController::class, 'block'])->name('users.block')->middleware('perm:users');
+    Route::patch('/users/{user}/unblock', [Admin\UserController::class, 'unblock'])->name('users.unblock')->middleware('perm:users');
 
-    Route::get('/translations', [Admin\TranslationController::class, 'index'])->name('translations.index');
+    Route::get('/customers/{customer}', [Admin\CustomerController::class, 'show'])->name('customers.show')->middleware('perm:users');
+
+    Route::prefix('translations')->middleware('perm:translations')->group(function () {
+        Route::get('/', [Admin\TranslationController::class, 'index'])->name('translations.index');
+        Route::get('/missing', [Admin\TranslationController::class, 'missing'])->name('translations.missing');
+        Route::get('/create', [Admin\TranslationController::class, 'create'])->name('translations.create');
+        Route::post('/', [Admin\TranslationController::class, 'store'])->name('translations.store');
+        Route::get('/{translation}/edit', [Admin\TranslationController::class, 'edit'])->name('translations.edit');
+        Route::put('/{translation}', [Admin\TranslationController::class, 'update'])->name('translations.update');
+        Route::delete('/{translation}', [Admin\TranslationController::class, 'destroy'])->name('translations.destroy');
+    });
     Route::get('/translations/missing', [Admin\TranslationController::class, 'missing'])->name('translations.missing');
     Route::get('/translations/create', [Admin\TranslationController::class, 'create'])->name('translations.create');
-    Route::post('/translations', [Admin\TranslationController::class, 'store'])->name('translations.store');
-    Route::get('/translations/{translation}/edit', [Admin\TranslationController::class, 'edit'])->name('translations.edit');
-    Route::put('/translations/{translation}', [Admin\TranslationController::class, 'update'])->name('translations.update');
-    Route::delete('/translations/{translation}', [Admin\TranslationController::class, 'destroy'])->name('translations.destroy');
+    Route::get('/messages', [Admin\MessageController::class, 'index'])->name('messages.index')->middleware('perm:messages');
+    Route::get('/messages/{message}', [Admin\MessageController::class, 'show'])->name('messages.show')->middleware('perm:messages');
+    Route::delete('/messages/{message}', [Admin\MessageController::class, 'destroy'])->name('messages.destroy')->middleware('perm:messages');
 
-    Route::get('/messages', [Admin\MessageController::class, 'index'])->name('messages.index');
-    Route::get('/messages/{message}', [Admin\MessageController::class, 'show'])->name('messages.show');
-    Route::delete('/messages/{message}', [Admin\MessageController::class, 'destroy'])->name('messages.destroy');
-
-    Route::get('/settings', [Admin\SettingController::class, 'edit'])->name('settings.edit');
-    Route::put('/settings', [Admin\SettingController::class, 'update'])->name('settings.update');
+    Route::get('/settings', [Admin\SettingController::class, 'edit'])->name('settings.edit')->middleware('perm:settings');
+    Route::put('/settings', [Admin\SettingController::class, 'update'])->name('settings.update')->middleware('perm:settings');
 });

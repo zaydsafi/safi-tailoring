@@ -22,6 +22,36 @@ class User extends Authenticatable
         return $this->role === 'admin';
     }
 
+    /**
+     * The Role row backing this account: admins map to the built-in
+     * 'admin' slug, staff to a custom row, customer to nothing.
+     */
+    public function assignedRole()
+    {
+        return $this->belongsTo(Role::class, 'role', 'slug');
+    }
+
+    /**
+     * Can this account manage the given admin-panel section?
+     * Admin accounts may always; other staff roles need the permission.
+     * Plain customers have no panel access at all.
+     */
+    public function canManage(string $permission): bool
+    {
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        $role = $this->assignedRole()->first();
+
+        return $role !== null && $role->permissions()->where('key', $permission)->exists();
+    }
+
+    public function hasPanelAccess(): bool
+    {
+        return $this->isAdmin() || $this->assignedRole()->exists();
+    }
+
     public function isBlocked(): bool
     {
         return $this->blocked_at !== null;

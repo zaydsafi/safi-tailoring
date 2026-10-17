@@ -1,6 +1,7 @@
 @php
     $user = $user ?? null;
     $isSelf = $user && $user->is(auth()->user());
+    $staffRoles = \App\Models\Role::query()->where('slug', '!=', 'admin')->orderBy('name')->get();
 @endphp
 
 <div class="grid gap-5 sm:grid-cols-2">
@@ -37,8 +38,16 @@
             <select id="role" name="role"
                     class="w-full rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('role') border-red-400 @enderror">
                 <option value="customer" @selected(old('role', $user->role ?? 'customer') === 'customer')>{{ t('admin.users.role_customer', 'Customer') }}</option>
+                @foreach ($staffRoles as $staffRole)
+                    <option value="{{ $staffRole->slug }}" @selected(old('role', $user->role ?? 'customer') === $staffRole->slug)>
+                        {{ $staffRole->name }}{{ $staffRole->permissions->isEmpty() ? ' (' . t('admin.roles.panel_only', 'panel access only') . ')' : '' }}
+                    </option>
+                @endforeach
                 <option value="admin" @selected(old('role', $user->role ?? 'customer') === 'admin')>{{ t('admin.users.role_admin', 'Admin') }}</option>
             </select>
+            @if ($staffRoles->isEmpty())
+                <p class="mt-1 text-xs text-brand-400">{{ t('admin.users.no_custom_roles', 'Custom roles appear after creating them in Roles & Permissions.') }}</p>
+            @endif
         @endif
         @error('role')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
     </div>

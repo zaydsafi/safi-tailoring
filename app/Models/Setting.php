@@ -13,7 +13,7 @@ class Setting extends Model
         'shop_name' => 'Safi Tailoring Shop',
         'shop_tagline' => 'Custom tailoring & fine ready-to-wear',
         'shop_phone' => '+93 700 000 000',
-        'shop_email' => 'info@safitailoring.com',
+        'shop_email' => 'sscc.url@gmail.com',
         'shop_address' => 'Main Bazaar Road, Kabul, Afghanistan',
         'currency_symbol' => 'AFN',
         'currency_code' => 'AFN',

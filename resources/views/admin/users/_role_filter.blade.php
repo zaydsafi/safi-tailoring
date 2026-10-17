@@ -1,0 +1,1 @@
+<option value="{{ $staffRole->slug }}" @selected(request('role') === $staffRole->slug)>{{ $staffRole->name }}</option>

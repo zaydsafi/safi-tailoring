@@ -12,6 +12,7 @@
                 <option value="">{{ t('admin.users.all_roles', 'All roles') }}</option>
                 <option value="admin" @selected(request('role') === 'admin')>{{ t('admin.users.admins', 'Admins') }}</option>
                 <option value="customer" @selected(request('role') === 'customer')>{{ t('admin.users.customers', 'Customers') }}</option>
+                @each ('admin.users._role_filter', \App\Models\Role::query()->where('slug', '!=', 'admin')->orderBy('name')->get(), 'staffRole')
             </select>
             <select name="status"
                     class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
@@ -64,8 +65,8 @@
                                 <p class="text-xs text-brand-400">{{ $user->phone ?? '—' }}</p>
                             </td>
                             <td class="px-4 py-3">
-                                <span class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $user->isAdmin() ? 'bg-brand-900 text-white' : 'bg-brand-100 text-brand-700' }}">
-                                    {{ $user->isAdmin() ? t('admin.users.role_admin', 'Admin') : t('admin.users.role_customer', 'Customer') }}
+                                <span class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $user->isAdmin() ? 'bg-brand-900 text-white' : ($user->assignedRole ? 'bg-teal-50 text-teal-700' : 'bg-brand-100 text-brand-700') }}">
+                                    {{ $user->isAdmin() ? t('admin.users.role_admin', 'Admin') : ($user->assignedRole?->name ?? t('admin.users.role_customer', 'Customer')) }}
                                 </span>
                             </td>
                             <td class="px-4 py-3">

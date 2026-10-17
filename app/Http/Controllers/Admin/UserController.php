@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Models\User;
 use App\Support\WhatsApp;
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ class UserController extends Controller
                     ->orWhere('email', 'like', $q)
                     ->orWhere('phone', 'like', $q));
             })
-            ->when(in_array($request->input('role'), ['admin', 'customer'], true),
+            ->when(in_array($request->input('role'), array_unique(['admin', 'customer', ...Role::query()->pluck('slug')->all()]), true),
                 fn ($query) => $query->where('role', $request->input('role')))
             ->when($request->input('status') === 'blocked', fn ($query) => $query->whereNotNull('blocked_at'))
             ->when($request->input('status') === 'active', fn ($query) => $query->whereNull('blocked_at'))
@@ -131,7 +132,7 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user)],
             'phone' => ['nullable', 'string', 'max:30', Rule::unique('users', 'phone')->ignore($user)],
-            'role' => ['required', Rule::in(['admin', 'customer'])],
+            'role' => ['required', Rule::in(array_unique(['admin', 'customer', ...Role::query()->pluck('slug')->all()]))],
             'address' => ['nullable', 'string', 'max:255'],
             'city' => ['nullable', 'string', 'max:255'],
             'password' => [$user ? 'nullable' : 'required', 'string', 'min:8', 'confirmed'],
