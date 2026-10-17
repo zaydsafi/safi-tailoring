@@ -38,6 +38,47 @@ class TranslationController extends Controller
         return view('admin.translations.index', compact('translations', 'q', 'group', 'groups', 'totalCount', 'missingPs', 'missingFa'));
     }
 
+    public function missing(Request $request)
+    {
+        $locale = in_array($request->query('locale'), ['ps', 'fa'], true) ? $request->query('locale') : 'all';
+        $q = $request->query('q');
+        $group = $request->query('group');
+
+        $missingColumn = fn (string $column) => fn ($query) => $query
+            ->where(fn ($sub) => $sub->whereNull($column)->orWhere($column, ''));
+
+        $translations = Translation::query()
+            ->when($request->filled('q'), function ($query) use ($request) {
+                $term = '%' . $request->query('q') . '%';
+                $query->where(function ($sub) use ($term) {
+                    $sub->where('key', 'like', $term)
+                        ->orWhere('en', 'like', $term);
+                });
+            })
+            ->when($request->filled('group'), fn ($query) => $query->where('group', $request->query('group')))
+            ->when($locale === 'ps', $missingColumn('ps'))
+            ->when($locale === 'fa', $missingColumn('fa'))
+            ->when($locale === 'all', fn ($query) => $query->where(
+                fn ($sub) => $sub->whereNull('ps')->orWhere('ps', '')->orWhereNull('fa')->orWhere('fa', '')
+            ))
+            ->orderBy('group')
+            ->orderBy('key')
+            ->paginate(20)
+            ->withQueryString();
+
+        $groups = $this->groups();
+
+        $missingCounts = [
+            'all' => Translation::where(
+                fn ($sub) => $sub->whereNull('ps')->orWhere('ps', '')->orWhereNull('fa')->orWhere('fa', '')
+            )->count(),
+            'ps' => Translation::where(fn ($query) => $query->whereNull('ps')->orWhere('ps', ''))->count(),
+            'fa' => Translation::where(fn ($query) => $query->whereNull('fa')->orWhere('fa', ''))->count(),
+        ];
+
+        return view('admin.translations.missing', compact('translations', 'locale', 'q', 'group', 'groups', 'missingCounts'));
+    }
+
     public function create()
     {
         $groups = $this->groups();

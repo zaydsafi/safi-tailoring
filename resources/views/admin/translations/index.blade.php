@@ -9,14 +9,14 @@
             <p class="text-sm font-medium text-brand-500">{{ t('admin.translations.total', 'Total Translations') }}</p>
             <p class="mt-2 text-2xl font-bold text-brand-900">{{ $totalCount }}</p>
         </div>
-        <div class="rounded-2xl border border-brand-100 bg-white p-5 shadow-sm">
+        <a href="{{ route('admin.translations.missing', ['locale' => 'ps']) }}" class="rounded-2xl border border-brand-100 bg-white p-5 shadow-sm transition hover:border-gold-300 hover:shadow">
             <p class="text-sm font-medium text-brand-500">{{ t('admin.translations.missing_ps', 'Missing Pashto') }}</p>
             <p class="mt-2 text-2xl font-bold {{ $missingPs > 0 ? 'text-gold-600' : 'text-brand-900' }}">{{ $missingPs }}</p>
-        </div>
-        <div class="rounded-2xl border border-brand-100 bg-white p-5 shadow-sm">
+        </a>
+        <a href="{{ route('admin.translations.missing', ['locale' => 'fa']) }}" class="rounded-2xl border border-brand-100 bg-white p-5 shadow-sm transition hover:border-gold-300 hover:shadow">
             <p class="text-sm font-medium text-brand-500">{{ t('admin.translations.missing_fa', 'Missing Farsi') }}</p>
             <p class="mt-2 text-2xl font-bold {{ $missingFa > 0 ? 'text-gold-600' : 'text-brand-900' }}">{{ $missingFa }}</p>
-        </div>
+        </a>
         <div class="rounded-2xl border border-brand-100 bg-white p-5 shadow-sm">
             <p class="text-sm font-medium text-brand-500">{{ t('admin.translations.groups', 'Groups') }}</p>
             <p class="mt-2 text-2xl font-bold text-brand-900">{{ $groups->count() }}</p>
@@ -40,6 +40,7 @@
             @endif
         </form>
         <a href="{{ route('admin.translations.create') }}" class="rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-800">{{ t('admin.translations.add', '+ Add Translation') }}</a>
+        <a href="{{ route('admin.translations.missing') }}" class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-50">{{ t('admin.translations.view_missing', 'View missing') }}</a>
     </div>
 
     <div class="overflow-x-auto rounded-2xl border border-brand-100 bg-white shadow-sm">

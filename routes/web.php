@@ -143,6 +143,7 @@ Route::middleware(['admin', AdminLocale::class])->prefix('admin')->name('admin.'
     Route::get('/customers/{customer}', [Admin\CustomerController::class, 'show'])->name('customers.show');
 
     Route::get('/translations', [Admin\TranslationController::class, 'index'])->name('translations.index');
+    Route::get('/translations/missing', [Admin\TranslationController::class, 'missing'])->name('translations.missing');
     Route::get('/translations/create', [Admin\TranslationController::class, 'create'])->name('translations.create');
     Route::post('/translations', [Admin\TranslationController::class, 'store'])->name('translations.store');
     Route::get('/translations/{translation}/edit', [Admin\TranslationController::class, 'edit'])->name('translations.edit');
