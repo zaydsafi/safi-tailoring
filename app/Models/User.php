@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'role', 'phone', 'address', 'city', 'blocked_at', 'blocked_reason'])]
+#[Fillable(['name', 'email', 'password', 'role', 'phone', 'address', 'city', 'blocked_at', 'blocked_reason', 'email_verified_at', 'phone_verified_at'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -52,6 +52,17 @@ class User extends Authenticatable
         return $this->isAdmin() || $this->assignedRole()->exists();
     }
 
+    /**
+     * A customer account is usable once it passed the registration OTP
+     * check (or the OTP requirement is disabled). Admins skip it.
+     */
+    public function isVerified(): bool
+    {
+        return $this->isAdmin()
+            || $this->email_verified_at !== null
+            || $this->phone_verified_at !== null;
+    }
+
     public function isBlocked(): bool
     {
         return $this->blocked_at !== null;
@@ -76,6 +87,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'phone_verified_at' => 'datetime',
             'blocked_at' => 'datetime',
             'password' => 'hashed',
         ];

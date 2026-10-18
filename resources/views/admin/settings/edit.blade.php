@@ -168,7 +168,66 @@
             </section>
 
             <section>
-                <h3 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.whatsapp_notifications', 'WhatsApp Notifications') }}</h3>
+                <h3 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.customer_notifications', 'Customer Notifications') }}</h3>
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <div>
+                        <label class="flex items-center gap-2 text-sm font-medium text-brand-900">
+                            <input type="checkbox" name="notify_email_enabled" value="1" @checked(old('notify_email_enabled', $settings['notify_email_enabled']) === '1')
+                                   class="h-4 w-4 rounded border-brand-200 text-teal-600 focus:ring-teal-600/20">
+                            {{ t('admin.settings.notify_email', 'Email customers on order updates (placed, payment, status changes)') }}
+                        </label>
+                        <p class="mt-1 text-xs text-brand-400">{{ t('admin.settings.notify_email_hint', 'Needs working mail settings (.env MAIL_*). Guest orders only get email when they enter one at checkout.') }}</p>
+                    </div>
+                    <div>
+                        <label class="flex items-center gap-2 text-sm font-medium text-brand-900">
+                            <input type="checkbox" name="notify_whatsapp_enabled" value="1" @checked(old('notify_whatsapp_enabled', $settings['notify_whatsapp_enabled']) === '1')
+                                   class="h-4 w-4 rounded border-brand-200 text-teal-600 focus:ring-teal-600/20">
+                            {{ t('admin.settings.notify_whatsapp', 'WhatsApp customers on order updates (placed, payment, status changes)') }}
+                        </label>
+                        <p class="mt-1 text-xs text-brand-400">{{ t('admin.settings.notify_whatsapp_hint', 'Uses the WhatsApp Cloud API below.') }}</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h3 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.registration_otp', 'Registration Verification (OTP)') }}</h3>
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <div>
+                        <label class="flex items-center gap-2 text-sm font-medium text-brand-900">
+                            <input type="checkbox" name="otp_required" value="1" @checked(old('otp_required', $settings['otp_required']) === '1')
+                                   class="h-4 w-4 rounded border-brand-200 text-teal-600 focus:ring-teal-600/20">
+                            {{ t('admin.settings.otp_required', 'New customers must enter a 6-digit code after registering') }}
+                        </label>
+                        <p class="mt-1 text-xs text-brand-400">{{ t('admin.settings.otp_required_hint', 'Unverified accounts cannot open their account pages until they verify. Codes expire after 10 minutes, 5 tries each, resend every 60 s.') }}</p>
+                    </div>
+                    <div></div>
+                    <div>
+                        <label class="flex items-center gap-2 text-sm font-medium text-brand-900">
+                            <input type="checkbox" name="otp_via_whatsapp" value="1" @checked(old('otp_via_whatsapp', $settings['otp_via_whatsapp']) === '1')
+                                   class="h-4 w-4 rounded border-brand-200 text-teal-600 focus:ring-teal-600/20">
+                            {{ t('admin.settings.otp_via_whatsapp', 'Send the code to the customer\'s WhatsApp number') }}
+                        </label>
+                        <p class="mt-1 text-xs text-brand-400">{{ t('admin.settings.otp_via_whatsapp_hint', 'Needs the WhatsApp Cloud API below. Optionally set an approved authentication template name so codes deliver outside the 24h conversation window.') }}</p>
+                    </div>
+                    <div>
+                        <label class="flex items-center gap-2 text-sm font-medium text-brand-900">
+                            <input type="checkbox" name="otp_via_email" value="1" @checked(old('otp_via_email', $settings['otp_via_email']) === '1')
+                                   class="h-4 w-4 rounded border-brand-200 text-teal-600 focus:ring-teal-600/20">
+                            {{ t('admin.settings.otp_via_email', 'Send the code by email') }}
+                        </label>
+                        <p class="mt-1 text-xs text-brand-400">{{ t('admin.settings.otp_via_email_hint', 'Needs working mail settings (.env MAIL_*). With both channels on, the code goes out over both and either one verifies the account.') }}</p>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.otp_auth_template', 'WhatsApp authentication template name (optional)') }}</label>
+                        <input type="text" name="whatsapp_auth_template" value="{{ old('whatsapp_auth_template', $settings['whatsapp_auth_template'] ?? '') }}" placeholder="{{ t('admin.settings.otp_auth_template_placeholder', 'e.g. otp_authentication') }}"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                        <p class="mt-1 text-xs text-brand-400">{{ t('admin.settings.otp_auth_template_hint', 'Create a one-time-passcode (OTP) template in your Meta WhatsApp Business dashboard and paste its name here.') }}</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h3 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.whatsapp_notifications', 'WhatsApp Cloud API') }}</h3>
                 <div class="grid gap-5 sm:grid-cols-2">
                     <div class="sm:col-span-2">
                         <label class="flex items-center gap-2 text-sm font-medium text-brand-900">

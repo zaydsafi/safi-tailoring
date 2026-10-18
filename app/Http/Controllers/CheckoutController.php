@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Setting;
 use App\Support\Cart;
 use App\Support\HesabPay;
+use App\Support\Notify;
 use App\Support\WhatsApp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -162,10 +163,16 @@ class CheckoutController extends Controller
             . route('admin.orders.show', $order)
         );
 
-        WhatsApp::notifyCustomer(
-            $order->customer_phone,
-            'Safi Tailoring: thank you! Your order ' . $order->order_number . ' was placed. Total: '
-            . money($order->total) . '. Track your order: ' . route('orders.track')
+        WhatsApp::notifyShop(
+            'New order ' . $order->order_number . ' — ' . money($order->total)
+            . ' (' . str_replace('_', ' ', $order->payment_method) . '). '
+            . route('admin.orders.show', $order)
+        );
+
+        // Customer gets email + WhatsApp (Settings → notification toggles).
+        Notify::orderPlaced(
+            $order,
+            t('mail.order_placed_line', 'Thank you! Your order was placed. Total: :total.', ['total' => money($order->total)])
         );
 
         if ($order->payment_method === 'hesabpay') {

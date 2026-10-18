@@ -79,7 +79,14 @@ Route::prefix('{locale}')
         });
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
-        Route::middleware('auth')->prefix('account')->name('account.')->group(function () {
+        // OTP verification needs the session created at registration.
+        // The controller double-checks eligibility (unverified customer +
+        // OTP requirement on + at least one deliverable channel).
+        Route::get('/verify', [AuthController::class, 'showVerify'])->name('verification.show');
+        Route::post('/verify', [AuthController::class, 'verify'])->name('verification.check');
+        Route::post('/verify/resend', [AuthController::class, 'resend'])->name('verification.resend');
+
+        Route::middleware(['auth', 'verified.customer'])->prefix('account')->name('account.')->group(function () {
             Route::get('/orders', [OrderController::class, 'index'])->name('orders');
             Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
             Route::get('/profile', [AccountController::class, 'editProfile'])->name('profile');

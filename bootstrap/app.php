@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
             'locale' => \App\Http\Middleware\SetLocale::class,
             'perm' => \App\Http\Middleware\CheckPermission::class,
+            'verified.customer' => \App\Http\Middleware\EnsureCustomerVerified::class,
         ]);
 
         // A blocked customer is signed out on their next request, everywhere.

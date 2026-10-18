@@ -104,6 +104,68 @@ class WhatsApp
     }
 
     /**
+     * Deliver the registration OTP. When the shop configured a WhatsApp
+     * authentication template we use Meta's proper authentication message;
+     * otherwise fall back to a plain text message (which only delivers
+     * inside an already-open 24h conversation window with the customer).
+     */
+    public static function sendOtp(?string $phone, string $code, int $ttlMinutes): bool
+    {
+        $number = static::normalize($phone);
+
+        if ($number === null || !static::cloudEnabled()) {
+            return false;
+        }
+
+        $template = Setting::get('whatsapp_auth_template');
+
+        if (filled($template)) {
+            $ok = static::postMessage([
+                'messaging_product' => 'whatsapp',
+                'recipient_type' => 'individual',
+                'to' => $number,
+                'type' => 'authentication',
+                'authentication' => [
+                    'otp_type' => 'one_time',
+                    'code' => $code,
+                ],
+            ], 'otp (authentication template)');
+
+            if ($ok) {
+                return true;
+            }
+        }
+
+        return static::send($phone, t('otp.whatsapp_body',
+            'Safi Tailoring: your verification code is :code (valid for :minutes minutes). Do not share it.',
+            ['code' => $code, 'minutes' => $ttlMinutes]));
+    }
+
+    private static function postMessage(array $payload, string $context): bool
+    {
+        try {
+            $response = Http::withToken(Setting::get('whatsapp_cloud_token'))
+                ->timeout(15)
+                ->post('https://graph.facebook.com/v21.0/' . Setting::get('whatsapp_phone_number_id') . '/messages', $payload);
+
+            if (!$response->successful()) {
+                Log::warning('WhatsApp Cloud API: send failed (' . $context . ')', [
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                ]);
+
+                return false;
+            }
+
+            return true;
+        } catch (\Throwable $e) {
+            Log::warning('WhatsApp Cloud API: request error (' . $context . ')', ['error' => $e->getMessage()]);
+
+            return false;
+        }
+    }
+
+    /**
      * Notify the customer about an order event (no-op when Cloud API is not configured).
      */
     public static function notifyCustomer(?string $phone, string $message): bool

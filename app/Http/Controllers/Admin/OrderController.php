@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use App\Support\WhatsApp;
+use App\Support\Notify;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -50,16 +50,8 @@ class OrderController extends Controller
                 'note' => $data['note'] ?? null,
             ]);
 
-            $message = 'Safi Tailoring: your order ' . $order->order_number . ' is now '
-                . (Order::STATUSES[$data['status']] ?? $data['status']) . '.';
-
-            if (filled($data['note'] ?? null)) {
-                $message .= ' Note: ' . $data['note'];
-            }
-
-            $message .= ' Track: ' . route('orders.track');
-
-            WhatsApp::notifyCustomer($order->customer_phone, $message);
+            // Email + WhatsApp, per the notification toggles in Settings.
+            Notify::orderStatus($order, $data['status'], $data['note'] ?? null);
         }
 
         return back()->with('success', t('admin.flash.order_status_updated', 'Order status updated.'));

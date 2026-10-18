@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Setting;
 use App\Support\HesabPay;
-use App\Support\WhatsApp;
+use App\Support\Notify;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -132,20 +132,36 @@ class PaymentController extends Controller
         }
 
         $secret = Setting::get('hesabpay_webhook_secret');
+        $signatureSent = $request->header('X-Signature') !== null || array_key_exists('signature', $data);
+        $verifiedByApiKey = null;
 
-        if (blank($secret)) {
-            Log::warning('HesabPay webhook: rejected — no webhook secret configured in admin settings');
+        if ($signatureSent) {
+            $verifiedByApiKey = HesabPay::verifyWebhookSignature($request);
 
-            return response()->json(['status' => 'disabled'], 503);
+            if ($verifiedByApiKey === false) {
+                Log::warning('HesabPay webhook: rejected — signature failed API verification');
+
+                return response()->json(['status' => 'unauthorized'], 401);
+            }
         }
 
-        if (!$this->webhookAuthorized($request, $data, $secret)) {
-            Log::warning('HesabPay webhook: rejected — bad secret or signature');
+        if ($verifiedByApiKey !== true) {
+            if (blank($secret)) {
+                Log::warning('HesabPay webhook: rejected — no signature to verify and no webhook secret configured in admin settings');
 
-            return response()->json(['status' => 'unauthorized'], 401);
+                return response()->json(['status' => 'disabled'], 503);
+            }
+
+            if (!$this->webhookSecretAuthorized($request, $data, $secret)) {
+                Log::warning('HesabPay webhook: rejected — bad secret or signature');
+
+                return response()->json(['status' => 'unauthorized'], 401);
+            }
         }
 
-        $orderNumber = $data['order_id'] ?? $data['orderId'] ?? $data['order_number'] ?? null;
+        // HesabPay echoes our create-session user_id (the order number) in the
+        // webhook; accept its own casing variants too.
+        $orderNumber = $data['user_id'] ?? $data['userId'] ?? $data['order_id'] ?? $data['orderId'] ?? $data['order_number'] ?? null;
         $transactionId = $data['transaction_id'] ?? $data['transactionId'] ?? $data['trx_id'] ?? null;
 
         $order = null;
@@ -160,6 +176,20 @@ class PaymentController extends Controller
 
         if (!$order || $order->payment_method !== 'hesabpay') {
             return response()->json(['status' => 'ignored']);
+        }
+
+        // A webhook is authoritative — including its amount. If HesabPay
+        // reports a different total than our order, do not trust it.
+        $amount = $data['amount'] ?? null;
+
+        if (is_numeric($amount) && round((float) $amount, 2) !== round((float) $order->total, 2)) {
+            Log::error('HesabPay webhook: rejected — amount mismatch', [
+                'order' => $order->order_number,
+                'webhook_amount' => (float) $amount,
+                'order_total' => (float) $order->total,
+            ]);
+
+            return response()->json(['status' => 'amount_mismatch'], 409);
         }
 
         if ($this->payloadIsSuccess($data)) {
@@ -181,11 +211,12 @@ class PaymentController extends Controller
     }
 
     /**
-     * Accept a matching shared secret (header or payload) or an HMAC-SHA256
-     * signature of the raw body. When the signature travels inside the JSON
-     * payload it must be computed over the payload without the signature field.
+     * Local shared-secret path: accept a matching secret (header or payload)
+     * or an HMAC-SHA256 signature of the raw body. When the signature travels
+     * inside the JSON payload it must be computed over the payload without the
+     * signature field.
      */
-    private function webhookAuthorized(Request $request, array $data, string $secret): bool
+    private function webhookSecretAuthorized(Request $request, array $data, string $secret): bool
     {
         $provided = $request->header('X-HesabPay-Secret')
             ?? $request->header('X-Webhook-Secret')
@@ -243,11 +274,7 @@ class PaymentController extends Controller
                 . ' [' . $source . ']',
         ]);
 
-        WhatsApp::notifyCustomer(
-            $order->customer_phone,
-            'Safi Tailoring: we received your payment for order ' . $order->order_number
-            . '. We will start working on it right away. Track your order: ' . route('orders.track')
-        );
+        Notify::paymentReceived($order, $transactionId);
     }
 
     private function canViewOrder(Order $order): bool

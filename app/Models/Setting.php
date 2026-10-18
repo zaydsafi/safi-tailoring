@@ -33,6 +33,17 @@ class Setting extends Model
         'whatsapp_phone_number_id' => '',
         'whatsapp_cloud_token' => '',
         'whatsapp_country_code' => '93',
+        'whatsapp_auth_template' => '',
+
+        // Customer notifications (order events): one toggle per channel.
+        'notify_email_enabled' => '1',
+        'notify_whatsapp_enabled' => '1',
+
+        // Registration verification: 6-digit OTP sent over the enabled
+        // channels; the account stays unverified until one succeeds.
+        'otp_required' => '1',
+        'otp_via_whatsapp' => '1',
+        'otp_via_email' => '1',
     ];
 
     public static function get(string $key, ?string $default = null): ?string

@@ -41,13 +41,14 @@ class SettingController extends Controller
             'whatsapp_phone_number_id' => ['nullable', 'string', 'max:100'],
             'whatsapp_cloud_token' => ['nullable', 'string', 'max:1000'],
             'whatsapp_country_code' => ['nullable', 'string', 'max:5'],
+            'whatsapp_auth_template' => ['nullable', 'string', 'max:191'],
         ]);
 
         foreach ($data as $key => $value) {
             Setting::set($key, $value);
         }
 
-        foreach (['hesabpay_enabled', 'whatsapp_cloud_enabled'] as $flag) {
+        foreach (['hesabpay_enabled', 'whatsapp_cloud_enabled', 'notify_email_enabled', 'notify_whatsapp_enabled', 'otp_required', 'otp_via_whatsapp', 'otp_via_email'] as $flag) {
             Setting::set($flag, $request->boolean($flag) ? '1' : '0');
         }
 
