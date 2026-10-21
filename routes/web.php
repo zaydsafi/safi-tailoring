@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\CustomOrderRequestController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MeasurementProfileController;
 use App\Http\Controllers\OrderController;
@@ -26,7 +27,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     $locale = (string) session('locale', Locales::DEFAULT);
 
-    return redirect('/' . (array_key_exists($locale, Locales::SUPPORTED) ? $locale : Locales::DEFAULT));
+    return redirect('/'.(array_key_exists($locale, Locales::SUPPORTED) ? $locale : Locales::DEFAULT));
 });
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
@@ -56,6 +57,12 @@ Route::prefix('{locale}')
         Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout');
         Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
         Route::get('/order/{order}/success', [CheckoutController::class, 'success'])->name('orders.success');
+
+        Route::get('/custom-order', [CustomOrderRequestController::class, 'show'])->name('custom-order.request');
+        Route::post('/custom-order', [CustomOrderRequestController::class, 'store'])->name('custom-order.request.store');
+        // Public: guests submit requests too, and the thank-you page only
+        // shows the non-sensitive reference number of the new request.
+        Route::get('/custom-order/thankyou/{requestRecord}', [CustomOrderRequestController::class, 'thankyou'])->name('custom-order.request.thankyou');
 
         Route::get('/track-order', [OrderController::class, 'trackForm'])->name('orders.track');
         Route::post('/track-order', [OrderController::class, 'track'])->name('orders.track.lookup');
@@ -135,6 +142,19 @@ Route::middleware(['admin', AdminLocale::class])->prefix('admin')->name('admin.'
     Route::get('/', [Admin\DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('roles', Admin\RoleController::class)->except(['show']);
+
+    // Static paths must be registered before the {requestRecord} wildcard
+    // route, otherwise “create-for-customer” is swallowed by it.
+    Route::get('/custom-orders', [Admin\CustomOrderRequestController::class, 'index'])->name('custom-orders.index')->middleware('perm:custom_orders');
+    Route::get('/custom-orders/create-for-customer', [Admin\CustomerOrderController::class, 'create'])->name('custom-orders.create')->middleware('perm:custom_orders');
+    Route::post('/custom-orders/create-for-customer', [Admin\CustomerOrderController::class, 'store'])->name('custom-orders.store')->middleware('perm:custom_orders');
+
+    Route::get('/custom-orders/{requestRecord}', [Admin\CustomOrderRequestController::class, 'show'])->name('custom-orders.show')->middleware('perm:custom_orders');
+    Route::patch('/custom-orders/{requestRecord}/status', [Admin\CustomOrderRequestController::class, 'updateStatus'])->name('custom-orders.status')->middleware('perm:custom_orders');
+    Route::post('/custom-orders/{requestRecord}/convert', [Admin\CustomOrderRequestController::class, 'convertToOrder'])->name('custom-orders.convert')->middleware('perm:custom_orders');
+
+    Route::get('/tailor', [Admin\TailorDashboardController::class, 'index'])->name('tailor.dashboard')->middleware('perm:tailor_dashboard');
+    Route::get('/tailor/requests', [Admin\TailorDashboardController::class, 'requests'])->name('tailor.requests')->middleware('perm:tailor_dashboard');
 
     Route::resource('categories', Admin\CategoryController::class)->except(['show'])->middleware('perm:categories');
     Route::resource('products', Admin\ProductController::class)->except(['show'])->middleware('perm:products');

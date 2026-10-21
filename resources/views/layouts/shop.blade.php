@@ -104,6 +104,7 @@
                     <a href="{{ route('shop.index') }}" class="hover:text-brand-700 {{ request()->routeIs('shop.*') ? 'text-brand-700' : '' }}">{{ t('nav.shop', 'Shop') }}</a>
                     <a href="{{ route('about') }}" class="hover:text-brand-700 {{ request()->routeIs('about') ? 'text-brand-700' : '' }}">{{ t('nav.about', 'About') }}</a>
                     <a href="{{ route('contact') }}" class="hover:text-brand-700 {{ request()->routeIs('contact') ? 'text-brand-700' : '' }}">{{ t('nav.contact', 'Contact') }}</a>
+                    <a href="{{ route('custom-order.request') }}" class="font-semibold text-brand-800 hover:text-brand-700 {{ request()->routeIs('custom-order.request') || request()->routeIs('custom-order.request.thankyou') ? 'text-brand-700' : '' }}">{{ t('nav.custom_order', 'Custom Order') }}</a>
                     <a href="{{ route('orders.track') }}" class="hover:text-brand-700 {{ request()->routeIs('orders.track') ? 'text-brand-700' : '' }}">{{ t('nav.track_order', 'Track Order') }}</a>
                 </nav>
 
@@ -164,6 +165,7 @@
                 <a href="{{ route('shop.index') }}" class="block py-2 hover:text-brand-700">{{ t('nav.shop', 'Shop') }}</a>
                 <a href="{{ route('about') }}" class="block py-2 hover:text-brand-700">{{ t('nav.about', 'About') }}</a>
                 <a href="{{ route('contact') }}" class="block py-2 hover:text-brand-700">{{ t('nav.contact', 'Contact') }}</a>
+                <a href="{{ route('custom-order.request') }}" class="block py-2 font-semibold text-brand-800 hover:text-brand-700">{{ t('nav.custom_order', 'Custom Order') }}</a>
                 <a href="{{ route('orders.track') }}" class="block py-2 hover:text-brand-700">{{ t('nav.track_order', 'Track Order') }}</a>
                 @guest
                     <a href="{{ route('login') }}" class="block py-2 hover:text-brand-700">{{ t('nav.sign_in', 'Sign In') }}</a>
@@ -220,6 +222,7 @@
                     <li><a href="{{ route('shop.index') }}" class="hover:text-white">{{ t('footer.all_products', 'All Products') }}</a></li>
                     <li><a href="{{ route('shop.index', ['type' => 'custom']) }}" class="hover:text-white">{{ t('footer.custom_tailoring', 'Custom Tailoring') }}</a></li>
                     <li><a href="{{ route('shop.index', ['type' => 'service']) }}" class="hover:text-white">{{ t('footer.alterations', 'Alteration Services') }}</a></li>
+                    <li><a href="{{ route('custom-order.request') }}" class="hover:text-white">{{ t('footer.start_custom_order', 'Start a Custom Order') }}</a></li>
                     <li><a href="{{ route('orders.track') }}" class="hover:text-white">{{ t('footer.track_order', 'Track Your Order') }}</a></li>
                 </ul>
             </div>

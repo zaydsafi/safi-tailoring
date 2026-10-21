@@ -16,7 +16,7 @@
                     <a href="{{ route('shop.index') }}" class="bg-gold-500 text-brand-950 font-semibold px-6 py-3 rounded-lg hover:bg-gold-400 transition-colors">
                         {{ t('home.cta_shop_collection', 'Shop Collection') }}
                     </a>
-                    <a href="{{ route('shop.index', ['type' => 'custom']) }}" class="border border-white/40 text-white font-semibold px-6 py-3 rounded-lg hover:bg-white/10 transition-colors">
+                    <a href="{{ route('custom-order.request') }}" class="border border-white/40 text-white font-semibold px-6 py-3 rounded-lg hover:bg-white/10 transition-colors">
                         {{ t('home.cta_custom_tailoring', 'Custom Tailoring') }}
                     </a>
                 </div>

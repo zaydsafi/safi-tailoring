@@ -20,6 +20,10 @@ class Permissions
         'messages' => 'Messages',
         'translations' => 'Translations',
         'settings' => 'Shop settings',
+
+        // Custom-order workflow: customer requests and staff conversion to real orders.
+        'custom_orders' => 'Custom orders',
+        'tailor_dashboard' => 'Tailor dashboard',
     ];
 
     /**

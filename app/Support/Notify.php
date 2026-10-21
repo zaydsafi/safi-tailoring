@@ -2,7 +2,9 @@
 
 namespace App\Support;
 
+use App\Mail\CustomOrderStatusMail;
 use App\Mail\OrderUpdatedMail;
+use App\Models\CustomOrderRequest;
 use App\Models\Order;
 use App\Models\Setting;
 use Illuminate\Support\Facades\Log;
@@ -25,17 +27,49 @@ class Notify
         return Setting::get('notify_whatsapp_enabled') === '1';
     }
 
+    public static function customOrderStatusChange(CustomOrderRequest $request, string $statusKey, ?string $assignedTo = null): void
+    {
+        $label = CustomOrderRequest::STATUSES[$statusKey] ?? $statusKey;
+
+        if (! self::emailEnabled()) {
+            return;
+        }
+
+        $address = filled($request->customer_email) ? (string) $request->customer_email : null;
+
+        if ($address === null) {
+            return;
+        }
+
+        $message = 'Safi Tailoring: your custom order request is now '.$label.'.';
+
+        if ($assignedTo !== null) {
+            $message .= ' It has been assigned to our tailoring team.';
+        }
+
+        $message .= ' Track your request with us over WhatsApp or phone.';
+
+        try {
+            Mail::to($address)->send(new CustomOrderStatusMail($request, $label, $message));
+        } catch (\Throwable $e) {
+            Log::warning('Notify: custom order request email failed', [
+                'request' => $request->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
     public static function orderStatus(Order $order, string $statusKey, ?string $note = null): void
     {
         $label = Order::STATUSES[$statusKey] ?? $statusKey;
 
-        $message = 'Safi Tailoring: your order ' . $order->order_number . ' is now ' . $label . '.';
+        $message = 'Safi Tailoring: your order '.$order->order_number.' is now '.$label.'.';
 
         if (filled($note)) {
-            $message .= ' Note: ' . $note;
+            $message .= ' Note: '.$note;
         }
 
-        $message .= ' Track: ' . route('orders.track');
+        $message .= ' Track: '.route('orders.track');
 
         self::email($order, t('mail.order_status_headline', 'Order :number is now :status', [
             'number' => $order->order_number,
@@ -49,8 +83,8 @@ class Notify
 
     public static function paymentReceived(Order $order, ?string $transactionId = null): void
     {
-        $message = 'Safi Tailoring: payment received for order ' . $order->order_number
-            . '. We will start working on it right away. Track your order: ' . route('orders.track');
+        $message = 'Safi Tailoring: payment received for order '.$order->order_number
+            .'. We will start working on it right away. Track your order: '.route('orders.track');
 
         self::email($order, t('mail.order_paid_headline', 'Payment received for order :number', [
             'number' => $order->order_number,
@@ -63,8 +97,8 @@ class Notify
 
     public static function orderPlaced(Order $order, string $summary): void
     {
-        $message = 'Safi Tailoring: order ' . $order->order_number . ' placed. ' . $summary
-            . ' Track: ' . route('orders.track');
+        $message = 'Safi Tailoring: order '.$order->order_number.' placed. '.$summary
+            .' Track: '.route('orders.track');
 
         self::email($order, t('mail.order_placed_headline', 'Order :number received', [
             'number' => $order->order_number,
@@ -81,7 +115,7 @@ class Notify
      */
     private static function email(Order $order, string $headline, string $message): void
     {
-        if (!self::emailEnabled()) {
+        if (! self::emailEnabled()) {
             return;
         }
 

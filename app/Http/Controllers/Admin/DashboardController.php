@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Category;
 use App\Models\ContactMessage;
+use App\Models\CustomOrderRequest;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
@@ -17,6 +17,7 @@ class DashboardController extends Controller
         $pendingOrders = Order::status('pending')->count();
         $totalProducts = Product::count();
         $totalCustomers = User::where('role', 'customer')->count();
+        $pendingCustomRequests = CustomOrderRequest::whereIn('status', ['new', 'assigned', 'in_progress'])->count();
         $revenue = Order::where('payment_status', 'paid')->where('status', '!=', 'cancelled')->sum('total');
         $unreadMessages = ContactMessage::where('is_read', false)->count();
 
@@ -27,7 +28,8 @@ class DashboardController extends Controller
 
         return view('admin.dashboard', compact(
             'todayOrders', 'pendingOrders', 'totalProducts', 'totalCustomers',
-            'revenue', 'unreadMessages', 'recentOrders', 'lowStock', 'chart'
+            'revenue', 'unreadMessages', 'recentOrders', 'lowStock', 'chart',
+            'pendingCustomRequests'
         ));
     }
 
@@ -63,7 +65,7 @@ class DashboardController extends Controller
         $statusCounts = [];
 
         foreach (Order::STATUSES as $status => $label) {
-            $statusLabels[] = t('orders.status_' . $status, $label);
+            $statusLabels[] = t('orders.status_'.$status, $label);
             $statusCounts[] = (int) ($counts[$status] ?? 0);
         }
 

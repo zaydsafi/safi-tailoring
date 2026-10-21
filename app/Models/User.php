@@ -63,6 +63,11 @@ class User extends Authenticatable
             || $this->phone_verified_at !== null;
     }
 
+    public function isTailor(): bool
+    {
+        return $this->role === 'tailor';
+    }
+
     public function isBlocked(): bool
     {
         return $this->blocked_at !== null;

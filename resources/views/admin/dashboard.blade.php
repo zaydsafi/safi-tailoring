@@ -44,6 +44,10 @@
             <p class="text-sm font-medium text-brand-500">{{ t('admin.dashboard.unread_messages', 'Unread Messages') }}</p>
             <p class="mt-2 text-2xl font-bold {{ $unreadMessages > 0 ? 'text-gold-600' : 'text-brand-900' }}">{{ $unreadMessages }}</p>
         </a>
+        <a href="{{ route('admin.custom-orders.index') }}" class="rounded-2xl border border-brand-100 bg-white p-5 shadow-sm transition hover:border-teal-300">
+            <p class="text-sm font-medium text-brand-500">{{ t('admin.dashboard.pending_custom_requests', 'Pending Custom Requests') }}</p>
+            <p class="mt-2 text-2xl font-bold {{ $pendingCustomRequests > 0 ? 'text-amber-600' : 'text-brand-900' }}">{{ $pendingCustomRequests }}</p>
+        </a>
     </div>
 
     <div class="mt-8 grid gap-6 xl:grid-cols-3">

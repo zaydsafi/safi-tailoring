@@ -21,20 +21,26 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (!Auth::attempt($credentials, $request->boolean('remember'))) {
+        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             throw ValidationException::withMessages([
                 'email' => t('admin.auth.invalid_credentials', 'These credentials do not match our records.'),
             ]);
         }
 
-        if (!auth()->user()->isAdmin()) {
+        $user = auth()->user();
+
+        if (! $user->isAdmin() && ! $user->hasPanelAccess()) {
             Auth::logout();
             throw ValidationException::withMessages([
-                'email' => t('admin.auth.admins_only', 'This login is for administrators only.'),
+                'email' => t('admin.auth.admins_only', 'This login is for administrators and staff only.'),
             ]);
         }
 
         $request->session()->regenerate();
+
+        if ($user->isTailor()) {
+            return redirect()->intended(route('admin.tailor.dashboard'));
+        }
 
         return redirect()->intended(route('admin.dashboard'));
     }

@@ -42,6 +42,13 @@ return new class extends Migration
         foreach (Permissions::CATALOG as $key => $label) {
             Permission::firstOrCreate(['key' => $key], ['label' => $label]);
         }
+
+        // Built-in staff role for the tailoring team. It is editable like any
+        // other custom role; this is only the initial seed so it exists by default.
+        Role::firstOrCreate(
+            ['slug' => 'tailor'],
+            ['name' => 'Tailor', 'description' => 'Tailoring team: custom orders, measurements, and order status for in-tailoring work.']
+        );
     }
 
     public function down(): void
