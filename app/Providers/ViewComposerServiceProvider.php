@@ -19,19 +19,6 @@ class ViewComposerServiceProvider extends ServiceProvider
 
     private function settings(): array
     {
-        return [
-            'shop_name' => Setting::get('shop_name'),
-            'shop_tagline' => Setting::get('shop_tagline'),
-            'shop_phone' => Setting::get('shop_phone'),
-            'shop_email' => Setting::get('shop_email'),
-            'shop_address' => Setting::get('shop_address'),
-            'currency_symbol' => Setting::get('currency_symbol'),
-            'announcement' => Setting::get('announcement'),
-            'facebook_url' => Setting::get('facebook_url'),
-            'instagram_url' => Setting::get('instagram_url'),
-            'whatsapp_number' => Setting::get('whatsapp_number'),
-            'hero_title' => Setting::get('hero_title'),
-            'hero_subtitle' => Setting::get('hero_subtitle'),
-        ];
+        return Setting::viewSettings();
     }
 }

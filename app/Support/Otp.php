@@ -3,16 +3,18 @@
 namespace App\Support;
 
 use App\Mail\OtpMail;
+use App\Models\EmailDelivery;
 use App\Models\Setting;
 use App\Models\User;
 use App\Models\VerificationCode;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 
 class Otp
 {
     public const TTL_MINUTES = 10;
+
     public const MAX_ATTEMPTS = 5;
+
     public const RESEND_COOLDOWN_SECONDS = 60;
 
     public const PURPOSE_REGISTER = 'register';
@@ -157,7 +159,7 @@ class Otp
             return false;
         }
 
-        if (!Hash::check($input, $code->code_hash)) {
+        if (! Hash::check($input, $code->code_hash)) {
             return false;
         }
 
@@ -191,13 +193,8 @@ class Otp
             $address = (string) ($user->email ?? '');
 
             if ($address !== '') {
-                try {
-                    Mail::to($address)->send(new OtpMail($code, self::TTL_MINUTES, $user->name));
-                    $sent = true;
-                } catch (\Throwable $e) {
-                    report($e);
-                    $sent = false;
-                }
+                $delivery = EmailLog::send($address, new OtpMail($code, self::TTL_MINUTES, $user->name));
+                $sent = $delivery->status === EmailDelivery::STATUS_SENT;
             }
         }
 

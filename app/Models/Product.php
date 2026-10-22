@@ -52,7 +52,7 @@ class Product extends Model
                 $slug = $base;
                 $i = 1;
                 while (static::where('slug', $slug)->where('id', '!=', $product->id ?? 0)->exists()) {
-                    $slug = $base . '-' . $i++;
+                    $slug = $base.'-'.$i++;
                 }
                 $product->slug = $slug;
             }
@@ -91,17 +91,27 @@ class Product extends Model
 
     public function inStock(int $qty = 1): bool
     {
-        if (!$this->track_stock) {
+        if (! $this->track_stock) {
             return true;
         }
 
         return $this->stock >= $qty;
     }
 
-    public function decrementStock(int $qty): void
+    /**
+     * Concurrency-safe decrement: only succeeds when enough stock exists at
+     * the moment of the write, so two simultaneous checkouts can never
+     * oversell. Returns false when stock was not available.
+     */
+    public function decrementStock(int $qty): bool
     {
-        if ($this->track_stock) {
-            $this->decrement('stock', $qty);
+        if (! $this->track_stock) {
+            return true;
         }
+
+        return $this->newQuery()
+            ->where('id', $this->id)
+            ->where('stock', '>=', $qty)
+            ->decrement('stock', $qty) > 0;
     }
 }

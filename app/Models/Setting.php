@@ -39,6 +39,16 @@ class Setting extends Model
         'notify_email_enabled' => '1',
         'notify_whatsapp_enabled' => '1',
 
+        // Outgoing email (SMTP). Empty host keeps the .env driver — filled
+        // values override it at runtime (see App\Support\MailerSettings).
+        'mail_smtp_host' => '',
+        'mail_smtp_port' => '587',
+        'mail_smtp_username' => '',
+        'mail_smtp_password' => '',
+        'mail_smtp_encryption' => 'tls',
+        'mail_from_address' => '',
+        'mail_from_name' => '',
+
         // Registration verification: 6-digit OTP sent over the enabled
         // channels; the account stays unverified until one succeeds.
         'otp_required' => '1',
@@ -50,7 +60,7 @@ class Setting extends Model
     {
         $default = $default ?? static::$defaults[$key] ?? null;
 
-        return Cache::rememberForever('setting:' . $key, function () use ($key, $default) {
+        return Cache::rememberForever('setting:'.$key, function () use ($key, $default) {
             return static::query()->where('key', $key)->value('value') ?? $default;
         });
     }
@@ -58,13 +68,41 @@ class Setting extends Model
     public static function set(string $key, ?string $value): void
     {
         static::query()->updateOrCreate(['key' => $key], ['value' => $value]);
-        Cache::forget('setting:' . $key);
+        Cache::forget('setting:'.$key);
+        Cache::forget('setting:view_settings');
     }
 
     public static function flushCache(): void
     {
         foreach (array_keys(static::$defaults) as $key) {
-            Cache::forget('setting:' . $key);
+            Cache::forget('setting:'.$key);
         }
+
+        Cache::forget('setting:view_settings');
+    }
+
+    /**
+     * The settings shared with every layout in one cached query instead of
+     * one cache/DB lookup per key per render.
+     *
+     * @return array<string, ?string>
+     */
+    public static function viewSettings(): array
+    {
+        $keys = [
+            'shop_name', 'shop_tagline', 'shop_phone', 'shop_email', 'shop_address',
+            'currency_symbol', 'announcement', 'facebook_url', 'instagram_url',
+            'whatsapp_number', 'hero_title', 'hero_subtitle',
+        ];
+
+        return Cache::rememberForever('setting:view_settings', function () use ($keys) {
+            $stored = static::query()->whereIn('key', $keys)->pluck('value', 'key');
+
+            return collect($keys)
+                ->mapWithKeys(fn (string $key) => [
+                    $key => $stored[$key] ?? static::$defaults[$key] ?? null,
+                ])
+                ->all();
+        });
     }
 }

@@ -15,9 +15,7 @@ use Illuminate\Validation\Rule;
 
 class CheckoutController extends Controller
 {
-    public function __construct(private Cart $cart)
-    {
-    }
+    public function __construct(private Cart $cart) {}
 
     public function show()
     {
@@ -29,6 +27,7 @@ class CheckoutController extends Controller
 
         if ($cartItems->isEmpty()) {
             $this->cart->clear();
+
             return redirect()->route('cart.index')->with('error', t('flash.cart_empty', 'Your cart is empty.'));
         }
 
@@ -68,6 +67,7 @@ class CheckoutController extends Controller
 
         if ($cartItems->isEmpty()) {
             $this->cart->clear();
+
             return redirect()->route('cart.index')->with('error', t('flash.cart_items_unavailable', 'Your cart items are no longer available.'));
         }
 
@@ -81,66 +81,76 @@ class CheckoutController extends Controller
             foreach ($customItems as $item) {
                 $m = $data['measurements'][$item->key] ?? null;
                 $hasAny = collect($m ?? [])->filter(fn ($v) => $v !== null && $v !== '')->isNotEmpty();
-                if (!$hasAny) {
+                if (! $hasAny) {
                     return back()
                         ->withInput()
-                        ->with('error', t('flash.measurement_needed_for', 'Please enter at least one measurement for') . ' "' . $item->product->name . '".');
+                        ->with('error', t('flash.measurement_needed_for', 'Please enter at least one measurement for').' "'.$item->product->name.'".');
                 }
             }
         }
 
         // Validate stock for ready items once more.
         foreach ($cartItems->where('product.type', 'ready') as $item) {
-            if (!$item->product->inStock($item->qty)) {
-                return back()->with('error', '"' . $item->product->name . '" ' . t('flash.not_enough_stock', 'does not have enough stock') . ' (' . $item->product->stock . ' ' . t('flash.available', 'available') . ').');
+            if (! $item->product->inStock($item->qty)) {
+                return back()->with('error', '"'.$item->product->name.'" '.t('flash.not_enough_stock', 'does not have enough stock').' ('.$item->product->stock.' '.t('flash.available', 'available').').');
             }
         }
 
         $subtotal = $cartItems->sum('line_total');
         $deliveryFee = $this->deliveryFee($subtotal);
 
-        $order = DB::transaction(function () use ($data, $cartItems, $subtotal, $deliveryFee) {
-            $order = Order::create([
-                'user_id' => auth()->id(),
-                'customer_name' => $data['customer_name'],
-                'customer_phone' => $data['customer_phone'],
-                'customer_email' => $data['customer_email'] ?? null,
-                'customer_address' => $data['customer_address'],
-                'customer_city' => $data['customer_city'] ?? null,
-                'notes' => $data['notes'] ?? null,
-                'payment_method' => $data['payment_method'],
-                'payment_status' => 'pending',
-                'status' => 'pending',
-                'subtotal' => $subtotal,
-                'delivery_fee' => $deliveryFee,
-                'total' => $subtotal + $deliveryFee,
-            ]);
-
-            foreach ($cartItems as $item) {
-                $measurements = null;
-                if ($item->product->type === 'custom') {
-                    $raw = $data['measurements'][$item->key] ?? [];
-                    $measurements = collect($raw)->filter(fn ($v) => $v !== null && $v !== '')->map(fn ($v) => (float) $v)->all();
-                }
-
-                $order->items()->create([
-                    'product_id' => $item->product->id,
-                    'product_name' => $item->product->name,
-                    'type' => $item->product->type,
-                    'size' => $item->size,
-                    'measurements' => $measurements,
-                    'price' => $item->price,
-                    'quantity' => $item->qty,
-                    'line_total' => $item->line_total,
+        try {
+            $order = DB::transaction(function () use ($data, $cartItems, $subtotal, $deliveryFee) {
+                $order = Order::create([
+                    'user_id' => auth()->id(),
+                    'customer_name' => $data['customer_name'],
+                    'customer_phone' => $data['customer_phone'],
+                    'customer_email' => $data['customer_email'] ?? null,
+                    'customer_address' => $data['customer_address'],
+                    'customer_city' => $data['customer_city'] ?? null,
+                    'notes' => $data['notes'] ?? null,
+                    'payment_method' => $data['payment_method'],
+                    'payment_status' => 'pending',
+                    'status' => 'pending',
+                    'subtotal' => $subtotal,
+                    'delivery_fee' => $deliveryFee,
+                    'total' => $subtotal + $deliveryFee,
                 ]);
 
-                $item->product->decrementStock($item->qty);
-            }
+                foreach ($cartItems as $item) {
+                    $measurements = null;
+                    if ($item->product->type === 'custom') {
+                        $raw = $data['measurements'][$item->key] ?? [];
+                        $measurements = collect($raw)->filter(fn ($v) => $v !== null && $v !== '')->map(fn ($v) => (float) $v)->all();
+                    }
 
-            $order->statusHistories()->create(['status' => 'pending', 'note' => 'Order placed']);
+                    $order->items()->create([
+                        'product_id' => $item->product->id,
+                        'product_name' => $item->product->name,
+                        'type' => $item->product->type,
+                        'size' => $item->size,
+                        'measurements' => $measurements,
+                        'price' => $item->price,
+                        'quantity' => $item->qty,
+                        'line_total' => $item->line_total,
+                    ]);
 
-            return $order;
-        });
+                    if (! $item->product->decrementStock($item->qty)) {
+                        // Race with another checkout: stock was gone between the
+                        // earlier check and this write. Roll the whole order back.
+                        throw new \RuntimeException($item->product->name);
+                    }
+                }
+
+                $order->statusHistories()->create(['status' => 'pending', 'note' => 'Order placed']);
+
+                return $order;
+            });
+        } catch (\RuntimeException $e) {
+            return back()
+                ->withInput()
+                ->with('error', '"'.$e->getMessage().'" '.t('flash.not_enough_stock', 'does not have enough stock').'.');
+        }
 
         // Optionally save a measurement profile for logged-in customers.
         if (auth()->check() && ($data['save_measurements'] ?? false) && $customItems->isNotEmpty()) {
@@ -148,7 +158,7 @@ class CheckoutController extends Controller
             $raw = $data['measurements'][$firstItem->key] ?? [];
             $clean = collect($raw)->filter(fn ($v) => $v !== null && $v !== '')->map(fn ($v) => (float) $v)->all();
 
-            if (!empty($clean)) {
+            if (! empty($clean)) {
                 auth()->user()->measurementProfiles()->create(array_merge($clean, [
                     'label' => $data['profile_label'] ?? 'My Measurements',
                 ]));
@@ -158,15 +168,9 @@ class CheckoutController extends Controller
         $this->cart->clear();
 
         WhatsApp::notifyShop(
-            'New order ' . $order->order_number . ' — ' . money($order->total)
-            . ' (' . str_replace('_', ' ', $order->payment_method) . '). '
-            . route('admin.orders.show', $order)
-        );
-
-        WhatsApp::notifyShop(
-            'New order ' . $order->order_number . ' — ' . money($order->total)
-            . ' (' . str_replace('_', ' ', $order->payment_method) . '). '
-            . route('admin.orders.show', $order)
+            'New order '.$order->order_number.' — '.money($order->total)
+            .' ('.str_replace('_', ' ', $order->payment_method).'). '
+            .route('admin.orders.show', $order)
         );
 
         // Customer gets email + WhatsApp (Settings → notification toggles).

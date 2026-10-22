@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ShopTestMail;
+use App\Models\EmailDelivery;
 use App\Models\Setting;
+use App\Support\EmailLog;
 use Illuminate\Http\Request;
 
 class SettingController extends Controller
@@ -42,6 +45,16 @@ class SettingController extends Controller
             'whatsapp_cloud_token' => ['nullable', 'string', 'max:1000'],
             'whatsapp_country_code' => ['nullable', 'string', 'max:5'],
             'whatsapp_auth_template' => ['nullable', 'string', 'max:191'],
+
+            // Outgoing email. A filled host switches mail to SMTP; blank
+            // fields fall back to whatever .env provides.
+            'mail_smtp_host' => ['nullable', 'string', 'max:255'],
+            'mail_smtp_port' => ['nullable', 'integer', 'between:1,65535'],
+            'mail_smtp_username' => ['nullable', 'string', 'max:255'],
+            'mail_smtp_password' => ['nullable', 'string', 'max:255'],
+            'mail_smtp_encryption' => ['nullable', 'in:tls,ssl,none'],
+            'mail_from_address' => ['nullable', 'email', 'max:255'],
+            'mail_from_name' => ['nullable', 'string', 'max:255'],
         ]);
 
         foreach ($data as $key => $value) {
@@ -53,5 +66,26 @@ class SettingController extends Controller
         }
 
         return back()->with('success', t('admin.flash.settings_saved', 'Settings saved.'));
+    }
+
+    /**
+     * Verifies the configured mail delivery with one real message so the
+     * shop owner can see "it works" or the exact error before going live.
+     */
+    public function testEmail(Request $request)
+    {
+        $data = $request->validate([
+            'test_email_to' => ['required', 'email', 'max:255'],
+        ]);
+
+        $delivery = EmailLog::send($data['test_email_to'], new ShopTestMail);
+
+        if ($delivery->status === EmailDelivery::STATUS_SENT) {
+            return back()->with('success', t('admin.settings.test_email_sent',
+                'Test email sent to :email — check the inbox (and spam folder).', ['email' => $data['test_email_to']]));
+        }
+
+        return back()->with('error', t('admin.settings.test_email_failed',
+            'Sending failed: :error', ['error' => $delivery->error ?? 'Unknown error']));
     }
 }

@@ -8,6 +8,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CustomOrderRequestController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\MeasurementProfileController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PageController;
@@ -24,11 +25,7 @@ use Illuminate\Support\Facades\Route;
 | Root: send visitors to their preferred language
 |--------------------------------------------------------------------------
 */
-Route::get('/', function () {
-    $locale = (string) session('locale', Locales::DEFAULT);
-
-    return redirect('/'.(array_key_exists($locale, Locales::SUPPORTED) ? $locale : Locales::DEFAULT));
-});
+Route::get('/', [LocaleController::class, 'root'])->name('root');
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
@@ -118,21 +115,7 @@ Route::post('/webhooks/hesabpay', [PaymentController::class, 'webhook'])->name('
 | Admin panel (English / Pashto / Persian — switcher in the admin header)
 |--------------------------------------------------------------------------
 */
-Route::get('/admin/lang/{locale}', function (string $locale) {
-    if (array_key_exists($locale, Locales::SUPPORTED)) {
-        session(['admin_locale' => $locale]);
-    }
-
-    $previous = url()->previous();
-
-    // Only go back if we came from an admin page (and not the switcher itself);
-    // otherwise (fresh session, external referer) land on the admin dashboard.
-    if (str_starts_with(parse_url($previous, PHP_URL_PATH) ?? '/', '/admin') && $previous !== url()->current()) {
-        return redirect($previous);
-    }
-
-    return redirect(route('admin.dashboard'));
-})->name('admin.lang');
+Route::get('/admin/lang/{locale}', [LocaleController::class, 'switchAdmin'])->name('admin.lang');
 
 Route::get('/admin/login', [Admin\AuthController::class, 'showLogin'])->name('admin.login')->middleware(['guest', AdminLocale::class]);
 Route::post('/admin/login', [Admin\AuthController::class, 'login'])->name('admin.login.store')->middleware(['guest', AdminLocale::class]);
@@ -186,6 +169,9 @@ Route::middleware(['admin', AdminLocale::class])->prefix('admin')->name('admin.'
     Route::get('/messages/{message}', [Admin\MessageController::class, 'show'])->name('messages.show')->middleware('perm:messages');
     Route::delete('/messages/{message}', [Admin\MessageController::class, 'destroy'])->name('messages.destroy')->middleware('perm:messages');
 
+    Route::get('/email-log', [Admin\EmailLogController::class, 'index'])->name('email-log.index')->middleware('perm:settings');
+
     Route::get('/settings', [Admin\SettingController::class, 'edit'])->name('settings.edit')->middleware('perm:settings');
     Route::put('/settings', [Admin\SettingController::class, 'update'])->name('settings.update')->middleware('perm:settings');
+    Route::post('/settings/test-email', [Admin\SettingController::class, 'testEmail'])->name('settings.test_email')->middleware('perm:settings');
 });

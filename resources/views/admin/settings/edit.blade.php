@@ -168,6 +168,76 @@
             </section>
 
             <section>
+                <h3 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.outgoing_email', 'Outgoing Email (SMTP)') }}</h3>
+                <p class="mb-4 text-xs text-brand-400">
+                    {{ t('admin.settings.outgoing_email_hint', 'Fill the host below to send real email through your mail provider (Gmail, Zoho, your hosting…). Save first, then use “Send test email” to confirm delivery. Leave the host empty to keep the mailer from the .env file.') }}
+                </p>
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.smtp_host', 'SMTP Host') }}</label>
+                        <input type="text" name="mail_smtp_host" value="{{ old('mail_smtp_host', $settings['mail_smtp_host']) }}" placeholder="{{ t('admin.settings.smtp_host_placeholder', 'e.g. smtp.gmail.com') }}"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('mail_smtp_host') border-red-400 @enderror">
+                        @error('mail_smtp_host')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.smtp_port', 'SMTP Port') }}</label>
+                        <input type="number" min="1" max="65535" name="mail_smtp_port" value="{{ old('mail_smtp_port', $settings['mail_smtp_port']) }}" placeholder="587"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('mail_smtp_port') border-red-400 @enderror">
+                        <p class="mt-1 text-xs text-brand-400">{{ t('admin.settings.smtp_port_hint', '587 for TLS (usual), 465 for SSL.') }}</p>
+                        @error('mail_smtp_port')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.smtp_username', 'SMTP Username') }}</label>
+                        <input type="text" name="mail_smtp_username" value="{{ old('mail_smtp_username', $settings['mail_smtp_username']) }}" placeholder="{{ t('admin.settings.smtp_username_placeholder', 'usually the email address') }}"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('mail_smtp_username') border-red-400 @enderror">
+                        @error('mail_smtp_username')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.smtp_password', 'SMTP Password') }}</label>
+                        <input type="password" name="mail_smtp_password" value="{{ old('mail_smtp_password', $settings['mail_smtp_password']) }}" placeholder="{{ t('admin.settings.smtp_password_placeholder', 'mail account password or app password') }}"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('mail_smtp_password') border-red-400 @enderror">
+                        @error('mail_smtp_password')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.smtp_encryption', 'Encryption') }}</label>
+                        <select name="mail_smtp_encryption"
+                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('mail_smtp_encryption') border-red-400 @enderror">
+                            <option value="tls" @selected(old('mail_smtp_encryption', $settings['mail_smtp_encryption']) === 'tls')>{{ t('admin.settings.encryption_tls', 'TLS (port 587)') }}</option>
+                            <option value="ssl" @selected(old('mail_smtp_encryption', $settings['mail_smtp_encryption']) === 'ssl')>{{ t('admin.settings.encryption_ssl', 'SSL (port 465)') }}</option>
+                            <option value="none" @selected(old('mail_smtp_encryption', $settings['mail_smtp_encryption']) === 'none')>{{ t('admin.settings.encryption_none', 'None') }}</option>
+                        </select>
+                        @error('mail_smtp_encryption')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.mail_from_address', 'From Address') }}</label>
+                        <input type="email" name="mail_from_address" value="{{ old('mail_from_address', $settings['mail_from_address']) }}" placeholder="{{ t('admin.settings.mail_from_address_placeholder', 'orders@yourdomain.com') }}"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('mail_from_address') border-red-400 @enderror">
+                        @error('mail_from_address')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.mail_from_name', 'From Name') }}</label>
+                        <input type="text" name="mail_from_name" value="{{ old('mail_from_name', $settings['mail_from_name']) }}"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('mail_from_name') border-red-400 @enderror">
+                        @error('mail_from_name')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                </div>
+                <div class="mt-5 rounded-xl border border-brand-100 bg-brand-50 p-4">
+                    <form method="POST" action="{{ route('admin.settings.test_email') }}" class="flex flex-wrap items-end gap-3">
+                        @csrf
+                        <div class="grow">
+                            <label for="test_email_to" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.test_email_to', 'Send a test email to') }}</label>
+                            <input type="email" id="test_email_to" name="test_email_to" value="{{ old('test_email_to', $settings['shop_email']) }}" required
+                                   class="w-full rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('test_email_to') border-red-400 @enderror">
+                        </div>
+                        <button type="submit" class="rounded-xl bg-brand-800 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">
+                            {{ t('admin.settings.send_test_email', 'Send test email') }}
+                        </button>
+                    </form>
+                    <p class="mt-2 text-xs text-brand-400">{{ t('admin.settings.test_email_hint', 'Saves are applied immediately — this test uses the settings from the fields above (after you save). If sending fails, the exact error is shown so you can fix host, port or credentials.') }}</p>
+                </div>
+            </section>
+
+            <section>
                 <h3 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.customer_notifications', 'Customer Notifications') }}</h3>
                 <div class="grid gap-5 sm:grid-cols-2">
                     <div>
@@ -176,7 +246,7 @@
                                    class="h-4 w-4 rounded border-brand-200 text-teal-600 focus:ring-teal-600/20">
                             {{ t('admin.settings.notify_email', 'Email customers on order updates (placed, payment, status changes)') }}
                         </label>
-                        <p class="mt-1 text-xs text-brand-400">{{ t('admin.settings.notify_email_hint', 'Needs working mail settings (.env MAIL_*). Guest orders only get email when they enter one at checkout.') }}</p>
+                        <p class="mt-1 text-xs text-brand-400">{{ t('admin.settings.notify_email_hint', 'Configure the SMTP section above so mail can actually leave the server. Guest orders only get email when they enter one at checkout.') }}</p>
                     </div>
                     <div>
                         <label class="flex items-center gap-2 text-sm font-medium text-brand-900">
@@ -215,7 +285,7 @@
                                    class="h-4 w-4 rounded border-brand-200 text-teal-600 focus:ring-teal-600/20">
                             {{ t('admin.settings.otp_via_email', 'Send the code by email') }}
                         </label>
-                        <p class="mt-1 text-xs text-brand-400">{{ t('admin.settings.otp_via_email_hint', 'Needs working mail settings (.env MAIL_*). With both channels on, the code goes out over both and either one verifies the account.') }}</p>
+                        <p class="mt-1 text-xs text-brand-400">{{ t('admin.settings.otp_via_email_hint', 'Uses the SMTP section above. With both channels on, the code goes out over both and either one verifies the account.') }}</p>
                     </div>
                     <div class="sm:col-span-2">
                         <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.otp_auth_template', 'WhatsApp authentication template name (optional)') }}</label>

@@ -32,9 +32,9 @@ class PaymentController extends Controller
         if ($success && $verified && $order->payment_method === 'hesabpay') {
             $this->markPaid($order, $transactionId ? (string) $transactionId : null, 'redirect');
 
-            if (!$this->canViewOrder($order)) {
+            if (! $this->canViewOrder($order)) {
                 return redirect()->route('orders.track')
-                    ->with('success', t('flash.payment_received_prefix', 'Payment received for order') . ' ' . $order->order_number . '! ' . t('flash.enter_phone_to_view', 'Enter your phone number to view it.'));
+                    ->with('success', t('flash.payment_received_prefix', 'Payment received for order').' '.$order->order_number.'! '.t('flash.enter_phone_to_view', 'Enter your phone number to view it.'));
             }
 
             session(['order_confirmed' => $order->order_number]);
@@ -48,9 +48,9 @@ class PaymentController extends Controller
                 'has_nonce' => filled($nonce),
             ]);
 
-            if (!$this->canViewOrder($order)) {
+            if (! $this->canViewOrder($order)) {
                 return redirect()->route('orders.track')
-                    ->with('success', t('flash.confirming_payment_prefix', 'We are confirming the payment for order') . ' ' . $order->order_number . '. ' . t('flash.check_back_moment', 'Check back in a moment.'));
+                    ->with('success', t('flash.confirming_payment_prefix', 'We are confirming the payment for order').' '.$order->order_number.'. '.t('flash.check_back_moment', 'Check back in a moment.'));
             }
 
             session(['order_confirmed' => $order->order_number]);
@@ -60,7 +60,7 @@ class PaymentController extends Controller
                 ->with('success', t('flash.payment_confirming', 'Payment received — we are confirming it with HesabPay. This usually takes a moment.'));
         }
 
-        if (!$this->canViewOrder($order)) {
+        if (! $this->canViewOrder($order)) {
             return redirect()->route('orders.track')
                 ->with('error', t('flash.enter_order_and_phone', 'Please enter your order number and phone number to check the order status.'));
         }
@@ -78,7 +78,7 @@ class PaymentController extends Controller
     {
         $order = Order::where('order_number', $orderNumber)->firstOrFail();
 
-        if (!$this->canViewOrder($order)) {
+        if (! $this->canViewOrder($order)) {
             return redirect()->route('orders.track');
         }
 
@@ -102,7 +102,7 @@ class PaymentController extends Controller
 
         $url = HesabPay::createSession($order);
 
-        if (!$url) {
+        if (! $url) {
             return back()->with('error', t('flash.hesabpay_retry_failed', 'We could not open the HesabPay checkout right now. Please try again in a moment or contact us on WhatsApp.'));
         }
 
@@ -152,7 +152,7 @@ class PaymentController extends Controller
                 return response()->json(['status' => 'disabled'], 503);
             }
 
-            if (!$this->webhookSecretAuthorized($request, $data, $secret)) {
+            if (! $this->webhookSecretAuthorized($request, $data, $secret)) {
                 Log::warning('HesabPay webhook: rejected — bad secret or signature');
 
                 return response()->json(['status' => 'unauthorized'], 401);
@@ -170,11 +170,11 @@ class PaymentController extends Controller
             $order = Order::where('order_number', $orderNumber)->first();
         }
 
-        if (!$order && filled($transactionId)) {
+        if (! $order && filled($transactionId)) {
             $order = Order::where('payment_transaction_id', $transactionId)->first();
         }
 
-        if (!$order || $order->payment_method !== 'hesabpay') {
+        if (! $order || $order->payment_method !== 'hesabpay') {
             return response()->json(['status' => 'ignored']);
         }
 
@@ -258,20 +258,28 @@ class PaymentController extends Controller
 
     private function markPaid(Order $order, ?string $transactionId, string $source): void
     {
-        if ($order->payment_status === 'paid') {
+        // Idempotent across the webhook + browser redirect double
+        // confirmation: only the first writer flips the status, so history
+        // rows and customer notifications are never duplicated.
+        $affected = Order::query()
+            ->where('id', $order->id)
+            ->where('payment_status', '!=', 'paid')
+            ->update([
+                'payment_status' => 'paid',
+                'payment_transaction_id' => $transactionId ?: $order->payment_transaction_id,
+            ]);
+
+        if ($affected === 0) {
             return;
         }
 
-        $order->update([
-            'payment_status' => 'paid',
-            'payment_transaction_id' => $transactionId ?: $order->payment_transaction_id,
-        ]);
+        $order->refresh();
 
         $order->statusHistories()->create([
             'status' => $order->status,
             'note' => 'Payment received via HesabPay'
-                . ($transactionId ? ' (TRX: ' . $transactionId . ')' : '')
-                . ' [' . $source . ']',
+                .($transactionId ? ' (TRX: '.$transactionId.')' : '')
+                .' ['.$source.']',
         ]);
 
         Notify::paymentReceived($order, $transactionId);

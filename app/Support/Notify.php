@@ -7,8 +7,6 @@ use App\Mail\OrderUpdatedMail;
 use App\Models\CustomOrderRequest;
 use App\Models\Order;
 use App\Models\Setting;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
 /**
  * Customer notification fanout for order events: WhatsApp and email,
@@ -50,12 +48,9 @@ class Notify
         $message .= ' Track your request with us over WhatsApp or phone.';
 
         try {
-            Mail::to($address)->send(new CustomOrderStatusMail($request, $label, $message));
+            EmailLog::send($address, new CustomOrderStatusMail($request, $label, $message));
         } catch (\Throwable $e) {
-            Log::warning('Notify: custom order request email failed', [
-                'request' => $request->id,
-                'error' => $e->getMessage(),
-            ]);
+            report($e);
         }
     }
 
@@ -111,7 +106,7 @@ class Notify
 
     /**
      * Send one order email. Skipped when disabled or no customer address;
-     * failures are logged, never raised.
+     * failures are reported, never raised.
      */
     private static function email(Order $order, string $headline, string $message): void
     {
@@ -122,18 +117,13 @@ class Notify
         $address = filled($order->customer_email) ? (string) $order->customer_email : null;
 
         if ($address === null) {
-            Log::info('Notify: no email for customer, email skipped', ['order' => $order->order_number]);
-
             return;
         }
 
         try {
-            Mail::to($address)->send(new OrderUpdatedMail($order, $headline, $message));
+            EmailLog::send($address, new OrderUpdatedMail($order, $headline, $message));
         } catch (\Throwable $e) {
-            Log::warning('Notify: order email failed', [
-                'order' => $order->order_number,
-                'error' => $e->getMessage(),
-            ]);
+            report($e);
         }
     }
 }
