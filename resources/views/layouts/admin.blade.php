@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
+    <meta name="description" content="@yield('title', t('admin.common.admin_panel', 'Admin Panel')) · {{ $shopSettings['shop_name'] ?? 'Safi Tailoring Shop' }} — private administration area.">
+    <meta name="theme-color" content="#0f3b39">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <title>@yield('title', t('admin.common.admin_panel', 'Admin Panel')) · {{ $shopSettings['shop_name'] ?? 'Safi Tailoring Shop' }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>

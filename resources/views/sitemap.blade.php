@@ -3,8 +3,14 @@
 @foreach ($urls as $url)
     <url>
         <loc>{{ $url['loc'] }}</loc>
-@if ($url['lastmod'])
+@if ($url['lastmod'] ?? false)
         <lastmod>{{ $url['lastmod'] }}</lastmod>
+@endif
+@if ($url['changefreq'] ?? false)
+        <changefreq>{{ $url['changefreq'] }}</changefreq>
+@endif
+@if ($url['priority'] ?? false)
+        <priority>{{ $url['priority'] }}</priority>
 @endif
 @foreach ($url['alternates'] as $hreflang => $href)
         <xhtml:link rel="alternate" hreflang="{{ $hreflang }}" href="{{ $href }}"/>

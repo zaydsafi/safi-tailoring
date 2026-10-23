@@ -10,6 +10,17 @@
         ? null
         : (\Illuminate\Support\Str::startsWith($ogImageRaw, ['http://', 'https://']) ? $ogImageRaw : url($ogImageRaw));
 
+    // Pages without their own image (home, shop, about…) share the newest
+    // product photo so social cards never render bare.
+    if ($metaImage === null) {
+        $fallbackImage = \Illuminate\Support\Facades\Cache::rememberForever('og:fallback-image',
+            fn () => \App\Models\Product::active()->latest('id')->value('image'));
+
+        if ($fallbackImage) {
+            $metaImage = url('storage/' . $fallbackImage);
+        }
+    }
+
     $canonical = url()->current();
     if (request()->query('page')) {
         $canonical .= '?page=' . request()->query('page');
@@ -46,6 +57,7 @@
     <meta name="description" content="{{ $metaDescription }}">
     <meta name="robots" content="@yield('robots', 'index, follow')">
     <meta name="theme-color" content="#0f3b39">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="canonical" href="{{ $canonical }}">
     @foreach ($locales as $code => $info)
         <link rel="alternate" hreflang="{{ $code }}" href="{{ $alternateUrl($code) }}">
@@ -94,7 +106,7 @@
                     <svg class="w-8 h-8 text-brand-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-1.488m3.42 3.42a15.995 15.995 0 0 1 1.622 3.395m-2.25 4.764c.101.324.151.66.151 1.001 0 1.036-.313 2-.85 2.8m-5.186-3.023a15.994 15.994 0 0 1-3.388 1.62m5.32-1.168a15.998 15.998 0 0 0-3.42-3.42m1.303 4.764c-.04.322-.06.65-.06.982 0 1.036.313 2 .85 2.8M6.53 9.53a15.994 15.994 0 0 0-1.622 3.395m2.143-4.75A15.995 15.995 0 0 1 12 7.5c.352 0 .697.03 1.032.086"/>
                     </svg>
-                    <span class="font-display font-bold text-lg sm:text-xl text-brand-900 leading-tight">
+                    <span class="font-display font-bold text-lg sm:text-xl text-brand-900 leading-tight max-w-[40vw] truncate sm:max-w-none">
                         {{ $shopSettings['shop_name'] }}
                     </span>
                 </a>
@@ -127,7 +139,8 @@
                     </a>
 
                     @auth
-                        <div class="relative" x-data="{ open: false }">
+                        {{-- On phones the account menu lives in the hamburger menu instead --}}
+                        <div class="relative hidden sm:block" x-data="{ open: false }">
                             <button @click="open = !open" class="flex items-center gap-1 text-sm font-medium text-gray-700 hover:text-brand-700 p-2">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
@@ -147,7 +160,7 @@
                         </div>
                     @else
                         <a href="{{ route('login') }}" class="hidden sm:inline text-sm font-medium text-gray-700 hover:text-brand-700">{{ t('nav.sign_in', 'Sign In') }}</a>
-                        <a href="{{ route('register') }}" class="text-sm font-medium bg-brand-800 text-white px-4 py-2 rounded-lg hover:bg-brand-700">{{ t('nav.register', 'Register') }}</a>
+                        <a href="{{ route('register') }}" class="hidden sm:inline text-sm font-medium bg-brand-800 text-white px-4 py-2 rounded-lg hover:bg-brand-700">{{ t('nav.register', 'Register') }}</a>
                     @endauth
 
                     <button @click="mobileOpen = !mobileOpen" class="md:hidden p-2 text-gray-700" aria-label="{{ t('nav.menu', 'Menu') }}">
@@ -169,6 +182,15 @@
                 <a href="{{ route('orders.track') }}" class="block py-2 hover:text-brand-700">{{ t('nav.track_order', 'Track Order') }}</a>
                 @guest
                     <a href="{{ route('login') }}" class="block py-2 hover:text-brand-700">{{ t('nav.sign_in', 'Sign In') }}</a>
+                    <a href="{{ route('register') }}" class="block py-2 font-semibold text-brand-800 hover:text-brand-700">{{ t('nav.register', 'Register') }}</a>
+                @else
+                    <a href="{{ route('account.orders') }}" class="block py-2 hover:text-brand-700">{{ t('nav.my_orders', 'My Orders') }}</a>
+                    <a href="{{ route('account.measurements') }}" class="block py-2 hover:text-brand-700">{{ t('nav.my_measurements', 'My Measurements') }}</a>
+                    <a href="{{ route('account.profile') }}" class="block py-2 hover:text-brand-700">{{ t('nav.profile', 'Profile') }}</a>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="block w-full text-start py-2 text-red-600">{{ t('nav.sign_out', 'Sign Out') }}</button>
+                    </form>
                 @endguest
                 <div class="mt-2 flex items-center gap-2 border-t border-gray-100 pt-3">
                     <span class="text-xs text-gray-400">{{ t('common.language', 'Language') }}</span>

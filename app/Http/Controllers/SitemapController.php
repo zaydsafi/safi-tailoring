@@ -19,7 +19,7 @@ class SitemapController extends Controller
 
         $urls = [];
 
-        foreach (['home', 'shop.index', 'about', 'contact'] as $routeName) {
+        foreach (['home', 'shop.index', 'about', 'contact'] as $i => $routeName) {
             $alternates = $this->alternates(
                 $locales,
                 fn (string $locale) => route($routeName, ['locale' => $locale])
@@ -30,6 +30,8 @@ class SitemapController extends Controller
                     'loc' => $alternates[$locale],
                     'alternates' => $alternates,
                     'lastmod' => null,
+                    'priority' => $i === 0 ? '1.0' : '0.8',
+                    'changefreq' => $i === 0 ? 'daily' : 'weekly',
                 ];
             }
         }
@@ -49,6 +51,8 @@ class SitemapController extends Controller
                             'loc' => $alternates[$locale],
                             'alternates' => $alternates,
                             'lastmod' => $product->updated_at?->toAtomString(),
+                            'priority' => '0.8',
+                            'changefreq' => 'weekly',
                         ];
                     }
                 }
