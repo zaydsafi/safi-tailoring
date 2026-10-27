@@ -49,6 +49,11 @@ class Setting extends Model
         'mail_from_address' => '',
         'mail_from_name' => '',
 
+        // SEO integrations. The GA4 id turns on the gtag snippet; the
+        // verification code is rendered as the Search Console meta tag.
+        'google_analytics_id' => '',
+        'google_site_verification' => '',
+
         // Registration verification: 6-digit OTP sent over the enabled
         // channels; the account stays unverified until one succeeds.
         'otp_required' => '1',
@@ -93,6 +98,7 @@ class Setting extends Model
             'shop_name', 'shop_tagline', 'shop_phone', 'shop_email', 'shop_address',
             'currency_symbol', 'announcement', 'facebook_url', 'instagram_url',
             'whatsapp_number', 'hero_title', 'hero_subtitle',
+            'google_analytics_id', 'google_site_verification',
         ];
 
         return Cache::rememberForever('setting:view_settings', function () use ($keys) {

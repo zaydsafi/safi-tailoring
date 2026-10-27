@@ -80,4 +80,37 @@
             </table>
         </div>
     </div>
+
+    @php
+        $tailorRole = $roles->firstWhere('slug', 'tailor');
+        $tailorPermissions = \App\Support\Permissions::tailor();
+        $tailorNotes = \App\Support\Permissions::TAILOR_NOTES;
+    @endphp
+    <div class="mt-6 rounded-2xl border border-brand-100 bg-white p-5 shadow-sm sm:p-6">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div class="max-w-xl">
+                <h2 class="text-base font-bold text-brand-900">{{ t('admin.roles.tailor_section_title', 'Tailor dashboard') }}</h2>
+                <p class="mt-1 text-sm text-brand-500">{{ t('admin.roles.tailor_summary_desc', 'Tailors work the custom-order queue from their own dashboard. Grant these two permissions to any staff role to give it tailor access.') }}</p>
+                <ul class="mt-3 space-y-2">
+                    @foreach ($tailorPermissions as $key => $label)
+                        <li class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                            <span class="rounded-full bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal-700">{{ $label }}</span>
+                            <span class="text-xs text-brand-400">{{ t($tailorNotes[$key], $tailorNotes[$key]) }}</span>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+            @if ($tailorRole)
+                <a href="{{ route('admin.roles.edit', $tailorRole) }}"
+                   class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-brand-200 px-4 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-50">
+                    {{ t('admin.roles.rename', 'Rename') }} · {{ $tailorRole->name }}
+                </a>
+            @else
+                <a href="{{ route('admin.roles.create') }}"
+                   class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-brand-200 px-4 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-50">
+                    {{ t('admin.roles.add', 'Add Role') }}
+                </a>
+            @endif
+        </div>
+    </div>
 @endsection

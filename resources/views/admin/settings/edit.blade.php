@@ -9,35 +9,35 @@
             @method('PUT')
 
             <section>
-                <h3 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.shop_information', 'Shop Information') }}</h3>
+                <h2 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.shop_information', 'Shop Information') }}</h2>
                 <div class="grid gap-5 sm:grid-cols-2">
-                    <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.shop_name', 'Shop Name') }} <span class="text-red-500">*</span></label>
-                        <input type="text" name="shop_name" value="{{ old('shop_name', $settings['shop_name']) }}" required
+                    <div><label for="shop_name"
+                        class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.shop_name', 'Shop Name') }} <span class="text-red-500">*</span></label>
+                        <input type="text" id="shop_name" name="shop_name" value="{{ old('shop_name', $settings['shop_name']) }}" required
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('shop_name') border-red-400 @enderror">
                         @error('shop_name')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.tagline', 'Tagline') }}</label>
-                        <input type="text" name="shop_tagline" value="{{ old('shop_tagline', $settings['shop_tagline']) }}"
+                        <label for="shop_tagline" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.tagline', 'Tagline') }}</label>
+                        <input type="text" id="shop_tagline" name="shop_tagline" value="{{ old('shop_tagline', $settings['shop_tagline']) }}"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('shop_tagline') border-red-400 @enderror">
                         @error('shop_tagline')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.common.phone', 'Phone') }}</label>
-                        <input type="text" name="shop_phone" value="{{ old('shop_phone', $settings['shop_phone']) }}"
+                        <label for="shop_phone" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.common.phone', 'Phone') }}</label>
+                        <input type="text" id="shop_phone" name="shop_phone" value="{{ old('shop_phone', $settings['shop_phone']) }}"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('shop_phone') border-red-400 @enderror">
                         @error('shop_phone')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.common.email', 'Email') }}</label>
-                        <input type="email" name="shop_email" value="{{ old('shop_email', $settings['shop_email']) }}"
+                        <label for="shop_email" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.common.email', 'Email') }}</label>
+                        <input type="email" id="shop_email" name="shop_email" value="{{ old('shop_email', $settings['shop_email']) }}"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('shop_email') border-red-400 @enderror">
                         @error('shop_email')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div class="sm:col-span-2">
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.common.address', 'Address') }}</label>
-                        <textarea name="shop_address" rows="2"
+                        <label for="shop_address" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.common.address', 'Address') }}</label>
+                        <textarea id="shop_address" name="shop_address" rows="2"
                                   class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('shop_address') border-red-400 @enderror">{{ old('shop_address', $settings['shop_address']) }}</textarea>
                         @error('shop_address')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
@@ -45,23 +45,23 @@
             </section>
 
             <section>
-                <h3 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.currency_delivery', 'Currency & Delivery') }}</h3>
+                <h2 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.currency_delivery', 'Currency & Delivery') }}</h2>
                 <div class="grid gap-5 sm:grid-cols-3">
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.currency_symbol', 'Currency Symbol') }} <span class="text-red-500">*</span></label>
-                        <input type="text" name="currency_symbol" value="{{ old('currency_symbol', $settings['currency_symbol']) }}" required maxlength="10"
+                        <label for="currency_symbol" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.currency_symbol', 'Currency Symbol') }} <span class="text-red-500">*</span></label>
+                        <input type="text" id="currency_symbol" name="currency_symbol" value="{{ old('currency_symbol', $settings['currency_symbol']) }}" required maxlength="10"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('currency_symbol') border-red-400 @enderror">
                         @error('currency_symbol')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.delivery_fee', 'Delivery Fee') }}</label>
-                        <input type="number" step="0.01" min="0" name="delivery_fee" value="{{ old('delivery_fee', $settings['delivery_fee']) }}"
+                        <label for="delivery_fee" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.delivery_fee', 'Delivery Fee') }}</label>
+                        <input type="number" id="delivery_fee" step="0.01" min="0" name="delivery_fee" value="{{ old('delivery_fee', $settings['delivery_fee']) }}"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('delivery_fee') border-red-400 @enderror">
                         @error('delivery_fee')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.free_delivery_over', 'Free Delivery Over') }}</label>
-                        <input type="number" step="0.01" min="0" name="free_delivery_over" value="{{ old('free_delivery_over', $settings['free_delivery_over']) }}"
+                        <label for="free_delivery_over" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.free_delivery_over', 'Free Delivery Over') }}</label>
+                        <input type="number" id="free_delivery_over" step="0.01" min="0" name="free_delivery_over" value="{{ old('free_delivery_over', $settings['free_delivery_over']) }}"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('free_delivery_over') border-red-400 @enderror">
                         @error('free_delivery_over')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
@@ -69,23 +69,23 @@
             </section>
 
             <section>
-                <h3 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.homepage', 'Homepage') }}</h3>
+                <h2 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.homepage', 'Homepage') }}</h2>
                 <div class="grid gap-5">
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.hero_title', 'Hero Title') }}</label>
-                        <input type="text" name="hero_title" value="{{ old('hero_title', $settings['hero_title']) }}"
+                        <label for="hero_title" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.hero_title', 'Hero Title') }}</label>
+                        <input type="text" id="hero_title" name="hero_title" value="{{ old('hero_title', $settings['hero_title']) }}"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('hero_title') border-red-400 @enderror">
                         @error('hero_title')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.hero_subtitle', 'Hero Subtitle') }}</label>
-                        <textarea name="hero_subtitle" rows="2"
+                        <label for="hero_subtitle" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.hero_subtitle', 'Hero Subtitle') }}</label>
+                        <textarea id="hero_subtitle" name="hero_subtitle" rows="2"
                                   class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('hero_subtitle') border-red-400 @enderror">{{ old('hero_subtitle', $settings['hero_subtitle']) }}</textarea>
                         @error('hero_subtitle')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.announcement_bar', 'Announcement Bar') }}</label>
-                        <input type="text" name="announcement" value="{{ old('announcement', $settings['announcement']) }}"
+                        <label for="announcement" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.announcement_bar', 'Announcement Bar') }}</label>
+                        <input type="text" id="announcement" name="announcement" value="{{ old('announcement', $settings['announcement']) }}"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('announcement') border-red-400 @enderror">
                         @error('announcement')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
@@ -93,38 +93,38 @@
             </section>
 
             <section>
-                <h3 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.social_messaging', 'Social & Messaging') }}</h3>
+                <h2 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.social_messaging', 'Social & Messaging') }}</h2>
                 <div class="grid gap-5 sm:grid-cols-3">
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.facebook_url', 'Facebook URL') }}</label>
-                        <input type="url" name="facebook_url" value="{{ old('facebook_url', $settings['facebook_url']) }}" placeholder="https://facebook.com/…"
+                        <label for="facebook_url" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.facebook_url', 'Facebook URL') }}</label>
+                        <input type="url" id="facebook_url" name="facebook_url" value="{{ old('facebook_url', $settings['facebook_url']) }}" placeholder="https://facebook.com/…"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('facebook_url') border-red-400 @enderror">
                         @error('facebook_url')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.instagram_url', 'Instagram URL') }}</label>
-                        <input type="url" name="instagram_url" value="{{ old('instagram_url', $settings['instagram_url']) }}" placeholder="https://instagram.com/…"
+                        <label for="instagram_url" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.instagram_url', 'Instagram URL') }}</label>
+                        <input type="url" id="instagram_url" name="instagram_url" value="{{ old('instagram_url', $settings['instagram_url']) }}" placeholder="https://instagram.com/…"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('instagram_url') border-red-400 @enderror">
                         @error('instagram_url')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.whatsapp_number', 'WhatsApp Number') }}</label>
-                        <input type="text" name="whatsapp_number" value="{{ old('whatsapp_number', $settings['whatsapp_number']) }}" placeholder="+93…"
+                        <label for="whatsapp_number" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.whatsapp_number', 'WhatsApp Number') }}</label>
+                        <input type="text" id="whatsapp_number" name="whatsapp_number" value="{{ old('whatsapp_number', $settings['whatsapp_number']) }}" placeholder="+93…"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('whatsapp_number') border-red-400 @enderror">
                         @error('whatsapp_number')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.country_code', 'Country Code') }}</label>
-                        <input type="text" name="whatsapp_country_code" value="{{ old('whatsapp_country_code', $settings['whatsapp_country_code']) }}" placeholder="93"
+                        <label for="whatsapp_country_code" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.country_code', 'Country Code') }}</label>
+                        <input type="text" id="whatsapp_country_code" name="whatsapp_country_code" value="{{ old('whatsapp_country_code', $settings['whatsapp_country_code']) }}" placeholder="93"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('whatsapp_country_code') border-red-400 @enderror">
-                        <p class="mt-1 text-xs text-brand-400">{{ t('admin.settings.country_code_hint', 'Used to turn local numbers (0700…) into international ones (93700…).') }}</p>
+                        <p class="mt-1 text-xs text-brand-600">{{ t('admin.settings.country_code_hint', 'Used to turn local numbers (0700…) into international ones (93700…).') }}</p>
                         @error('whatsapp_country_code')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                 </div>
             </section>
 
             <section>
-                <h3 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.hesabpay_payments', 'HesabPay Payments') }}</h3>
+                <h2 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.hesabpay_payments', 'HesabPay Payments') }}</h2>
                 <div class="grid gap-5 sm:grid-cols-2">
                     <div class="sm:col-span-2">
                         <label class="flex items-center gap-2 text-sm font-medium text-brand-900">
@@ -134,8 +134,8 @@
                         </label>
                     </div>
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.environment', 'Environment') }}</label>
-                        <select name="hesabpay_environment"
+                        <label for="hesabpay_environment" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.environment', 'Environment') }}</label>
+                        <select id="hesabpay_environment" name="hesabpay_environment"
                                 class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('hesabpay_environment') border-red-400 @enderror">
                             <option value="production" @selected(old('hesabpay_environment', $settings['hesabpay_environment']) === 'production')>{{ t('admin.settings.environment_production', 'Production (live)') }}</option>
                             <option value="sandbox" @selected(old('hesabpay_environment', $settings['hesabpay_environment']) === 'sandbox')>{{ t('admin.settings.environment_sandbox', 'Sandbox (testing)') }}</option>
@@ -143,21 +143,21 @@
                         @error('hesabpay_environment')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.api_key', 'API Key') }}</label>
-                        <input type="text" name="hesabpay_api_key" value="{{ old('hesabpay_api_key', $settings['hesabpay_api_key']) }}" placeholder="{{ t('admin.settings.api_key_placeholder', 'From your HesabPay merchant account') }}"
+                        <label for="hesabpay_api_key" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.api_key', 'API Key') }}</label>
+                        <input type="text" id="hesabpay_api_key" name="hesabpay_api_key" value="{{ old('hesabpay_api_key', $settings['hesabpay_api_key']) }}" placeholder="{{ t('admin.settings.api_key_placeholder', 'From your HesabPay merchant account') }}"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('hesabpay_api_key') border-red-400 @enderror">
-                        <p class="mt-1 text-xs text-brand-400">{{ t('admin.settings.api_key_hint', 'Keep this private. Rotate it in your HesabPay dashboard if it is ever shared.') }}</p>
+                        <p class="mt-1 text-xs text-brand-600">{{ t('admin.settings.api_key_hint', 'Keep this private. Rotate it in your HesabPay dashboard if it is ever shared.') }}</p>
                         @error('hesabpay_api_key')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div class="sm:col-span-2" x-data="{ gen() { const a = new Uint8Array(24); crypto.getRandomValues(a); return Array.from(a, b => b.toString(16).padStart(2, '0')).join(''); } }">
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.webhook_secret', 'Webhook Secret (required for webhooks)') }}</label>
+                        <label for="hesabpay_webhook_secret" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.webhook_secret', 'Webhook Secret (required for webhooks)') }}</label>
                         <div class="flex gap-2">
-                            <input type="text" name="hesabpay_webhook_secret" x-ref="secret" value="{{ old('hesabpay_webhook_secret', $settings['hesabpay_webhook_secret']) }}" placeholder="{{ t('admin.settings.webhook_secret_placeholder', 'Generate one, then paste the same value into HesabPay') }}"
+                            <input type="text" id="hesabpay_webhook_secret" name="hesabpay_webhook_secret" x-ref="secret" value="{{ old('hesabpay_webhook_secret', $settings['hesabpay_webhook_secret']) }}" placeholder="{{ t('admin.settings.webhook_secret_placeholder', 'Generate one, then paste the same value into HesabPay') }}"
                                    class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('hesabpay_webhook_secret') border-red-400 @enderror">
                             <button type="button" @click="$refs.secret.value = gen()"
                                     class="shrink-0 rounded-xl border border-brand-200 px-4 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-50">{{ t('admin.settings.generate', 'Generate') }}</button>
                         </div>
-                        <p class="mt-1 text-xs text-brand-400">
+                        <p class="mt-1 text-xs text-brand-600">
                             {{ t('admin.settings.webhook_url_label', 'Webhook URL for HesabPay:') }} <code class="rounded bg-brand-50 px-1.5 py-0.5">{{ route('webhooks.hesabpay') }}</code>
                             {{ t('admin.settings.webhook_requests_note', '. Requests must send this value in the') }} <code class="rounded bg-brand-50 px-1.5 py-0.5">X-HesabPay-Secret</code>
                             {{ t('admin.settings.webhook_hmac_note', 'header (or sign the raw body with HMAC-SHA256 as') }} <code class="rounded bg-brand-50 px-1.5 py-0.5">signature</code>{{ t('admin.settings.webhook_pending_note', '). Until a secret is set, webhook calls are rejected — payments are then confirmed by the checkout redirect only.') }}
@@ -168,39 +168,39 @@
             </section>
 
             <section>
-                <h3 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.outgoing_email', 'Outgoing Email (SMTP)') }}</h3>
-                <p class="mb-4 text-xs text-brand-400">
+                <h2 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.outgoing_email', 'Outgoing Email (SMTP)') }}</h2>
+                <p class="mb-4 text-xs text-brand-600">
                     {{ t('admin.settings.outgoing_email_hint', 'Fill the host below to send real email through your mail provider (Gmail, Zoho, your hosting…). Save first, then use “Send test email” to confirm delivery. Leave the host empty to keep the mailer from the .env file.') }}
                 </p>
                 <div class="grid gap-5 sm:grid-cols-2">
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.smtp_host', 'SMTP Host') }}</label>
-                        <input type="text" name="mail_smtp_host" value="{{ old('mail_smtp_host', $settings['mail_smtp_host']) }}" placeholder="{{ t('admin.settings.smtp_host_placeholder', 'e.g. smtp.gmail.com') }}"
+                        <label for="mail_smtp_host" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.smtp_host', 'SMTP Host') }}</label>
+                        <input type="text" id="mail_smtp_host" name="mail_smtp_host" value="{{ old('mail_smtp_host', $settings['mail_smtp_host']) }}" placeholder="{{ t('admin.settings.smtp_host_placeholder', 'e.g. smtp.gmail.com') }}"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('mail_smtp_host') border-red-400 @enderror">
                         @error('mail_smtp_host')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.smtp_port', 'SMTP Port') }}</label>
-                        <input type="number" min="1" max="65535" name="mail_smtp_port" value="{{ old('mail_smtp_port', $settings['mail_smtp_port']) }}" placeholder="587"
+                        <label for="mail_smtp_port" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.smtp_port', 'SMTP Port') }}</label>
+                        <input type="number" id="mail_smtp_port" min="1" max="65535" name="mail_smtp_port" value="{{ old('mail_smtp_port', $settings['mail_smtp_port']) }}" placeholder="587"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('mail_smtp_port') border-red-400 @enderror">
-                        <p class="mt-1 text-xs text-brand-400">{{ t('admin.settings.smtp_port_hint', '587 for TLS (usual), 465 for SSL.') }}</p>
+                        <p class="mt-1 text-xs text-brand-600">{{ t('admin.settings.smtp_port_hint', '587 for TLS (usual), 465 for SSL.') }}</p>
                         @error('mail_smtp_port')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.smtp_username', 'SMTP Username') }}</label>
-                        <input type="text" name="mail_smtp_username" value="{{ old('mail_smtp_username', $settings['mail_smtp_username']) }}" placeholder="{{ t('admin.settings.smtp_username_placeholder', 'usually the email address') }}"
+                        <label for="mail_smtp_username" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.smtp_username', 'SMTP Username') }}</label>
+                        <input type="text" id="mail_smtp_username" name="mail_smtp_username" value="{{ old('mail_smtp_username', $settings['mail_smtp_username']) }}" placeholder="{{ t('admin.settings.smtp_username_placeholder', 'usually the email address') }}"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('mail_smtp_username') border-red-400 @enderror">
                         @error('mail_smtp_username')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.smtp_password', 'SMTP Password') }}</label>
-                        <input type="password" name="mail_smtp_password" value="{{ old('mail_smtp_password', $settings['mail_smtp_password']) }}" placeholder="{{ t('admin.settings.smtp_password_placeholder', 'mail account password or app password') }}"
+                        <label for="mail_smtp_password" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.smtp_password', 'SMTP Password') }}</label>
+                        <input type="password" id="mail_smtp_password" name="mail_smtp_password" value="{{ old('mail_smtp_password', $settings['mail_smtp_password']) }}" placeholder="{{ t('admin.settings.smtp_password_placeholder', 'mail account password or app password') }}"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('mail_smtp_password') border-red-400 @enderror">
                         @error('mail_smtp_password')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.smtp_encryption', 'Encryption') }}</label>
-                        <select name="mail_smtp_encryption"
+                        <label for="mail_smtp_encryption" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.smtp_encryption', 'Encryption') }}</label>
+                        <select id="mail_smtp_encryption" name="mail_smtp_encryption"
                                 class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('mail_smtp_encryption') border-red-400 @enderror">
                             <option value="tls" @selected(old('mail_smtp_encryption', $settings['mail_smtp_encryption']) === 'tls')>{{ t('admin.settings.encryption_tls', 'TLS (port 587)') }}</option>
                             <option value="ssl" @selected(old('mail_smtp_encryption', $settings['mail_smtp_encryption']) === 'ssl')>{{ t('admin.settings.encryption_ssl', 'SSL (port 465)') }}</option>
@@ -209,14 +209,14 @@
                         @error('mail_smtp_encryption')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.mail_from_address', 'From Address') }}</label>
-                        <input type="email" name="mail_from_address" value="{{ old('mail_from_address', $settings['mail_from_address']) }}" placeholder="{{ t('admin.settings.mail_from_address_placeholder', 'orders@yourdomain.com') }}"
+                        <label for="mail_from_address" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.mail_from_address', 'From Address') }}</label>
+                        <input type="email" id="mail_from_address" name="mail_from_address" value="{{ old('mail_from_address', $settings['mail_from_address']) }}" placeholder="{{ t('admin.settings.mail_from_address_placeholder', 'orders@yourdomain.com') }}"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('mail_from_address') border-red-400 @enderror">
                         @error('mail_from_address')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.mail_from_name', 'From Name') }}</label>
-                        <input type="text" name="mail_from_name" value="{{ old('mail_from_name', $settings['mail_from_name']) }}"
+                        <label for="mail_from_name" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.mail_from_name', 'From Name') }}</label>
+                        <input type="text" id="mail_from_name" name="mail_from_name" value="{{ old('mail_from_name', $settings['mail_from_name']) }}"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('mail_from_name') border-red-400 @enderror">
                         @error('mail_from_name')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
@@ -233,12 +233,12 @@
                             {{ t('admin.settings.send_test_email', 'Send test email') }}
                         </button>
                     </form>
-                    <p class="mt-2 text-xs text-brand-400">{{ t('admin.settings.test_email_hint', 'Saves are applied immediately — this test uses the settings from the fields above (after you save). If sending fails, the exact error is shown so you can fix host, port or credentials.') }}</p>
+                    <p class="mt-2 text-xs text-brand-600">{{ t('admin.settings.test_email_hint', 'Saves are applied immediately — this test uses the settings from the fields above (after you save). If sending fails, the exact error is shown so you can fix host, port or credentials.') }}</p>
                 </div>
             </section>
 
             <section>
-                <h3 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.customer_notifications', 'Customer Notifications') }}</h3>
+                <h2 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.customer_notifications', 'Customer Notifications') }}</h2>
                 <div class="grid gap-5 sm:grid-cols-2">
                     <div>
                         <label class="flex items-center gap-2 text-sm font-medium text-brand-900">
@@ -246,7 +246,7 @@
                                    class="h-4 w-4 rounded border-brand-200 text-teal-600 focus:ring-teal-600/20">
                             {{ t('admin.settings.notify_email', 'Email customers on order updates (placed, payment, status changes)') }}
                         </label>
-                        <p class="mt-1 text-xs text-brand-400">{{ t('admin.settings.notify_email_hint', 'Configure the SMTP section above so mail can actually leave the server. Guest orders only get email when they enter one at checkout.') }}</p>
+                        <p class="mt-1 text-xs text-brand-600">{{ t('admin.settings.notify_email_hint', 'Configure the SMTP section above so mail can actually leave the server. Guest orders only get email when they enter one at checkout.') }}</p>
                     </div>
                     <div>
                         <label class="flex items-center gap-2 text-sm font-medium text-brand-900">
@@ -254,13 +254,13 @@
                                    class="h-4 w-4 rounded border-brand-200 text-teal-600 focus:ring-teal-600/20">
                             {{ t('admin.settings.notify_whatsapp', 'WhatsApp customers on order updates (placed, payment, status changes)') }}
                         </label>
-                        <p class="mt-1 text-xs text-brand-400">{{ t('admin.settings.notify_whatsapp_hint', 'Uses the WhatsApp Cloud API below.') }}</p>
+                        <p class="mt-1 text-xs text-brand-600">{{ t('admin.settings.notify_whatsapp_hint', 'Uses the WhatsApp Cloud API below.') }}</p>
                     </div>
                 </div>
             </section>
 
             <section>
-                <h3 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.registration_otp', 'Registration Verification (OTP)') }}</h3>
+                <h2 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.registration_otp', 'Registration Verification (OTP)') }}</h2>
                 <div class="grid gap-5 sm:grid-cols-2">
                     <div>
                         <label class="flex items-center gap-2 text-sm font-medium text-brand-900">
@@ -268,7 +268,7 @@
                                    class="h-4 w-4 rounded border-brand-200 text-teal-600 focus:ring-teal-600/20">
                             {{ t('admin.settings.otp_required', 'New customers must enter a 6-digit code after registering') }}
                         </label>
-                        <p class="mt-1 text-xs text-brand-400">{{ t('admin.settings.otp_required_hint', 'Unverified accounts cannot open their account pages until they verify. Codes expire after 10 minutes, 5 tries each, resend every 60 s.') }}</p>
+                        <p class="mt-1 text-xs text-brand-600">{{ t('admin.settings.otp_required_hint', 'Unverified accounts cannot open their account pages until they verify. Codes expire after 10 minutes, 5 tries each, resend every 60 s.') }}</p>
                     </div>
                     <div></div>
                     <div>
@@ -277,7 +277,7 @@
                                    class="h-4 w-4 rounded border-brand-200 text-teal-600 focus:ring-teal-600/20">
                             {{ t('admin.settings.otp_via_whatsapp', 'Send the code to the customer\'s WhatsApp number') }}
                         </label>
-                        <p class="mt-1 text-xs text-brand-400">{{ t('admin.settings.otp_via_whatsapp_hint', 'Needs the WhatsApp Cloud API below. Optionally set an approved authentication template name so codes deliver outside the 24h conversation window.') }}</p>
+                        <p class="mt-1 text-xs text-brand-600">{{ t('admin.settings.otp_via_whatsapp_hint', 'Needs the WhatsApp Cloud API below. Optionally set an approved authentication template name so codes deliver outside the 24h conversation window.') }}</p>
                     </div>
                     <div>
                         <label class="flex items-center gap-2 text-sm font-medium text-brand-900">
@@ -285,19 +285,43 @@
                                    class="h-4 w-4 rounded border-brand-200 text-teal-600 focus:ring-teal-600/20">
                             {{ t('admin.settings.otp_via_email', 'Send the code by email') }}
                         </label>
-                        <p class="mt-1 text-xs text-brand-400">{{ t('admin.settings.otp_via_email_hint', 'Uses the SMTP section above. With both channels on, the code goes out over both and either one verifies the account.') }}</p>
+                        <p class="mt-1 text-xs text-brand-600">{{ t('admin.settings.otp_via_email_hint', 'Uses the SMTP section above. With both channels on, the code goes out over both and either one verifies the account.') }}</p>
                     </div>
                     <div class="sm:col-span-2">
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.otp_auth_template', 'WhatsApp authentication template name (optional)') }}</label>
-                        <input type="text" name="whatsapp_auth_template" value="{{ old('whatsapp_auth_template', $settings['whatsapp_auth_template'] ?? '') }}" placeholder="{{ t('admin.settings.otp_auth_template_placeholder', 'e.g. otp_authentication') }}"
+                        <label for="whatsapp_auth_template" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.otp_auth_template', 'WhatsApp authentication template name (optional)') }}</label>
+                        <input type="text" id="whatsapp_auth_template" name="whatsapp_auth_template" value="{{ old('whatsapp_auth_template', $settings['whatsapp_auth_template'] ?? '') }}" placeholder="{{ t('admin.settings.otp_auth_template_placeholder', 'e.g. otp_authentication') }}"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
-                        <p class="mt-1 text-xs text-brand-400">{{ t('admin.settings.otp_auth_template_hint', 'Create a one-time-passcode (OTP) template in your Meta WhatsApp Business dashboard and paste its name here.') }}</p>
+                        <p class="mt-1 text-xs text-brand-600">{{ t('admin.settings.otp_auth_template_hint', 'Create a one-time-passcode (OTP) template in your Meta WhatsApp Business dashboard and paste its name here.') }}</p>
                     </div>
                 </div>
             </section>
 
             <section>
-                <h3 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.whatsapp_notifications', 'WhatsApp Cloud API') }}</h3>
+                <h2 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.seo_analytics', 'SEO & Analytics') }}</h2>
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <div>
+                        <label for="google_analytics_id" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.google_analytics_id', 'Google Analytics 4 ID') }}</label>
+                        <input type="text" id="google_analytics_id" name="google_analytics_id" value="{{ old('google_analytics_id', $settings['google_analytics_id']) }}" placeholder="G-XXXXXXXXXX"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('google_analytics_id') border-red-400 @enderror">
+                        <p class="mt-1 text-xs text-brand-600">{{ t('admin.settings.google_analytics_hint', 'Paste your GA4 measurement ID (starts with G-) to count every page view.') }}</p>
+                        @error('google_analytics_id')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label for="google_site_verification" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.google_site_verification', 'Google Search Console verification') }}</label>
+                        <input type="text" id="google_site_verification" name="google_site_verification" value="{{ old('google_site_verification', $settings['google_site_verification']) }}" placeholder="google-site-verification=…"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('google_site_verification') border-red-400 @enderror">
+                        <p class="mt-1 text-xs text-brand-600">{{ t('admin.settings.google_site_verification_hint', 'Paste the verification meta tag content shown by Google Search Console.') }}</p>
+                        @error('google_site_verification')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                </div>
+                <p class="mt-4 text-xs text-brand-600">
+                    <span class="font-semibold">{{ t('admin.settings.webmaster_title', 'Webmaster & Ranking Tools') }}:</span>
+                    {{ t('admin.settings.webmaster_hint', 'Search Console is the Google tool for indexing and Google ranking reports — verify your site there and submit the sitemap.') }}
+                </p>
+            </section>
+
+            <section>
+                <h2 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.whatsapp_notifications', 'WhatsApp Cloud API') }}</h2>
                 <div class="grid gap-5 sm:grid-cols-2">
                     <div class="sm:col-span-2">
                         <label class="flex items-center gap-2 text-sm font-medium text-brand-900">
@@ -305,19 +329,19 @@
                                    class="h-4 w-4 rounded border-brand-200 text-teal-600 focus:ring-teal-600/20">
                             {{ t('admin.settings.enable_whatsapp_cloud', 'Send automatic WhatsApp notifications (Meta Cloud API — free tier)') }}
                         </label>
-                        <p class="mt-1 text-xs text-brand-400">
+                        <p class="mt-1 text-xs text-brand-600">
                             {{ t('admin.settings.whatsapp_cloud_fallback_note', 'Without this, customers can still reach you for free through WhatsApp buttons (wa.me links) on every order page.') }}
                         </p>
                     </div>
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.phone_number_id', 'Phone Number ID') }}</label>
-                        <input type="text" name="whatsapp_phone_number_id" value="{{ old('whatsapp_phone_number_id', $settings['whatsapp_phone_number_id']) }}" placeholder="{{ t('admin.settings.phone_number_id_placeholder', 'From Meta WhatsApp Business setup') }}"
+                        <label for="whatsapp_phone_number_id" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.phone_number_id', 'Phone Number ID') }}</label>
+                        <input type="text" id="whatsapp_phone_number_id" name="whatsapp_phone_number_id" value="{{ old('whatsapp_phone_number_id', $settings['whatsapp_phone_number_id']) }}" placeholder="{{ t('admin.settings.phone_number_id_placeholder', 'From Meta WhatsApp Business setup') }}"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('whatsapp_phone_number_id') border-red-400 @enderror">
                         @error('whatsapp_phone_number_id')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div>
-                        <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.access_token', 'Access Token') }}</label>
-                        <input type="text" name="whatsapp_cloud_token" value="{{ old('whatsapp_cloud_token', $settings['whatsapp_cloud_token']) }}" placeholder="{{ t('admin.settings.access_token_placeholder', 'Permanent access token') }}"
+                        <label for="whatsapp_cloud_token" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.access_token', 'Access Token') }}</label>
+                        <input type="text" id="whatsapp_cloud_token" name="whatsapp_cloud_token" value="{{ old('whatsapp_cloud_token', $settings['whatsapp_cloud_token']) }}" placeholder="{{ t('admin.settings.access_token_placeholder', 'Permanent access token') }}"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('whatsapp_cloud_token') border-red-400 @enderror">
                         @error('whatsapp_cloud_token')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>

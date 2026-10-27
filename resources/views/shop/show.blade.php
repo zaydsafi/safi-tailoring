@@ -2,7 +2,14 @@
 
 @section('title', $product->name . ' — ' . $shopSettings['shop_name'])
 
-@section('meta_description', t('seo.product_meta_description', 'View fabric, sizing and details for this hand-stitched piece and order it made to your measurements.'))
+@php
+    // Real SEO copy: the product's own summary wins over the generic default.
+    $productMetaDescription = $product->short_description
+        ?: \Illuminate\Support\Str::limit(strip_tags((string) $product->description), 155, '…')
+        ?: t('seo.product_meta_description', 'View fabric, sizing and details for this hand-stitched piece and order it made to your measurements.');
+@endphp
+
+@section('meta_description', $productMetaDescription)
 
 @section('og_image', 'storage/' . $product->image)
 @section('og_type', 'product')

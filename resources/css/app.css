@@ -11,8 +11,8 @@
     --color-brand-100: #dcebe8;
     --color-brand-200: #b9d7d2;
     --color-brand-300: #8ebbb4;
-    --color-brand-400: #629a93;
-    --color-brand-500: #48807a;
+    --color-brand-400: #4f7d77;
+    --color-brand-500: #417a74;
     --color-brand-600: #386663;
     --color-brand-700: #2f5351;
     --color-brand-800: #294443;
@@ -38,6 +38,443 @@ html {
 
 [x-cloak] {
     display: none !important;
+}
+
+/* ------------------------------------------------------------------ */
+/* Motion & interactive effects                                        */
+/* ------------------------------------------------------------------ */
+
+/* Scroll reveal: elements fade/slide in as they enter the viewport. */
+[data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0s);
+    will-change: opacity, transform;
+}
+
+[data-reveal].is-revealed {
+    opacity: 1;
+    transform: none;
+}
+
+/* Pointer tilt: cards that subtly rotate toward the mouse. */
+[data-tilt] {
+    transform-style: preserve-3d;
+}
+
+/* Shine sweep: a light streak glides across the button on hover. */
+.btn-shine {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.btn-shine::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(105deg, transparent 42%, rgb(255 255 255 / 0.35) 50%, transparent 58%);
+    transform: translateX(-120%);
+    transition: transform 0.65s ease;
+    pointer-events: none;
+}
+
+.btn-shine:hover::after {
+    transform: translateX(120%);
+}
+
+[dir="rtl"] .btn-shine::after {
+    transform: translateX(120%) scaleX(-1);
+}
+
+[dir="rtl"] .btn-shine:hover::after {
+    transform: translateX(-120%) scaleX(-1);
+}
+
+/* Elevated: primary cards/buttons lift with a soft teal shadow. */
+.elevated {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.elevated:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px -14px rgb(15 59 57 / 0.5);
+}
+
+.elevated:active {
+    transform: translateY(0);
+    box-shadow: 0 6px 14px -10px rgb(15 59 57 / 0.4);
+}
+
+/* Animated link underline (grows from the start edge on hover). */
+.link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-size: 0% 1.5px;
+    background-position: 0 100%;
+    transition: background-size 0.3s ease;
+}
+
+.link-underline:hover {
+    background-size: 100% 1.5px;
+}
+
+[dir="rtl"] .link-underline {
+    background-position: 100% 100%;
+}
+
+/* Product cards: bordered hover state pairs with the JS tilt effect. */
+.product-card {
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.product-card:hover {
+    border-color: var(--color-brand-200);
+    box-shadow: 0 18px 36px -18px rgb(15 59 57 / 0.35);
+}
+
+.product-card:hover .product-card-img {
+    transform: scale(1.08);
+}
+
+.product-card-img {
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Category tiles: caption slides up + image warms on hover. */
+.category-tile img {
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), filter 0.3s ease;
+}
+
+.category-tile:hover img {
+    transform: scale(1.08);
+    filter: saturate(1.2);
+}
+
+.category-tile .category-caption {
+    transform: translateY(6px);
+    transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.category-tile:hover .category-caption {
+    transform: translateY(0);
+}
+
+/* Hero stat cards glow slightly when the pointer crosses them. */
+.stat-card {
+    transition: transform 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    border-color: rgb(221 189 107 / 0.45);
+    background-color: var(--color-brand-700);
+}
+
+/* Honor reduced-motion preferences. */
+/* ------------------------------------------------------------------ */
+/* Admin & tailor panel effects                                        */
+/* ------------------------------------------------------------------ */
+
+/* Sidebar links: hover fills in with a gold active indicator. */
+.admin-shell nav a {
+    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.admin-shell nav a:hover {
+    transform: translateX(2px);
+}
+
+[dir="rtl"] .admin-shell nav a:hover {
+    transform: translateX(-2px);
+}
+
+/* Content fades up gently when a page loads. */
+.admin-shell main > *:not([x-cloak]) {
+    animation: admin-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes admin-rise {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* Mobile: wide admin tables collapse into stacked, labelled cards. */
+@media (max-width: 639px) {
+    .admin-shell .table-stack {
+        min-width: 0 !important;
+        width: 100% !important;
+    }
+
+    .admin-shell .table-stack thead {
+        display: none;
+    }
+
+    .admin-shell .table-stack tbody,
+    .admin-shell .table-stack tbody tr {
+        display: block;
+    }
+
+    .admin-shell .table-stack tbody tr:not(.table-stack-empty) {
+        border: 1px solid var(--color-brand-100);
+        border-radius: 0.75rem;
+        background: #fff;
+        padding: 0.25rem 0.75rem;
+        margin: 0.5rem 0;
+    }
+
+    .admin-shell .table-stack tbody tr.table-stack-empty {
+        text-align: center;
+    }
+
+    .admin-shell .table-stack tbody tr:not(.table-stack-empty) td {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.5rem 0;
+        text-align: end;
+        border: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .admin-shell .table-stack td::before {
+        content: attr(data-label);
+        flex: none;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--color-brand-400);
+    }
+
+    /* Cell contents must be able to shrink and wrap inside the card row,
+       otherwise truncated (nowrap) text pushes the card past the screen. */
+    .admin-shell .table-stack td,
+    .admin-shell .table-stack td > * {
+        min-width: 0;
+    }
+
+    .admin-shell .table-stack td .truncate,
+    .admin-shell .table-stack td [class*="truncate"] {
+        white-space: normal;
+        overflow-wrap: anywhere;
+        text-align: end;
+    }
+
+    .admin-shell .table-stack td[data-label=""],
+    .admin-shell .table-stack td[data-label=""]::before {
+        display: block;
+    }
+
+    .admin-shell .table-stack td[data-label=""]::before {
+        content: none;
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* Premium hero                                                        */
+/* ------------------------------------------------------------------ */
+
+.hero-premium {
+    background:
+        radial-gradient(1200px 500px at 80% -10%, rgba(190, 160, 80, 0.18), transparent 60%),
+        linear-gradient(160deg, var(--color-brand-950) 0%, var(--color-brand-900) 55%, var(--color-brand-800) 100%);
+    background-color: var(--color-brand-900);
+}
+
+/* Soft floating glow orbs behind the content. */
+.hero-glow-one,
+.hero-glow-two {
+    position: absolute;
+    border-radius: 9999px;
+    filter: blur(60px);
+    opacity: 0.5;
+}
+
+.hero-glow-one {
+    width: 26rem;
+    height: 26rem;
+    top: -10rem;
+    inset-inline-start: -8rem;
+    background: radial-gradient(circle, rgba(240, 200, 110, 0.28), transparent 70%);
+    animation: hero-drift 14s ease-in-out infinite alternate;
+}
+
+.hero-glow-two {
+    width: 20rem;
+    height: 20rem;
+    bottom: -8rem;
+    inset-inline-end: -6rem;
+    background: radial-gradient(circle, rgba(120, 170, 165, 0.30), transparent 70%);
+    animation: hero-drift 18s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes hero-drift {
+    from {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    to {
+        transform: translate3d(2.5rem, 1.5rem, 0) scale(1.08);
+    }
+}
+
+/* A faint stitching seam running horizontally through the hero. */
+.hero-seam {
+    position: absolute;
+    inset-inline: 0;
+    top: 62%;
+    height: 2px;
+    background-image: repeating-linear-gradient(
+        to right,
+        rgba(240, 200, 110, 0.35) 0 14px,
+        transparent 14px 26px
+    );
+    transform: skewY(-6deg);
+    opacity: 0.6;
+}
+
+/* Gold kicker with a short accent seam above it. */
+.hero-kicker {
+    display: inline-block;
+    color: var(--color-gold-400);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+.hero-kicker::before {
+    content: "";
+    display: block;
+    width: 2.5rem;
+    height: 2px;
+    background: repeating-linear-gradient(
+        to right,
+        var(--color-gold-400) 0 7px,
+        transparent 7px 12px
+    );
+    margin-bottom: 0.75rem;
+}
+
+/* Ghost (outline) hero buttons fill softly on hover. */
+.btn-ghost {
+    background-image: linear-gradient(rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.14));
+    background-repeat: no-repeat;
+    background-position: bottom;
+    background-size: 100% 0%;
+    transition:
+        background-color 0.3s ease,
+        background-size 0.3s ease;
+}
+
+.btn-ghost:hover {
+    background-size: 100% 100%;
+}
+
+/* Section headings carry the same stitch accent. */
+.section-title::after,
+.section-title-center::after {
+    content: "";
+    display: block;
+    width: 4rem;
+    height: 2px;
+    margin-top: 0.75rem;
+    background: repeating-linear-gradient(
+        to right,
+        var(--color-gold-500) 0 8px,
+        transparent 8px 14px
+    );
+}
+
+.section-title-center::after {
+    margin-inline: auto;
+}
+
+.step-badge {
+    transition:
+        transform 0.3s ease,
+        background-color 0.3s ease;
+}
+
+.step-badge:hover {
+    transform: translateY(-4px) scale(1.1);
+    background-color: var(--color-gold-200);
+}
+
+/* The closing call-to-action panel echoes the hero. */
+.cta-panel {
+    background:
+        radial-gradient(600px 220px at 85% 0%, rgba(190, 160, 80, 0.35), transparent 60%),
+        linear-gradient(155deg, var(--color-brand-950) 0%, var(--color-brand-900) 70%, var(--color-brand-800) 100%);
+    color: white;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 24px 60px -30px rgba(10, 40, 36, 0.55);
+}
+
+.cta-panel > * {
+    position: relative;
+}
+
+/* Honor reduced-motion preferences. */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    [data-reveal] {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
+
+    .btn-shine::after {
+        display: none;
+    }
+
+    .hero-glow-one,
+    .hero-glow-two {
+        animation: none;
+    }
+
+    .btn-ghost {
+        transition: none;
+    }
+
+    .elevated,
+    .product-card,
+    .product-card-img,
+    .category-tile img,
+    .category-tile .category-caption,
+    .stat-card {
+        transition: none;
+    }
+
+    .elevated:hover,
+    .stat-card:hover {
+        transform: none;
+    }
+
+    .admin-shell main > *:not([x-cloak]) {
+        animation: none;
+    }
+
+    .admin-shell nav a,
+    .admin-shell nav a::after {
+        transition: none;
+    }
 }
 
 /* ------------------------------------------------------------------ */

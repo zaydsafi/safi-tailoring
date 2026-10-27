@@ -7,8 +7,10 @@ use App\Models\Order;
 use App\Models\Setting;
 use App\Support\Cart;
 use App\Support\HesabPay;
+use App\Support\InvoicePdf;
 use App\Support\Notify;
 use App\Support\WhatsApp;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -102,7 +104,7 @@ class CheckoutController extends Controller
         try {
             $order = DB::transaction(function () use ($data, $cartItems, $subtotal, $deliveryFee) {
                 $order = Order::create([
-                    'user_id' => auth()->id(),
+                    'user_id' => auth()->user()?->id,
                     'customer_name' => $data['customer_name'],
                     'customer_phone' => $data['customer_phone'],
                     'customer_email' => $data['customer_email'] ?? null,
@@ -150,6 +152,12 @@ class CheckoutController extends Controller
             return back()
                 ->withInput()
                 ->with('error', '"'.$e->getMessage().'" '.t('flash.not_enough_stock', 'does not have enough stock').'.');
+        } catch (QueryException $e) {
+            report($e);
+
+            return back()
+                ->withInput()
+                ->with('error', t('flash.order_failed', 'We could not place your order. Please try again or contact us.'));
         }
 
         // Optionally save a measurement profile for logged-in customers.
@@ -209,6 +217,21 @@ class CheckoutController extends Controller
         $order->load('items');
 
         return view('shop.order-success', compact('order'));
+    }
+
+    /**
+     * Receipt PDF for the just-placed order. Same access rule as the
+     * success page, so guest shoppers can save their receipt right away.
+     */
+    public function receipt(Order $order)
+    {
+        $allowed = session('order_confirmed') === $order->order_number
+            || (auth()->check() && (auth()->id() === $order->user_id || auth()->user()->isAdmin()));
+
+        abort_unless($allowed, 403);
+
+        return InvoicePdf::for($order)
+            ->download('receipt-'.$order->order_number.'.pdf');
     }
 
     private function deliveryFee(float $subtotal): float

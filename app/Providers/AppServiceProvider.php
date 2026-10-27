@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Support\Locales;
 use App\Support\MailerSettings;
+use App\Support\TlsMailManager;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -14,7 +15,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Use the TLS-aware mail manager so SMTP connections can fall back to
+        // the project CA bundle when the runtime's own CA configuration is
+        // broken (see TlsMailManager).
+        $this->app->extend('mail.manager', function () {
+            return new TlsMailManager($this->app);
+        });
     }
 
     /**

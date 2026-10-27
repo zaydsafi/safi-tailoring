@@ -8,7 +8,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="flex min-h-screen items-center justify-center bg-brand-900 px-4 font-sans antialiased">
-    <div class="w-full max-w-md">
+    <main class="w-full max-w-md">
         <div class="mb-8 text-center">
             <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gold-400/20">
                 <svg class="h-8 w-8 text-gold-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
@@ -54,7 +54,7 @@
             </form>
         </div>
 
-        <p class="mt-6 text-center text-xs text-brand-400"><a href="{{ route('home') }}" class="underline hover:text-white">{{ t('admin.auth.back_to_storefront', 'Back to storefront') }}</a></p>
-    </div>
+        <p class="mt-6 text-center text-xs text-brand-300"><a href="{{ route('home') }}" class="underline hover:text-white">{{ t('admin.auth.back_to_storefront', 'Back to storefront') }}</a></p>
+    </main>
 </body>
 </html>

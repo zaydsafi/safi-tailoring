@@ -190,7 +190,7 @@
                         <h2 class="text-sm font-bold text-green-900">{{ t('custom_order.help_title', 'Need help with measurements?') }}</h2>
                     </div>
                     <p class="text-xs text-green-800 leading-relaxed mb-4">{{ t('custom_order.help_text', 'Chat with our tailoring team on WhatsApp — we can walk you through the numbers before you submit.') }}</p>
-                    <a href="{{ $waHelp }}" target="_blank" rel="noopener" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-green-700">
+                    <a href="{{ $waHelp }}" target="_blank" rel="noopener" class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-green-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-green-800">
                         {{ t('contact.start_chat', 'Start Chat') }}
                     </a>
                 </div>

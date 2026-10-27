@@ -31,7 +31,7 @@ class ShopController extends Controller
             ->when($request->query('sort') === 'price_asc', fn ($q) => $q->orderByRaw('COALESCE(sale_price, price) asc'))
             ->when($request->query('sort') === 'price_desc', fn ($q) => $q->orderByRaw('COALESCE(sale_price, price) desc'))
             ->when($request->query('sort') === 'oldest', fn ($q) => $q->oldest())
-            ->when(!in_array($request->query('sort'), ['price_asc', 'price_desc', 'oldest']), fn ($q) => $q->latest())
+            ->when(! in_array($request->query('sort'), ['price_asc', 'price_desc', 'oldest']), fn ($q) => $q->latest())
             ->paginate(12)
             ->withQueryString();
 
@@ -41,7 +41,13 @@ class ShopController extends Controller
     public function show(string $slug)
     {
         $product = Product::active()->with(['category', 'images'])->where('slug', $slug)->firstOrFail();
-        $related = Product::active()->where('category_id', $product->category_id)->where('id', '!=', $product->id)->take(4)->get();
+
+        $related = Product::active()
+            ->where('category_id', $product->category_id)
+            ->where('id', '!=', $product->id)
+            ->with('category')
+            ->take(4)
+            ->get();
 
         return view('shop.show', compact('product', 'related'));
     }

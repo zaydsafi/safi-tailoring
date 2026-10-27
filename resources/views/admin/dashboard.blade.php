@@ -25,7 +25,7 @@
             ];
         @endphp
         @foreach ($cards as $card)
-            <div class="rounded-2xl border border-brand-100 bg-white p-5 shadow-sm">
+            <div data-reveal class="elevated rounded-2xl border border-brand-100 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
                 <div class="flex items-center justify-between">
                     <p class="text-sm font-medium text-brand-500">{{ $card['label'] }}</p>
                     <svg class="h-6 w-6 text-teal-700/40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}"/></svg>
@@ -36,15 +36,15 @@
     </div>
 
     <div class="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div class="rounded-2xl border border-brand-100 bg-white p-5 shadow-sm">
+        <div data-reveal class="elevated rounded-2xl border border-brand-100 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
             <p class="text-sm font-medium text-brand-500">{{ t('admin.dashboard.customers', 'Customers') }}</p>
             <p class="mt-2 text-2xl font-bold text-brand-900">{{ $totalCustomers }}</p>
         </div>
-        <a href="{{ route('admin.messages.index') }}" class="rounded-2xl border border-brand-100 bg-white p-5 shadow-sm transition hover:border-teal-300">
+        <a href="{{ route('admin.messages.index') }}" data-reveal class="elevated rounded-2xl border border-brand-100 bg-white p-5 shadow-sm transition duration-200 hover:border-teal-300 hover:-translate-y-0.5 hover:shadow-md">
             <p class="text-sm font-medium text-brand-500">{{ t('admin.dashboard.unread_messages', 'Unread Messages') }}</p>
             <p class="mt-2 text-2xl font-bold {{ $unreadMessages > 0 ? 'text-gold-600' : 'text-brand-900' }}">{{ $unreadMessages }}</p>
         </a>
-        <a href="{{ route('admin.custom-orders.index') }}" class="rounded-2xl border border-brand-100 bg-white p-5 shadow-sm transition hover:border-teal-300">
+        <a href="{{ route('admin.custom-orders.index') }}" data-reveal class="elevated rounded-2xl border border-brand-100 bg-white p-5 shadow-sm transition duration-200 hover:border-teal-300 hover:-translate-y-0.5 hover:shadow-md">
             <p class="text-sm font-medium text-brand-500">{{ t('admin.dashboard.pending_custom_requests', 'Pending Custom Requests') }}</p>
             <p class="mt-2 text-2xl font-bold {{ $pendingCustomRequests > 0 ? 'text-amber-600' : 'text-brand-900' }}">{{ $pendingCustomRequests }}</p>
         </a>

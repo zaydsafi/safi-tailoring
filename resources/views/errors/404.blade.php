@@ -1,0 +1,17 @@
+@extends('layouts.shop')
+
+@section('title', t('errors.not_found_title', 'Page Not Found') . ' — ' . $shopSettings['shop_name'])
+
+@section('robots', 'noindex, nofollow')
+
+@section('content')
+    <div class="max-w-2xl mx-auto px-4 py-24 text-center">
+        <p class="font-display text-7xl font-black text-brand-200 select-none">404</p>
+        <h1 class="font-display text-3xl font-bold text-brand-900 mt-2 mb-4">{{ t('errors.not_found_heading', 'This page took a wrong turn') }}</h1>
+        <p class="text-gray-600 mb-8">{{ t('errors.not_found_body', 'The page you are looking for was moved, removed or never existed. Check the URL or head back to our shop — every piece we make is still right here.') }}</p>
+        <div class="flex flex-wrap justify-center gap-4">
+            <a href="{{ route('shop.index') }}" class="bg-brand-800 text-white font-medium px-6 py-3 rounded-lg hover:bg-brand-700 transition-colors">{{ t('errors.back_to_shop', 'Back to Shop') }}</a>
+            <a href="{{ route('home') }}" class="border border-gray-300 text-gray-700 font-medium px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors">{{ t('errors.go_home', 'Go to Homepage') }}</a>
+        </div>
+    </div>
+@endsection

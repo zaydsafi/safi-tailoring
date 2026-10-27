@@ -7,14 +7,14 @@
         <form method="GET" class="flex flex-wrap items-center gap-2">
             <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ t('admin.users.search_placeholder', 'Search name, email or phone…') }}"
                    class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 sm:w-64">
-            <select name="role"
+            <select name="role" aria-label="{{ t('admin.users.role', 'Role') }}"
                     class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
                 <option value="">{{ t('admin.users.all_roles', 'All roles') }}</option>
                 <option value="admin" @selected(request('role') === 'admin')>{{ t('admin.users.admins', 'Admins') }}</option>
                 <option value="customer" @selected(request('role') === 'customer')>{{ t('admin.users.customers', 'Customers') }}</option>
                 @each ('admin.users._role_filter', \App\Models\Role::query()->where('slug', '!=', 'admin')->orderBy('name')->get(), 'staffRole')
             </select>
-            <select name="status"
+            <select name="status" aria-label="{{ t('admin.common.status', 'Status') }}"
                     class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
                 <option value="">{{ t('admin.users.all_statuses', 'All statuses') }}</option>
                 <option value="active" @selected(request('status') === 'active')>{{ t('admin.users.active', 'Active') }}</option>
@@ -25,6 +25,8 @@
                 <a href="{{ route('admin.users.index') }}" class="text-sm font-semibold text-brand-500 hover:text-brand-700">{{ t('admin.users.clear', 'Clear') }}</a>
             @endif
         </form>
+        <a href="{{ route('admin.exports.customers') }}"
+           class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-50">{{ t('admin.reports.export_customers', 'Export Customers (Excel)') }}</a>
         <a href="{{ route('admin.users.create') }}"
            class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-800">
             <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>

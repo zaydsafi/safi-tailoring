@@ -22,8 +22,11 @@ class TailorDashboardController extends Controller
             ->take(10)
             ->get();
 
+        // The dashboard reads each customer's has-measurements badge, so the
+        // count is fetched with the customers in one query (no N+1).
         $customers = User::where('role', 'customer')
             ->whereNotNull('phone')
+            ->withCount('measurementProfiles')
             ->latest()
             ->take(20)
             ->get();

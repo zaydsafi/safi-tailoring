@@ -44,6 +44,8 @@
             <p class="text-sm text-gray-500">{{ t('orders.placed_on', 'Placed') }} {{ $order->created_at->format('M d, Y \a\t H:i') }}</p>
         </div>
         <span class="px-3 py-1.5 rounded-full text-sm font-bold {{ status_badge_class($order->status) }}">{{ $statusLabels[$order->status] ?? $order->statusLabel() }}</span>
+        <a href="{{ route('account.orders.invoice', $order) }}"
+           class="inline-flex items-center gap-2 bg-brand-800 text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-brand-700">{{ t('orders.download_invoice_pdf', 'Invoice (PDF)') }}</a>
     </div>
 
     <div class="bg-white border border-gray-200 rounded-xl p-6 mb-6">

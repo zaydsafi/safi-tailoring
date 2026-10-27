@@ -76,6 +76,8 @@
         @endif
 
         <div class="flex flex-wrap justify-center gap-4">
+            <a href="{{ route('orders.guest_invoice', $order) }}"
+               class="border border-gray-300 text-gray-700 font-medium px-6 py-3 rounded-lg hover:bg-gray-50">{{ t('orders.download_receipt_pdf', 'Download Receipt (PDF)') }}</a>
             @if($canPayHesabPay)
                 <form method="POST" action="{{ route('hesabpay.retry', $order) }}">
                     @csrf
@@ -86,7 +88,7 @@
                class="font-medium px-6 py-3 rounded-lg {{ $canPayHesabPay ? 'border border-gray-300 text-gray-700 hover:bg-gray-50' : 'bg-brand-800 text-white hover:bg-brand-700' }}">{{ t('orders.track_this_order', 'Track This Order') }}</a>
             <a href="{{ route('shop.index') }}" class="border border-gray-300 text-gray-700 font-medium px-6 py-3 rounded-lg hover:bg-gray-50">{{ t('common.continue_shopping', 'Continue Shopping') }}</a>
             @if($waUrl)
-                <a href="{{ $waUrl }}" target="_blank" rel="noopener" class="bg-green-600 text-white font-medium px-6 py-3 rounded-lg hover:bg-green-700">{{ t('common.whatsapp_us', 'WhatsApp Us') }}</a>
+                <a href="{{ $waUrl }}" target="_blank" rel="noopener" class="bg-green-700 text-white font-medium px-6 py-3 rounded-lg hover:bg-green-800">{{ t('common.whatsapp_us', 'WhatsApp Us') }}</a>
             @endif
         </div>
     </div>

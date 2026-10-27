@@ -46,6 +46,10 @@ class SettingController extends Controller
             'whatsapp_country_code' => ['nullable', 'string', 'max:5'],
             'whatsapp_auth_template' => ['nullable', 'string', 'max:191'],
 
+            // SEO & analytics integrations.
+            'google_analytics_id' => ['nullable', 'string', 'max:32', 'regex:/^G-[A-Z0-9]{5,}$/i'],
+            'google_site_verification' => ['nullable', 'string', 'max:255'],
+
             // Outgoing email. A filled host switches mail to SMTP; blank
             // fields fall back to whatever .env provides.
             'mail_smtp_host' => ['nullable', 'string', 'max:255'],

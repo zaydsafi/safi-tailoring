@@ -1,9 +1,9 @@
 @props(['product'])
 
-<div class="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow flex flex-col">
+<div class="product-card group bg-white rounded-xl border border-gray-200 overflow-hidden transition flex flex-col" data-reveal data-tilt>
     <a href="{{ route('shop.show', $product->slug) }}" class="block relative aspect-square overflow-hidden bg-gray-100">
         <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" loading="lazy"
-             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+             class="product-card-img w-full h-full object-cover">
         @if($product->onSale())
             <span class="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
                 {{ t('product.sale', 'Sale') }}
@@ -21,7 +21,7 @@
     </a>
     <div class="p-4 flex flex-col flex-1">
         <p class="text-xs text-gray-500 mb-1">{{ $product->category->name }}</p>
-        <a href="{{ route('shop.show', $product->slug) }}" class="font-semibold text-gray-900 hover:text-brand-700 leading-snug">
+        <a href="{{ route('shop.show', $product->slug) }}" class="link-underline font-semibold text-gray-900 hover:text-brand-700 leading-snug inline-block">
             {{ $product->name }}
         </a>
         <div class="mt-auto pt-3 flex items-center justify-between">

@@ -12,7 +12,9 @@ class HomeController extends Controller
     {
         $featured = Product::active()->featured()->with('category')->latest()->take(8)->get();
         $categories = Category::active()->withCount(['products' => fn ($q) => $q->active()])->orderBy('sort_order')->take(6)->get();
-        $newArrivals = Product::active()->where('is_featured', false)->latest()->take(4)->get();
+        // Products render through x-product-card, which shows the category
+        // name — eager-load it too so the card loop never runs N+1 queries.
+        $newArrivals = Product::active()->where('is_featured', false)->with('category')->latest()->take(4)->get();
 
         return view('shop.home', [
             'featured' => $featured,

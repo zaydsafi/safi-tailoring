@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Support\InvoicePdf;
 use App\Support\Notify;
 use Illuminate\Http\Request;
 
@@ -36,10 +37,19 @@ class OrderController extends Controller
         return view('admin.orders.show', compact('order', 'statuses'));
     }
 
+    /**
+     * Invoice / receipt PDF for the admin order page.
+     */
+    public function invoice(Order $order)
+    {
+        return InvoicePdf::for($order)
+            ->download('invoice-'.$order->order_number.'.pdf');
+    }
+
     public function updateStatus(Request $request, Order $order)
     {
         $data = $request->validate([
-            'status' => ['required', 'in:' . implode(',', array_keys(Order::STATUSES))],
+            'status' => ['required', 'in:'.implode(',', array_keys(Order::STATUSES))],
             'note' => ['nullable', 'string', 'max:500'],
         ]);
 

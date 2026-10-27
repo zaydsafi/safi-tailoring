@@ -33,8 +33,10 @@ class CustomOrderRequestController extends Controller
                 ->map(fn ($v) => (float) $v)->all();
         }
 
-        // Attach to the logged-in customer when present.
-        $userId = auth()->id();
+        // Attach to the logged-in customer when present. user()?->id (not
+        // id()) so a stale session for a deleted account resolves to null
+        // instead of violating the foreign key.
+        $userId = auth()->user()?->id;
 
         $requestRecord = CustomOrderRequest::create(array_merge($data, [
             'user_id' => $userId,

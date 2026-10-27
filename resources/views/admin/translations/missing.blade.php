@@ -37,7 +37,7 @@
         @endif
         <input type="text" name="q" value="{{ $q }}" placeholder="{{ t('admin.translations.search_placeholder', 'Search key or translation…') }}"
                class="w-56 rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
-        <select name="group" class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+        <select name="group" aria-label="{{ t('admin.translations.all_groups', 'Group') }}" class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
             <option value="">{{ t('admin.translations.all_groups', 'All groups') }}</option>
             @foreach ($groups as $groupOption)
                 <option value="{{ $groupOption }}" @selected($group === $groupOption)>{{ $groupOption }}</option>

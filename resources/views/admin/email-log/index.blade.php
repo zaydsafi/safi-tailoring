@@ -4,12 +4,18 @@
 
 @section('content')
     <div class="mb-6">
-        <p class="max-w-2xl text-sm text-brand-500">{{ t('admin.email_log.subtitle', 'Outgoing email attempts: order mail, verification codes and the delivery test. A failed row shows the exact error the mail server returned.') }}</p>
-        @if ($failedCount > 0)
-            <p class="mt-1 text-sm font-semibold text-red-600">
-                {{ t('admin.email_log.failed_count', ':count failed attempts', ['count' => $failedCount]) }}
-            </p>
-        @endif
+        <div class="flex flex-wrap items-start justify-between gap-3">
+            <div>
+                <p class="max-w-2xl text-sm text-brand-500">{{ t('admin.email_log.subtitle', 'Outgoing email attempts: order mail, verification codes and the delivery test. A failed row shows the exact error the mail server returned.') }}</p>
+                @if ($failedCount > 0)
+                    <p class="mt-1 text-sm font-semibold text-red-600">
+                        {{ t('admin.email_log.failed_count', ':count failed attempts', ['count' => $failedCount]) }}
+                    </p>
+                @endif
+            </div>
+            <a href="{{ route('admin.exports.email_log') }}"
+               class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-50">{{ t('admin.reports.export_excel', 'Export (Excel)') }}</a>
+        </div>
     </div>
 
     <div class="overflow-x-auto rounded-2xl border border-brand-100 bg-white shadow-sm">

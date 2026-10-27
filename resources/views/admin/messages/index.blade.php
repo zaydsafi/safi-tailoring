@@ -3,8 +3,10 @@
 @section('title', t('admin.messages.title', 'Messages'))
 
 @section('content')
-    <div class="mb-6">
+    <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
         <p class="text-sm text-brand-500">{{ $unreadCount === 1 ? t('admin.messages.unread_one', ':count unread message', ['count' => $unreadCount]) : t('admin.messages.unread_many', ':count unread messages', ['count' => $unreadCount]) }}</p>
+        <a href="{{ route('admin.exports.messages') }}"
+           class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-50">{{ t('admin.reports.export_excel', 'Export (Excel)') }}</a>
     </div>
 
     <div class="overflow-x-auto rounded-2xl border border-brand-100 bg-white shadow-sm">

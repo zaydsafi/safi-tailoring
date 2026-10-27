@@ -57,7 +57,7 @@
                     <form method="POST" action="{{ route('admin.users.unblock', $customer) }}">
                         @csrf
                         @method('PATCH')
-                        <button type="submit" class="w-full rounded-xl bg-green-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-green-700">{{ t('admin.customers.unblock', 'Unblock Account') }}</button>
+                        <button type="submit" class="w-full rounded-xl bg-green-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-green-800">{{ t('admin.customers.unblock', 'Unblock Account') }}</button>
                     </form>
                 @else
                     <p class="mb-4 text-xs text-brand-500">{{ t('admin.customers.block_warning', 'Blocking signs the customer out immediately and prevents them from signing in again until unblocked. Past orders are kept.') }}</p>

@@ -33,4 +33,41 @@ class Permissions
     {
         return array_keys(self::CATALOG);
     }
+
+    /**
+     * The two permissions that make up the tailor workspace. They get
+     * their own section on the Roles & Permissions screen.
+     */
+    public const TAILOR_KEYS = ['custom_orders', 'tailor_dashboard'];
+
+    /**
+     * What each tailor permission unlocks — shown as copy on the Roles
+     * screen so admins know exactly what they are granting.
+     *
+     * @return array<string, string>
+     */
+    public const TAILOR_NOTES = [
+        'tailor_dashboard' => 'admin.roles.tailor_perm_dashboard_desc',
+        'custom_orders' => 'admin.roles.tailor_perm_custom_orders_desc',
+    ];
+
+    /**
+     * General admin sections (everything except the tailor workspace).
+     *
+     * @return array<string, string>
+     */
+    public static function general(): array
+    {
+        return array_diff_key(self::CATALOG, array_flip(self::TAILOR_KEYS));
+    }
+
+    /**
+     * The tailor workspace section.
+     *
+     * @return array<string, string>
+     */
+    public static function tailor(): array
+    {
+        return array_intersect_key(self::CATALOG, array_flip(self::TAILOR_KEYS));
+    }
 }

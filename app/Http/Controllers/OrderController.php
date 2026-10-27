@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Support\InvoicePdf;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -23,6 +24,17 @@ class OrderController extends Controller
         return view('account.order-detail', compact('order'));
     }
 
+    /**
+     * Invoice / receipt PDF for one of the signed-in customer's own orders.
+     */
+    public function invoice(Order $order)
+    {
+        abort_unless($order->user_id === auth()->id(), 403);
+
+        return InvoicePdf::for($order)
+            ->download('invoice-'.$order->order_number.'.pdf');
+    }
+
     public function trackForm()
     {
         return view('shop.track');
@@ -40,7 +52,7 @@ class OrderController extends Controller
             ->where('customer_phone', $data['customer_phone'])
             ->first();
 
-        if (!$order) {
+        if (! $order) {
             return back()
                 ->withInput()
                 ->with('error', t('flash.order_not_found', 'No order found with that order number and phone. Please check both and try again.'));

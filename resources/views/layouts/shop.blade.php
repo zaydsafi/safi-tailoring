@@ -47,6 +47,22 @@
         'url' => url('/' . $currentLocale),
         'inLanguage' => $currentLocale,
     ];
+
+    // Google Search Console ownership verification (admin Settings → SEO & Analytics).
+    $searchConsoleVerification = null;
+    $verificationRaw = trim((string) ($shopSettings['google_site_verification'] ?? ''));
+
+    if ($verificationRaw !== '') {
+        if (preg_match('/content=["\']([^"\']+)["\']/i', $verificationRaw, $m)) {
+            $searchConsoleVerification = $m[1];
+        } else {
+            $searchConsoleVerification = $verificationRaw;
+        }
+    }
+
+    // Google Analytics 4 — accepts "G-XXXXXXXXXX" or a raw paste that simply starts with G-.
+    $googleAnalyticsId = trim((string) ($shopSettings['google_analytics_id'] ?? ''));
+    $gaId = preg_match('/^G-[A-Z0-9]+$/i', $googleAnalyticsId) ? $googleAnalyticsId : null;
 @endphp
 <!DOCTYPE html>
 <html lang="{{ $currentLocale }}" dir="{{ is_rtl() ? 'rtl' : 'ltr' }}">
@@ -85,8 +101,21 @@
         <meta name="twitter:image" content="{{ $metaImage }}">
     @endif
 
+    @if ($searchConsoleVerification)
+        <meta name="google-site-verification" content="{{ $searchConsoleVerification }}">
+    @endif
+
     <script type="application/ld+json">{!! json_encode($organizationSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
     <script type="application/ld+json">{!! json_encode($websiteSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+    @if ($gaId)
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ $gaId }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '{{ $gaId }}');
+        </script>
+    @endif
     @stack('seo')
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])

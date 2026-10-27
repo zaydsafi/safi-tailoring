@@ -65,7 +65,7 @@
             <a href="{{ route('orders.track') }}" class="border border-gray-300 text-gray-700 font-medium px-6 py-3 rounded-lg hover:bg-gray-50">{{ t('orders.track_order', 'Track Order') }}</a>
             @if($waHelp)
                 <a href="{{ $waHelp }}" target="_blank" rel="noopener"
-                   class="bg-green-600 text-white font-medium px-6 py-3 rounded-lg hover:bg-green-700">{{ t('common.whatsapp_us', 'WhatsApp Us') }}</a>
+                   class="bg-green-700 text-white font-medium px-6 py-3 rounded-lg hover:bg-green-800">{{ t('common.whatsapp_us', 'WhatsApp Us') }}</a>
             @endif
         </div>
     </div>

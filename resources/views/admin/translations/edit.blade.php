@@ -41,7 +41,7 @@
 
                 <div class="mt-6 space-y-5">
                     <div class="flex items-center justify-between">
-                        <h3 class="text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.translations.translations_heading', 'Translations') }}</h3>
+                        <h2 class="text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.translations.translations_heading', 'Translations') }}</h2>
                         <p class="text-xs text-brand-400">{{ t('admin.translations.fallback_note', 'Pashto/Farsi left empty fall back to English.') }}</p>
                     </div>
                     <div>

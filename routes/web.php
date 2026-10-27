@@ -54,6 +54,7 @@ Route::prefix('{locale}')
         Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout');
         Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
         Route::get('/order/{order}/success', [CheckoutController::class, 'success'])->name('orders.success');
+        Route::get('/order/{order}/receipt', [CheckoutController::class, 'receipt'])->name('orders.guest_invoice');
 
         Route::get('/custom-order', [CustomOrderRequestController::class, 'show'])->name('custom-order.request');
         Route::post('/custom-order', [CustomOrderRequestController::class, 'store'])->name('custom-order.request.store');
@@ -93,6 +94,7 @@ Route::prefix('{locale}')
         Route::middleware(['auth', 'verified.customer'])->prefix('account')->name('account.')->group(function () {
             Route::get('/orders', [OrderController::class, 'index'])->name('orders');
             Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+            Route::get('/orders/{order}/invoice', [OrderController::class, 'invoice'])->name('orders.invoice');
             Route::get('/profile', [AccountController::class, 'editProfile'])->name('profile');
             Route::put('/profile', [AccountController::class, 'updateProfile'])->name('profile.update');
             Route::put('/profile/password', [AccountController::class, 'updatePassword'])->name('password.update');
@@ -124,7 +126,7 @@ Route::middleware(['admin', AdminLocale::class])->prefix('admin')->name('admin.'
     Route::post('/logout', [Admin\AuthController::class, 'logout'])->name('logout');
     Route::get('/', [Admin\DashboardController::class, 'index'])->name('dashboard');
 
-    Route::resource('roles', Admin\RoleController::class)->except(['show']);
+    Route::resource('roles', Admin\RoleController::class)->except(['show'])->middleware('perm:roles');
 
     // Static paths must be registered before the {requestRecord} wildcard
     // route, otherwise “create-for-customer” is swallowed by it.
@@ -142,8 +144,18 @@ Route::middleware(['admin', AdminLocale::class])->prefix('admin')->name('admin.'
     Route::resource('categories', Admin\CategoryController::class)->except(['show'])->middleware('perm:categories');
     Route::resource('products', Admin\ProductController::class)->except(['show'])->middleware('perm:products');
 
+    // Excel / CSV report downloads
+    Route::get('/exports/orders', [Admin\ExportController::class, 'orders'])->name('exports.orders')->middleware('perm:orders');
+    Route::get('/exports/sales-summary', [Admin\ExportController::class, 'salesSummary'])->name('exports.sales_summary')->middleware('perm:orders');
+    Route::get('/exports/products', [Admin\ExportController::class, 'products'])->name('exports.products')->middleware('perm:products');
+    Route::get('/exports/customers', [Admin\ExportController::class, 'customers'])->name('exports.customers')->middleware('perm:users');
+    Route::get('/exports/custom-orders', [Admin\ExportController::class, 'customOrders'])->name('exports.custom_orders')->middleware('perm:custom_orders');
+    Route::get('/exports/messages', [Admin\ExportController::class, 'messages'])->name('exports.messages')->middleware('perm:messages');
+    Route::get('/exports/email-log', [Admin\ExportController::class, 'emailLog'])->name('exports.email_log')->middleware('perm:settings');
+
     Route::get('/orders', [Admin\OrderController::class, 'index'])->name('orders.index')->middleware('perm:orders');
     Route::get('/orders/{order}', [Admin\OrderController::class, 'show'])->name('orders.show')->middleware('perm:orders');
+    Route::get('/orders/{order}/invoice', [Admin\OrderController::class, 'invoice'])->name('orders.invoice')->middleware('perm:orders');
     Route::patch('/orders/{order}/status', [Admin\OrderController::class, 'updateStatus'])->name('orders.status')->middleware('perm:orders');
     Route::patch('/orders/{order}/payment', [Admin\OrderController::class, 'updatePayment'])->name('orders.payment')->middleware('perm:orders');
     Route::delete('/orders/{order}', [Admin\OrderController::class, 'destroy'])->name('orders.destroy')->middleware('perm:orders');
@@ -163,13 +175,23 @@ Route::middleware(['admin', AdminLocale::class])->prefix('admin')->name('admin.'
         Route::put('/{translation}', [Admin\TranslationController::class, 'update'])->name('translations.update');
         Route::delete('/{translation}', [Admin\TranslationController::class, 'destroy'])->name('translations.destroy');
     });
-    Route::get('/translations/missing', [Admin\TranslationController::class, 'missing'])->name('translations.missing');
-    Route::get('/translations/create', [Admin\TranslationController::class, 'create'])->name('translations.create');
+    Route::get('/translations/missing', [Admin\TranslationController::class, 'missing'])->name('translations.missing')->middleware('perm:translations');
+    Route::get('/translations/create', [Admin\TranslationController::class, 'create'])->name('translations.create')->middleware('perm:translations');
     Route::get('/messages', [Admin\MessageController::class, 'index'])->name('messages.index')->middleware('perm:messages');
     Route::get('/messages/{message}', [Admin\MessageController::class, 'show'])->name('messages.show')->middleware('perm:messages');
     Route::delete('/messages/{message}', [Admin\MessageController::class, 'destroy'])->name('messages.destroy')->middleware('perm:messages');
 
     Route::get('/email-log', [Admin\EmailLogController::class, 'index'])->name('email-log.index')->middleware('perm:settings');
+
+    // Database backups: list / create / download / delete / restore.
+    Route::prefix('backups')->name('backups.')->middleware('perm:settings')->group(function () {
+        Route::get('/', [Admin\BackupController::class, 'index'])->name('index');
+        Route::post('/', [Admin\BackupController::class, 'store'])->name('store');
+        Route::get('/{name}/download', [Admin\BackupController::class, 'download'])->name('download')->where('name', '[A-Za-z0-9._\-]+');
+        Route::get('/{name}/recover', [Admin\BackupController::class, 'recover'])->name('recover')->where('name', '[A-Za-z0-9._\-]+');
+        Route::post('/{name}/restore', [Admin\BackupController::class, 'restore'])->name('restore')->where('name', '[A-Za-z0-9._\-]+');
+        Route::delete('/{name}', [Admin\BackupController::class, 'destroy'])->name('destroy')->where('name', '[A-Za-z0-9._\-]+');
+    });
 
     Route::get('/settings', [Admin\SettingController::class, 'edit'])->name('settings.edit')->middleware('perm:settings');
     Route::put('/settings', [Admin\SettingController::class, 'update'])->name('settings.update')->middleware('perm:settings');
