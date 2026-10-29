@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Support\Backup;
 use App\Support\MailBackup;
+use App\Support\OffsiteBackup;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -22,15 +23,49 @@ class BackupController extends Controller
     {
         $name = Backup::create();
 
-        // A second copy leaves the server immediately: the backup is
-        // emailed to the shop owner with the SQL file attached.
+        // Two extra copies leave the server immediately: one is emailed to
+        // the shop owner, one (when configured) is uploaded to their cPanel
+        // hosting so a dead local server cannot kill all the backups.
         $mailed = MailBackup::sendCopyOf($name);
+        $staged = OffsiteBackup::push($name);
 
-        $message = $mailed
-            ? t('admin.flash.backup_created', 'Backup created: :name', ['name' => $name])
-            : t('admin.flash.backup_created_no_email', 'Backup created: :name (no email copy — set a valid shop email in settings)', ['name' => $name]);
+        if ($staged && $mailed) {
+            $message = t('admin.flash.backup_created_offsite_email',
+                'Backup created: :name — a copy was emailed and one stored on your cPanel hosting.', ['name' => $name]);
+        } elseif ($staged) {
+            $message = t('admin.flash.backup_created_offsite',
+                'Backup created: :name — a copy was stored on your cPanel hosting (no email copy — set a valid shop email in settings).', ['name' => $name]);
+        } elseif ($mailed) {
+            $message = t('admin.flash.backup_created', 'Backup created: :name', ['name' => $name]);
+        } else {
+            $message = t('admin.flash.backup_created_no_email',
+                'Backup created: :name (no email copy — set a valid shop email in settings)', ['name' => $name]);
+        }
 
-        return back()->with('success', $message);
+        $redirect = back();
+
+        if (OffsiteBackup::enabled() && ! $staged) {
+            $redirect->with('error', t('admin.flash.backup_offsite_failed',
+                'Off-site copy of :name could not be stored on your cPanel hosting — check the FTP settings on the Settings page.', ['name' => $name]));
+        }
+
+        return $redirect->with('success', $message);
+    }
+
+    /**
+     * Manual copy of an existing backup file to the cPanel storage.
+     */
+    public function offsite(string $name)
+    {
+        abort_unless(Backup::exists($name), 404);
+
+        if (OffsiteBackup::push($name)) {
+            return back()->with('success', t('admin.flash.offsite_uploaded',
+                ':name is now on your cPanel hosting.', ['name' => $name]));
+        }
+
+        return back()->with('error', t('admin.flash.offsite_upload_failed',
+            'Could not store :name on your cPanel hosting — check the FTP settings on the Settings page.', ['name' => $name]));
     }
 
     public function download(string $name): BinaryFileResponse

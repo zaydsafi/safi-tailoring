@@ -212,8 +212,36 @@ function initResponsiveTables() {
     });
 }
 
+/*
+ * GA4 e-commerce: the add-to-cart form(s) carry data-ga-* attributes
+ * (item id, name, price, currency). The submit is delegated so it keeps
+ * working on any list page too; navigation is never blocked.
+ */
+function initAddToCartEvents() {
+    document.addEventListener('submit', (event) => {
+        const form = event.target instanceof Element ? event.target.closest('form[data-ga-add-to-cart]') : null;
+        const qty = form?.querySelector('[name=qty]')?.value ?? 1;
+
+        if (!form || typeof window.gtag !== 'function') {
+            return;
+        }
+
+        window.gtag('event', 'add_to_cart', {
+            currency: form.dataset.gaCurrency,
+            value: parseFloat(form.dataset.gaPrice || '0') * (parseInt(qty, 10) || 1),
+            items: [{
+                item_id: form.dataset.gaItem,
+                item_name: form.dataset.gaName,
+                price: parseFloat(form.dataset.gaPrice || '0'),
+                quantity: parseInt(qty, 10) || 1,
+            }],
+        });
+    });
+}
+
 initScrollReveal();
 initPointerTilt();
 initResponsiveTables();
+initAddToCartEvents();
 
 Alpine.start();

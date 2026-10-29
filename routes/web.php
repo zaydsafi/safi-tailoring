@@ -26,9 +26,9 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 Route::get('/', [LocaleController::class, 'root'])->name('root');
-
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
+Route::get('/products-feed.xml', [SitemapController::class, 'productsFeed'])->name('products.feed');
 
 /*
 |--------------------------------------------------------------------------
@@ -188,6 +188,7 @@ Route::middleware(['admin', AdminLocale::class])->prefix('admin')->name('admin.'
         Route::get('/', [Admin\BackupController::class, 'index'])->name('index');
         Route::post('/', [Admin\BackupController::class, 'store'])->name('store');
         Route::get('/{name}/download', [Admin\BackupController::class, 'download'])->name('download')->where('name', '[A-Za-z0-9._\-]+');
+        Route::post('/{name}/offsite', [Admin\BackupController::class, 'offsite'])->name('offsite')->where('name', '[A-Za-z0-9._\-]+');
         Route::get('/{name}/recover', [Admin\BackupController::class, 'recover'])->name('recover')->where('name', '[A-Za-z0-9._\-]+');
         Route::post('/{name}/restore', [Admin\BackupController::class, 'restore'])->name('restore')->where('name', '[A-Za-z0-9._\-]+');
         Route::delete('/{name}', [Admin\BackupController::class, 'destroy'])->name('destroy')->where('name', '[A-Za-z0-9._\-]+');

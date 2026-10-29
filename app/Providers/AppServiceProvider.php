@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Support\BackupTransporter;
+use App\Support\FtpBackupTransporter;
 use App\Support\Locales;
 use App\Support\MailerSettings;
 use App\Support\TlsMailManager;
@@ -15,6 +17,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        // Off-site backup copies run over FTP/FTPS to the owner's cPanel
+        // hosting; tests swap this binding for a recording fake.
+        $this->app->bind(BackupTransporter::class, FtpBackupTransporter::class);
+
         // Use the TLS-aware mail manager so SMTP connections can fall back to
         // the project CA bundle when the runtime's own CA configuration is
         // broken (see TlsMailManager).

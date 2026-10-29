@@ -1,5 +1,30 @@
 @extends('layouts.shop')
 
+@push('seo')
+    @php
+        // GA4 e-commerce purchase: one event per confirmed order so the
+        // shop sees real revenue in Google Analytics, not just pageviews.
+        $purchaseCurrency = \App\Models\Setting::get('currency_code', 'AFN') ?: 'AFN';
+        $purchaseItems = $order->items->map(fn ($item) => [
+            'item_id' => 'st-'.$item->product_id,
+            'item_name' => $item->product_name,
+            'price' => (float) $item->line_total / max($item->quantity, 1),
+            'quantity' => $item->quantity,
+        ])->all();
+    @endphp
+    <script>
+        if (typeof gtag === 'function') {
+            gtag('event', 'purchase', {
+                transaction_id: {{ json_encode($order->order_number) }},
+                currency: {{ json_encode($purchaseCurrency) }},
+                value: {{ json_encode((float) $order->total) }},
+                shipping: {{ json_encode((float) $order->delivery_fee) }},
+                items: {{ json_encode($purchaseItems, JSON_UNESCAPED_UNICODE) }},
+            });
+        }
+    </script>
+@endpush
+
 @section('title', t('seo.order_success_title', 'Order Confirmed') . ' — ' . $shopSettings['shop_name'])
 
 @section('robots', 'noindex, nofollow')

@@ -3,10 +3,46 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Setting;
 use App\Support\Locales;
+use Illuminate\Support\Str;
 
 class SitemapController extends Controller
 {
+    /**
+     * Google Merchant Center product feed: one plain-data item per active
+     * product, ready to submit in Search Console / Merchant Center for
+     * Google Shopping listings. Rendered in the shop's default language
+     * because one feed file carries one language and the titles live in
+     * the products' English base fields.
+     */
+    public function productsFeed()
+    {
+        app()->setLocale(Locales::DEFAULT);
+
+        $products = Product::active()
+            ->with('category')
+            ->orderBy('id')
+            ->get();
+
+        $items = $products->map(fn (Product $product) => [
+            'id' => 'st-'.$product->id,
+            'title' => $product->name,
+            'description' => $product->short_description
+                ?: Str::limit(strip_tags((string) $product->description), 300),
+            'link' => route('shop.show', ['locale' => Locales::DEFAULT, 'slug' => $product->slug]),
+            'image' => $product->image ? url('storage/'.$product->image) : null,
+            'availability' => $product->inStock() ? 'in_stock' : 'out_of_stock',
+            'price' => number_format($product->effectivePrice(), 2, '.', ''),
+            'currency' => Setting::get('currency_code', 'AFN') ?: 'AFN',
+            'brand' => Setting::get('shop_name', 'Safi Tailoring Shop'),
+        ])->all();
+
+        return response()
+            ->view('product-feed', ['items' => $items])
+            ->header('Content-Type', 'application/xml; charset=UTF-8');
+    }
+
     /**
      * XML sitemap: one <url> entry per locale for every public page
      * (home, shop, about, contact) and every active product. Each entry
@@ -19,7 +55,7 @@ class SitemapController extends Controller
 
         $urls = [];
 
-        foreach (['home', 'shop.index', 'about', 'contact'] as $i => $routeName) {
+        foreach (['home', 'shop.index', 'about', 'contact', 'custom-order.request'] as $i => $routeName) {
             $alternates = $this->alternates(
                 $locales,
                 fn (string $locale) => route($routeName, ['locale' => $locale])
@@ -86,10 +122,10 @@ class SitemapController extends Controller
             'Disallow: /*/reset-password',
             'Allow: /',
             '',
-            'Sitemap: ' . route('sitemap'),
+            'Sitemap: '.route('sitemap'),
         ];
 
-        return response(implode("\n", $lines) . "\n", 200)
+        return response(implode("\n", $lines)."\n", 200)
             ->header('Content-Type', 'text/plain');
     }
 

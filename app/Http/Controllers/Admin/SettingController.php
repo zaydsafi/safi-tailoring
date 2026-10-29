@@ -49,6 +49,7 @@ class SettingController extends Controller
             // SEO & analytics integrations.
             'google_analytics_id' => ['nullable', 'string', 'max:32', 'regex:/^G-[A-Z0-9]{5,}$/i'],
             'google_site_verification' => ['nullable', 'string', 'max:255'],
+            'bing_site_verification' => ['nullable', 'string', 'max:255'],
 
             // Outgoing email. A filled host switches mail to SMTP; blank
             // fields fall back to whatever .env provides.
@@ -59,13 +60,21 @@ class SettingController extends Controller
             'mail_smtp_encryption' => ['nullable', 'in:tls,ssl,none'],
             'mail_from_address' => ['nullable', 'email', 'max:255'],
             'mail_from_name' => ['nullable', 'string', 'max:255'],
+
+            // Off-site backups (cPanel hosting over FTP/FTPS).
+            'offsite_ftp_host' => ['nullable', 'string', 'max:255'],
+            'offsite_ftp_port' => ['nullable', 'integer', 'between:1,65535'],
+            'offsite_ftp_username' => ['nullable', 'string', 'max:255'],
+            'offsite_ftp_password' => ['nullable', 'string', 'max:255'],
+            'offsite_ftp_secure' => ['nullable', 'in:none,ssl'],
+            'offsite_ftp_path' => ['nullable', 'string', 'max:255'],
         ]);
 
         foreach ($data as $key => $value) {
             Setting::set($key, $value);
         }
 
-        foreach (['hesabpay_enabled', 'whatsapp_cloud_enabled', 'notify_email_enabled', 'notify_whatsapp_enabled', 'otp_required', 'otp_via_whatsapp', 'otp_via_email'] as $flag) {
+        foreach (['hesabpay_enabled', 'whatsapp_cloud_enabled', 'notify_email_enabled', 'notify_whatsapp_enabled', 'otp_required', 'otp_via_whatsapp', 'otp_via_email', 'offsite_backup_enabled'] as $flag) {
             Setting::set($flag, $request->boolean($flag) ? '1' : '0');
         }
 

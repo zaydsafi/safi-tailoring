@@ -49,6 +49,26 @@
 @push('seo')
     <script type="application/ld+json">{!! json_encode($productSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
     <script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+    @php
+        $offerCurrency = \App\Models\Setting::get('currency_code', 'AFN') ?: 'AFN';
+        $offerPrice = round($product->effectivePrice(), 2);
+    @endphp
+    <script>
+        // GA4 enhanced e-commerce: the product view itself.
+        if (typeof gtag === 'function') {
+            gtag('event', 'view_item', {
+                currency: {{ json_encode($offerCurrency) }},
+                value: {{ json_encode($offerPrice) }},
+                items: [{
+                    item_id: 'st-{{ $product->id }}',
+                    item_name: {{ json_encode($product->name) }},
+                    item_category: {{ json_encode($product->category?->name) }},
+                    price: {{ json_encode($offerPrice) }},
+                    quantity: 1,
+                }],
+            });
+        }
+    </script>
 @endpush
 
 @section('content')
@@ -110,7 +130,12 @@
                     <p class="text-sm text-gray-600 mb-6"><span class="font-semibold text-gray-900">{{ t('product.fabric', 'Fabric') }}:</span> {{ $product->fabric }}</p>
                 @endif
 
-                <form method="POST" action="{{ route('cart.add') }}" class="space-y-5">
+                <form method="POST" action="{{ route('cart.add') }}" class="space-y-5"
+                      data-ga-add-to-cart="1"
+                      data-ga-item="st-{{ $product->id }}"
+                      data-ga-name="{{ $product->name }}"
+                      data-ga-price="{{ number_format($product->effectivePrice(), 2, '.', '') }}"
+                      data-ga-currency="{{ \App\Models\Setting::get('currency_code', 'AFN') ?: 'AFN' }}">
                     @csrf
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
 

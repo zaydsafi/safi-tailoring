@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\Setting;
 use App\Models\User;
 use App\Support\Backup;
+use App\Support\BackupTransporter;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Mail;
@@ -243,5 +244,107 @@ class BackupFeatureTest extends TestCase
             ->post(route('admin.backups.restore', $name), ['tables' => ['made_up_table']])
             ->assertRedirect(route('admin.backups.recover', $name))
             ->assertSessionHasErrors('tables.0');
+    }
+
+    public function test_enabling_cpanel_storage_pushes_every_newly_created_backup(): void
+    {
+        $recorder = new RecordingTransporter;
+        $this->app->instance(BackupTransporter::class, $recorder);
+
+        Setting::set('offsite_backup_enabled', '1');
+        Setting::set('offsite_ftp_host', 'ftp.example-host.test');
+        Setting::set('offsite_ftp_path', 'shop-backups');
+        Mail::fake();
+
+        $this->withSession(['admin_locale' => 'en'])
+            ->actingAs(User::where('email', 'backup-admin@example.test')->first())
+            ->post(route('admin.backups.store'))
+            ->assertRedirect();
+
+        // Leftover same-second backup files can change which file sorts
+        // newest, so assert on the upload the recorder captured instead
+        // of re-deriving the name from the files list.
+        $this->assertCount(1, $recorder->uploads);
+        [$localPath, $remotePath] = $recorder->uploads[0];
+
+        $this->assertMatchesRegularExpression(Backup::FILENAME_PATTERN, basename($localPath));
+        $this->assertFileExists($localPath);
+        $this->assertSame('/shop-backups/'.basename($localPath), $remotePath);
+    }
+
+    public function test_disabled_cpanel_storage_uploads_nothing(): void
+    {
+        $recorder = new RecordingTransporter;
+        $this->app->instance(BackupTransporter::class, $recorder);
+        Mail::fake();
+
+        $this->withSession(['admin_locale' => 'en'])
+            ->actingAs(User::where('email', 'backup-admin@example.test')->first())
+            ->post(route('admin.backups.store'))
+            ->assertRedirect();
+
+        $this->assertSame([], $recorder->uploads, 'Nothing should be uploaded while off-site storage is off.');
+    }
+
+    public function test_upload_button_copies_an_existing_backup_to_cpanel(): void
+    {
+        $recorder = new RecordingTransporter;
+        $this->app->instance(BackupTransporter::class, $recorder);
+
+        Setting::set('offsite_backup_enabled', '1');
+        Setting::set('offsite_ftp_host', 'ftp.example-host.test');
+        $name = Backup::create();
+
+        $this->withSession(['admin_locale' => 'en'])
+            ->actingAs(User::where('email', 'backup-admin@example.test')->first())
+            ->post(route('admin.backups.offsite', $name))
+            ->assertRedirect();
+
+        $this->assertSame('/'.$name, $recorder->uploads[0][1] ?? null, 'Without a folder setting the file lands in the FTP root.');
+
+        $this->actingAs(User::where('email', 'backup-admin@example.test')->first())
+            ->post(route('admin.backups.offsite', 'not-a-real-backup.sql'))
+            ->assertNotFound();
+    }
+
+    public function test_cpanel_storage_settings_save_from_the_settings_page(): void
+    {
+        $admin = User::where('email', 'backup-admin@example.test')->first();
+
+        $this->withSession(['admin_locale' => 'en'])
+            ->actingAs($admin)
+            ->put(route('admin.settings.update'), [
+                'shop_name' => 'Safi Tailoring Shop',
+                'currency_symbol' => 'AFN',
+                'hesabpay_environment' => 'production',
+                'offsite_ftp_secure' => 'ssl',
+                'offsite_ftp_host' => 'ftp.example-host.test',
+                'offsite_ftp_port' => '990',
+                'offsite_ftp_username' => 'backups@example-host.test',
+                'offsite_ftp_password' => 'secret-pass',
+                'offsite_ftp_path' => 'shop-backups',
+                'offsite_backup_enabled' => '1',
+            ])
+            ->assertRedirect();
+
+        $this->assertSame('ftp.example-host.test', Setting::get('offsite_ftp_host'));
+        $this->assertSame('990', Setting::get('offsite_ftp_port'));
+        $this->assertSame('ssl', Setting::get('offsite_ftp_secure'));
+        $this->assertSame('1', Setting::get('offsite_backup_enabled'));
+    }
+}
+
+/**
+ * Test double for the off-site (cPanel) storage: records every upload
+ * instead of touching a network.
+ */
+class RecordingTransporter implements BackupTransporter
+{
+    /** @var list<array{0: string, 1: string}> */
+    public array $uploads = [];
+
+    public function upload(string $localPath, string $remotePath): void
+    {
+        $this->uploads[] = [$localPath, $remotePath];
     }
 }

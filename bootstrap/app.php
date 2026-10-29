@@ -1,5 +1,11 @@
 <?php
 
+use App\Http\Middleware\CheckPermission;
+use App\Http\Middleware\EnsureCustomerVerified;
+use App\Http\Middleware\EnsureUserIsAdmin;
+use App\Http\Middleware\EnsureUserIsNotBlocked;
+use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -13,15 +19,16 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
-            'locale' => \App\Http\Middleware\SetLocale::class,
-            'perm' => \App\Http\Middleware\CheckPermission::class,
-            'verified.customer' => \App\Http\Middleware\EnsureCustomerVerified::class,
+            'admin' => EnsureUserIsAdmin::class,
+            'locale' => SetLocale::class,
+            'perm' => CheckPermission::class,
+            'verified.customer' => EnsureCustomerVerified::class,
         ]);
 
         // A blocked customer is signed out on their next request, everywhere.
         $middleware->web(append: [
-            \App\Http\Middleware\EnsureUserIsNotBlocked::class,
+            EnsureUserIsNotBlocked::class,
+            SecurityHeaders::class,
         ]);
 
         // HesabPay posts payment callbacks to this endpoint without a CSRF token.

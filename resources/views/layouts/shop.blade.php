@@ -31,13 +31,16 @@
 
     $organizationSchema = array_filter([
         '@context' => 'https://schema.org',
-        '@type' => 'Organization',
+        '@type' => 'LocalBusiness',
         'name' => $shopSettings['shop_name'],
         'url' => url('/' . $currentLocale),
         'telephone' => $shopSettings['shop_phone'],
         'email' => $shopSettings['shop_email'],
-        'address' => $shopSettings['shop_address'] ? ['@type' => 'PostalAddress', 'streetAddress' => $shopSettings['shop_address']] : null,
+        'address' => $shopSettings['shop_address'] ? ['@type' => 'PostalAddress', 'streetAddress' => $shopSettings['shop_address'], 'addressCountry' => 'AF'] : null,
+        'image' => $metaImage,
         'sameAs' => array_values(array_filter([$shopSettings['facebook_url'], $shopSettings['instagram_url']])),
+        'currenciesAccepted' => \App\Models\Setting::get('currency_code', 'AFN'),
+        'paymentAccepted' => implode(', ', [t('payment.cash_on_delivery', 'Cash on Delivery'), t('payment.bank_transfer', 'Bank Transfer'), t('payment.hesabpay', 'HesabPay')]),
     ], fn ($value) => $value !== null && $value !== '');
 
     $websiteSchema = [
@@ -103,6 +106,21 @@
 
     @if ($searchConsoleVerification)
         <meta name="google-site-verification" content="{{ $searchConsoleVerification }}">
+    @endif
+
+    @php
+        $bingVerificationRaw = trim((string) ($shopSettings['bing_site_verification'] ?? ''));
+        $bingVerification = null;
+        if ($bingVerificationRaw !== '') {
+            if (preg_match('/content=["\']([^"\']+)["\']/i', $bingVerificationRaw, $bm)) {
+                $bingVerification = $bm[1];
+            } else {
+                $bingVerification = $bingVerificationRaw;
+            }
+        }
+    @endphp
+    @if ($bingVerification)
+        <meta name="msvalidate.01" content="{{ $bingVerification }}">
     @endif
 
     <script type="application/ld+json">{!! json_encode($organizationSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>

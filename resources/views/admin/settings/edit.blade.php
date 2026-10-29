@@ -313,6 +313,13 @@
                         <p class="mt-1 text-xs text-brand-600">{{ t('admin.settings.google_site_verification_hint', 'Paste the verification meta tag content shown by Google Search Console.') }}</p>
                         @error('google_site_verification')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
+                    <div>
+                        <label for="bing_site_verification" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.bing_site_verification', 'Bing Webmaster Tools verification') }}</label>
+                        <input type="text" id="bing_site_verification" name="bing_site_verification" value="{{ old('bing_site_verification', $settings['bing_site_verification']) }}" placeholder="msvalidate.01 code"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('bing_site_verification') border-red-400 @enderror">
+                        <p class="mt-1 text-xs text-brand-600">{{ t('admin.settings.bing_site_verification_hint', 'Verify the site in Bing Webmaster Tools too (it also powers Yahoo) and submit your sitemap there.') }}</p>
+                        @error('bing_site_verification')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                    </div>
                 </div>
                 <p class="mt-4 text-xs text-brand-600">
                     <span class="font-semibold">{{ t('admin.settings.webmaster_title', 'Webmaster & Ranking Tools') }}:</span>
@@ -344,6 +351,61 @@
                         <input type="text" id="whatsapp_cloud_token" name="whatsapp_cloud_token" value="{{ old('whatsapp_cloud_token', $settings['whatsapp_cloud_token']) }}" placeholder="{{ t('admin.settings.access_token_placeholder', 'Permanent access token') }}"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('whatsapp_cloud_token') border-red-400 @enderror">
                         @error('whatsapp_cloud_token')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">{{ t('admin.settings.offsite_backup', 'Off-Site Backup (cPanel)') }}</h2>
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <div class="sm:col-span-2">
+                        <label class="flex items-center gap-2 text-sm font-medium text-brand-900">
+                            <input type="checkbox" name="offsite_backup_enabled" value="1" @checked(old('offsite_backup_enabled', $settings['offsite_backup_enabled']) === '1')
+                                   class="h-4 w-4 rounded border-brand-200 text-teal-600 focus:ring-teal-600/20">
+                            {{ t('admin.settings.offsite_backup_enabled', 'Store a copy of every new backup on my cPanel hosting') }}
+                        </label>
+                        <p class="mt-1 text-xs text-brand-600">{{ t('admin.settings.offsite_backup_hint', 'Each backup is uploaded over FTP/FTPS right after it is created (button or nightly 02:00 run), so your data survives even if this server is lost. Get the host, username and password from your cPanel → FTP Accounts page.') }}</p>
+                    </div>
+                    <div>
+                        <label for="offsite_ftp_host" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.offsite_host', 'FTP host') }}</label>
+                        <input type="text" id="offsite_ftp_host" name="offsite_ftp_host" value="{{ old('offsite_ftp_host', $settings['offsite_ftp_host']) }}" placeholder="{{ t('admin.settings.offsite_host_placeholder', 'e.g. ftp.yourdomain.com') }}"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('offsite_ftp_host') border-red-400 @enderror">
+                        @error('offsite_ftp_host')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label for="offsite_ftp_port" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.offsite_port', 'FTP port') }}</label>
+                        <input type="number" id="offsite_ftp_port" name="offsite_ftp_port" value="{{ old('offsite_ftp_port', $settings['offsite_ftp_port']) }}" placeholder="21"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('offsite_ftp_port') border-red-400 @enderror">
+                        <p class="mt-1 text-xs text-brand-600">{{ t('admin.settings.offsite_port_hint', 'Plain FTP: 21. FTPS on cPanel is usually port 990.') }}</p>
+                        @error('offsite_ftp_port')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label for="offsite_ftp_username" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.offsite_username', 'FTP username') }}</label>
+                        <input type="text" id="offsite_ftp_username" name="offsite_ftp_username" value="{{ old('offsite_ftp_username', $settings['offsite_ftp_username']) }}" placeholder="backupuser@yourdomain.com"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('offsite_ftp_username') border-red-400 @enderror">
+                        @error('offsite_ftp_username')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label for="offsite_ftp_password" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.offsite_password', 'FTP password') }}</label>
+                        <input type="password" id="offsite_ftp_password" name="offsite_ftp_password" value="{{ old('offsite_ftp_password', $settings['offsite_ftp_password']) }}" autocomplete="new-password"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('offsite_ftp_password') border-red-400 @enderror">
+                        @error('offsite_ftp_password')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label for="offsite_ftp_secure" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.offsite_secure', 'Connection security') }}</label>
+                        <select id="offsite_ftp_secure" name="offsite_ftp_secure"
+                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('offsite_ftp_secure') border-red-400 @enderror">
+                            <option value="none" @selected(old('offsite_ftp_secure', $settings['offsite_ftp_secure']) === 'none')>{{ t('admin.settings.offsite_secure_none', 'Plain FTP (no encryption)') }}</option>
+                            <option value="ssl" @selected(old('offsite_ftp_secure', $settings['offsite_ftp_secure']) === 'ssl')>{{ t('admin.settings.offsite_secure_ssl', 'FTPS — encrypted (recommended)') }}</option>
+                        </select>
+                        @error('offsite_ftp_secure')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label for="offsite_ftp_path" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.offsite_path', 'Folder on the hosting (optional)') }}</label>
+                        <input type="text" id="offsite_ftp_path" name="offsite_ftp_path" value="{{ old('offsite_ftp_path', $settings['offsite_ftp_path']) }}" placeholder="{{ t('admin.settings.offsite_path_placeholder', 'e.g. backups or public_html/backups') }}"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('offsite_ftp_path') border-red-400 @enderror">
+                        <p class="mt-1 text-xs text-brand-600">{{ t('admin.settings.offsite_path_hint', 'Created automatically if it does not exist. Keep it out of public_html so the backups are not downloadable by anyone.') }}</p>
+                        @error('offsite_ftp_path')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                 </div>
             </section>

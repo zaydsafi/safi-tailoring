@@ -8,14 +8,28 @@
             <h1 class="text-2xl font-bold text-brand-900">{{ t('admin.backups.title', 'Backups') }}</h1>
             <p class="mt-1 max-w-2xl text-sm text-brand-500">{{ t('admin.backups.subtitle', 'Full SQL dumps of the shop database in storage/app/backups. A nightly backup runs automatically; you can also create one anytime and download it to your own computer.') }}</p>
         </div>
-        <form method="POST" action="{{ route('admin.backups.store') }}">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+            @if (\App\Support\OffsiteBackup::enabled())
+                <span class="inline-flex items-center gap-1.5 rounded-full bg-teal-50 px-3 py-1.5 text-xs font-semibold text-teal-700">
+                    <span class="h-2 w-2 rounded-full bg-teal-500"></span>
+                    {{ t('admin.backups.offsite_on', 'cPanel storage is on — new backups are also uploaded to your hosting.') }}
+                </span>
+            @else
+                <a href="{{ route('admin.settings.edit') }}"
+                   class="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-600 transition hover:bg-brand-100">
+                    <span class="h-2 w-2 rounded-full bg-brand-300"></span>
+                    {{ t('admin.backups.offsite_off', 'cPanel storage is off — enable it in Settings to keep a copy on your hosting.') }}
+                </a>
+            @endif
+            <form method="POST" action="{{ route('admin.backups.store') }}">
             @csrf
             <button type="submit"
                     class="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-800">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
                 {{ t('admin.backups.create', 'Create backup') }}
             </button>
-        </form>
+            </form>
+        </div>
     </div>
 
     <div class="overflow-hidden rounded-2xl border border-brand-100 bg-white shadow-sm">
@@ -43,6 +57,13 @@
                                        class="rounded-lg border border-brand-200 px-3 py-1.5 text-xs font-semibold text-brand-700 transition hover:bg-brand-50">{{ t('admin.backups.download', 'Download') }}</a>
                                     <a href="{{ route('admin.backups.recover', $backup['name']) }}"
                                        class="rounded-lg border border-teal-200 px-3 py-1.5 text-xs font-semibold text-teal-700 transition hover:bg-teal-50">{{ t('admin.backups.recover', 'Recover') }}</a>
+                                    @if (\App\Support\OffsiteBackup::enabled())
+                                        <form method="POST" action="{{ route('admin.backups.offsite', $backup['name']) }}">
+                                            @csrf
+                                            <button type="submit"
+                                                    class="rounded-lg border border-blue-200 px-3 py-1.5 text-xs font-semibold text-blue-700 transition hover:bg-blue-50">{{ t('admin.backups.upload_offsite', 'Upload to cPanel') }}</button>
+                                        </form>
+                                    @endif
                                     <form method="POST" action="{{ route('admin.backups.restore', $backup['name']) }}"
                                           onsubmit="return confirm('{!! t('admin.backups.confirm_restore', 'Replace ALL current shop data with the contents of ":name"? The data currently in the database is lost. This cannot be undone.', ['name' => e($backup['name'])]) !!}')">
                                         @csrf

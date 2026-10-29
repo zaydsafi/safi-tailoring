@@ -50,15 +50,29 @@ class Setting extends Model
         'mail_from_name' => '',
 
         // SEO integrations. The GA4 id turns on the gtag snippet; the
-        // verification code is rendered as the Search Console meta tag.
+        // verification codes are rendered as the respective Webmaster
+        // Tools meta tags (Google Search Console and Bing Webmaster, the
+        // two engines that matter for indexing and ranking).
         'google_analytics_id' => '',
         'google_site_verification' => '',
+        'bing_site_verification' => '',
 
         // Registration verification: 6-digit OTP sent over the enabled
         // channels; the account stays unverified until one succeeds.
         'otp_required' => '1',
         'otp_via_whatsapp' => '1',
         'otp_via_email' => '1',
+
+        // Off-site backup storage on the owner's cPanel hosting. Filled
+        // host + the flag on copies every new backup over FTP/FTPS (see
+        // App\Support\OffsiteBackup).
+        'offsite_backup_enabled' => '0',
+        'offsite_ftp_host' => '',
+        'offsite_ftp_port' => '21',
+        'offsite_ftp_username' => '',
+        'offsite_ftp_password' => '',
+        'offsite_ftp_secure' => 'none',
+        'offsite_ftp_path' => '',
     ];
 
     public static function get(string $key, ?string $default = null): ?string
@@ -98,7 +112,7 @@ class Setting extends Model
             'shop_name', 'shop_tagline', 'shop_phone', 'shop_email', 'shop_address',
             'currency_symbol', 'announcement', 'facebook_url', 'instagram_url',
             'whatsapp_number', 'hero_title', 'hero_subtitle',
-            'google_analytics_id', 'google_site_verification',
+            'google_analytics_id', 'google_site_verification', 'bing_site_verification',
         ];
 
         return Cache::rememberForever('setting:view_settings', function () use ($keys) {

@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Support\Backup;
 use App\Support\MailBackup;
+use App\Support\OffsiteBackup;
 use Illuminate\Console\Command;
 
 class BackupDatabaseCommand extends Command
@@ -37,6 +38,16 @@ class BackupDatabaseCommand extends Command
             $this->info('A copy was emailed to '.(MailBackup::recipient() ?? 'the shop email').'.');
         } else {
             $this->warn('No email copy sent (set a valid shop email in settings).');
+        }
+
+        // Third copy lives on the owner's cPanel hosting, out of reach of
+        // anything that can take this server down.
+        if (OffsiteBackup::enabled()) {
+            if (OffsiteBackup::push($name)) {
+                $this->info('A copy was stored on cPanel hosting at '.OffsiteBackup::remotePath($name).'.');
+            } else {
+                $this->warn('The cPanel hosting copy failed — check the off-site FTP settings.');
+            }
         }
 
         $keep = (int) ($this->option('prune') ?? 0);

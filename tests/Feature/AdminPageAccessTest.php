@@ -384,6 +384,7 @@ class AdminPageAccessTest extends TestCase
                 'recipient' => 'owner@example.test',
             ]],
             'backups.store' => ['post', route('admin.backups.store'), []],
+            'backups.offsite' => ['post', route('admin.backups.offsite', $backupFile), []],
             'backups.restore' => ['post', route('admin.backups.restore', $backupFile), []],
             'backups.destroy' => ['delete', route('admin.backups.destroy', $backupFile), []],
         ];
