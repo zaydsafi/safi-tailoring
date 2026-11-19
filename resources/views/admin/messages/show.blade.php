@@ -51,7 +51,7 @@
             </div>
             <div class="flex flex-wrap gap-2">
                 @if ($message->email)
-                    <a href="{{ $replyHref }}" class="rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-800">{{ t('admin.messages.reply_by_email', 'Reply by Email') }}</a>
+                    <a href="{{ $replyHref }}" class="rounded-xl bg-gold-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gold-800">{{ t('admin.messages.reply_by_email', 'Reply by Email') }}</a>
                 @else
                     <span class="rounded-xl border border-brand-200 bg-brand-50 px-4 py-2.5 text-sm font-semibold text-brand-400">{{ t('admin.messages.no_email_left', 'Customer left no email') }}</span>
                 @endif

@@ -5,7 +5,7 @@
 @section('content')
     <div class="mb-6 flex items-center justify-between">
         <p class="text-sm text-brand-500">{{ $categories->total() === 1 ? t('admin.categories.count_one', '1 category') : t('admin.categories.count_many', ':count categories', ['count' => $categories->total()]) }}</p>
-        <a href="{{ route('admin.categories.create') }}" class="rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-800">{{ t('admin.categories.add', '+ Add Category') }}</a>
+        <a href="{{ route('admin.categories.create') }}" class="rounded-xl bg-gold-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gold-800">{{ t('admin.categories.add', '+ Add Category') }}</a>
     </div>
 
     <div class="overflow-x-auto rounded-2xl border border-brand-100 bg-white shadow-sm">

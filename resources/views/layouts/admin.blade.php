@@ -5,27 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <meta name="description" content="@yield('title', t('admin.common.admin_panel', 'Admin Panel')) · {{ $shopSettings['shop_name'] ?? 'Safi Tailoring Shop' }} — private administration area.">
-    <meta name="theme-color" content="#0f3b39">
+    <meta name="theme-color" content="#0e1520">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <title>@yield('title', t('admin.common.admin_panel', 'Admin Panel')) · {{ $shopSettings['shop_name'] ?? 'Safi Tailoring Shop' }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-brand-50 font-sans text-brand-900 antialiased">
-<div x-data="{ sidebarOpen: false }" class="admin-shell">
+<div x-data="{ sidebarOpen: false }"
+     @keydown.escape.window="sidebarOpen = false"
+     x-effect="document.body.classList.toggle('overflow-hidden', sidebarOpen)"
+     class="admin-shell">
     {{-- Mobile sidebar backdrop --}}
-    <div x-show="sidebarOpen" x-cloak class="fixed inset-0 z-30 bg-brand-950/50 lg:hidden" @click="sidebarOpen = false"></div>
+    <div x-show="sidebarOpen" x-cloak x-transition.opacity.duration.200ms
+         class="fixed inset-0 z-30 bg-brand-950/60 backdrop-blur-sm lg:hidden"
+         @click="sidebarOpen = false" aria-hidden="true"></div>
 
     {{-- Sidebar --}}
-    <aside class="fixed inset-y-0 start-0 z-40 w-64 transform bg-brand-900 text-white transition-transform duration-200 lg:translate-x-0!"
+    <aside id="admin-sidebar"
+           aria-label="{{ t('admin.common.admin_navigation', 'Admin navigation') }}"
+           class="fixed inset-y-0 start-0 z-40 flex h-screen max-h-screen h-dvh max-h-dvh w-64 flex-col overflow-hidden border-e border-white/10 bg-brand-950 text-white shadow-2xl shadow-brand-950/30 transition-transform duration-200 lg:translate-x-0!"
            :class="sidebarOpen ? 'translate-x-0' : 'rtl:translate-x-full -translate-x-full'">
-        <div class="flex h-16 items-center gap-2 border-b border-white/10 px-6">
-            <svg class="h-7 w-7 text-gold-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/>
-            </svg>
-            <div>
-                <p class="text-sm font-bold leading-tight">{{ $shopSettings['shop_name'] ?? 'Safi Tailoring' }}</p>
-                <p class="text-[11px] text-brand-300">{{ t('admin.common.admin_panel', 'Admin Panel') }}</p>
+        <div class="flex h-16 shrink-0 items-center gap-3 border-b border-dashed border-white/15 px-5">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gold-400/40 bg-white/5 text-gold-300">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/>
+                </svg>
+            </span>
+            <div class="min-w-0">
+                <p class="truncate font-display text-[15px] font-semibold leading-tight tracking-tight">{{ $shopSettings['shop_name'] ?? 'Safi Tailoring' }}</p>
+                <p class="text-[10px] font-semibold uppercase tracking-[0.16em] text-brand-300">{{ t('admin.common.admin_panel', 'Admin Panel') }}</p>
             </div>
+            <button type="button" @click="sidebarOpen = false"
+                    class="ms-auto rounded-lg p-1.5 text-brand-300 transition hover:bg-white/10 hover:text-white lg:hidden"
+                    aria-label="{{ t('admin.common.close_menu', 'Close menu') }}">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
         </div>
 
         @php
@@ -65,35 +81,74 @@
 
                 return $user->isAdmin() || $user->canManage($item['perm']);
             })->values()->all();
+
+            // Groups are separated by a rule instead of a heading, so the menu
+            // stays readable in English, Pashto, and Persian without new copy.
+            $navGroups = [
+                'admin.dashboard' => 'overview',
+                'admin.orders.index' => 'workshop',
+                'admin.custom-orders.index' => 'workshop',
+                'admin.products.index' => 'catalog',
+                'admin.categories.index' => 'catalog',
+                'admin.users.index' => 'people',
+                'admin.messages.index' => 'people',
+                'admin.email-log.index' => 'system',
+                'admin.backups.index' => 'system',
+                'admin.translations.index' => 'system',
+                'admin.roles.index' => 'system',
+                'admin.settings.edit' => 'system',
+            ];
+
+            $nav = array_map(
+                fn (array $item): array => $item + ['group' => $navGroups[$item['route']] ?? 'system'],
+                $nav
+            );
         @endphp
 
-        <nav class="space-y-1 px-3 py-4">
+        <nav class="admin-sidebar-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4"
+             aria-label="{{ t('admin.common.admin_navigation', 'Admin navigation') }}">
+            @php $currentGroup = null; @endphp
             @foreach ($nav as $item)
+                @if ($currentGroup !== null && $currentGroup !== $item['group'])
+                    <div class="mx-3 my-3 border-t border-white/10" role="presentation"></div>
+                @endif
+
+                @php
+                    $currentGroup = $item['group'];
+                    $isActive = request()->routeIs($item['match'] ?? str_replace('.index', '.*', $item['route']))
+                        || request()->routeIs($item['route']);
+                @endphp
+
                 <a href="{{ route($item['route']) }}"
-                   class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition {{ request()->routeIs($item['match'] ?? str_replace('.index', '.*', $item['route'])) || request()->routeIs($item['route']) ? 'bg-teal-700 text-white' : 'text-brand-200 hover:bg-white/10 hover:text-white' }}">
-                    <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                   @if ($isActive) aria-current="page" @endif
+                   class="group relative flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition {{ $isActive ? 'bg-white/[0.08] text-white' : 'text-brand-200 hover:bg-white/5 hover:text-white' }}">
+                    @if ($isActive)
+                        <span class="absolute inset-y-2 start-0 w-[3px] rounded-full bg-gold-400" aria-hidden="true"></span>
+                    @endif
+                    <svg class="h-5 w-5 shrink-0 {{ $isActive ? 'text-gold-300' : 'text-brand-300 group-hover:text-brand-100' }}"
+                         fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"/>
                     </svg>
-                    {{ $item['label'] }}
+                    <span class="truncate">{{ $item['label'] }}</span>
                 </a>
             @endforeach
         </nav>
 
-        <div class="absolute inset-x-0 bottom-0 border-t border-white/10 p-4">
-            <nav class="mb-3 flex items-center gap-1 rounded-full bg-white/5 p-1 lg:hidden" aria-label="{{ t('admin.common.language', 'Language') }}">
+        <div class="shrink-0 border-t border-white/10 p-4">
+            <nav class="mb-3 flex items-center gap-1 rounded-lg bg-white/5 p-1 lg:hidden" aria-label="{{ t('admin.common.language', 'Language') }}">
                 @foreach (\App\Support\Locales::SUPPORTED as $code => $info)
                     <a href="{{ route('admin.lang', $code) }}"
-                       class="flex-1 rounded-full px-2 py-1.5 text-center text-xs font-semibold transition {{ $code === app()->getLocale() ? 'bg-teal-700 text-white' : 'text-brand-200 hover:bg-white/10 hover:text-white' }}"
+                       class="flex-1 rounded-md px-2 py-1.5 text-center text-xs font-semibold transition {{ $code === app()->getLocale() ? 'bg-gold-600 text-white' : 'text-brand-200 hover:bg-white/10 hover:text-white' }}"
                        @if ($code === app()->getLocale()) aria-current="true" @endif>{{ $info['native'] }}</a>
                 @endforeach
             </nav>
-            <a href="{{ route('home') }}" target="_blank" class="mb-2 flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-brand-200 transition hover:bg-white/10 hover:text-white">
+            <a href="{{ route('home') }}" target="_blank" class="mb-1 flex min-h-11 items-center gap-2 rounded-lg px-3 py-2 text-sm text-brand-200 transition hover:bg-white/5 hover:text-white">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-4.5-6L21 3m0 0l-3.75 0M21 3v3.75"/></svg>
                 {{ t('admin.common.view_storefront', 'View Storefront') }}
             </a>
             <form method="POST" action="{{ route('admin.logout') }}">
                 @csrf
-                <button type="submit" class="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-brand-200 transition hover:bg-white/10 hover:text-white">
+                <button type="submit" class="flex min-h-11 w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-brand-200 transition hover:bg-white/5 hover:text-white">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
                     {{ t('admin.common.sign_out', 'Sign Out') }}
                 </button>
@@ -102,31 +157,45 @@
     </aside>
 
     {{-- Main --}}
-    <div class="lg:ps-64">
-        <header class="sticky top-0 z-20 flex h-16 items-center gap-4 border-b border-brand-100 bg-white/90 px-4 backdrop-blur sm:px-6">
-            <button type="button" @click="sidebarOpen = true" class="rounded-lg p-2 text-brand-600 hover:bg-brand-50 lg:hidden">
-                <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+    <div class="min-h-dvh lg:ps-64">
+        <header class="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-brand-100/80 bg-brand-50/85 px-4 backdrop-blur sm:px-6">
+            <button type="button" @click="sidebarOpen = true"
+                    :aria-expanded="sidebarOpen.toString()"
+                    aria-controls="admin-sidebar"
+                    aria-label="{{ t('admin.common.open_menu', 'Open menu') }}"
+                    class="-ms-1 rounded-lg p-2.5 text-brand-700 transition hover:bg-brand-100/70 lg:hidden">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
             </button>
-            <h1 class="min-w-0 flex-1 truncate text-lg font-bold text-brand-900">@yield('title', t('admin.nav.dashboard', 'Dashboard'))</h1>
+            <h1 class="min-w-0 flex-1 truncate font-display text-xl font-semibold tracking-tight text-brand-900">@yield('title', t('admin.nav.dashboard', 'Dashboard'))</h1>
             <div class="ms-auto flex shrink-0 items-center gap-3">
-                <nav class="hidden sm:flex items-center rounded-full border border-brand-100 bg-brand-50 p-0.5" aria-label="{{ t('admin.common.language', 'Language') }}">
+                <nav class="hidden items-center rounded-lg border border-brand-200/70 bg-white/60 p-0.5 sm:flex" aria-label="{{ t('admin.common.language', 'Language') }}">
                     @foreach (\App\Support\Locales::SUPPORTED as $code => $info)
                         <a href="{{ route('admin.lang', $code) }}"
-                           class="rounded-full px-2.5 py-1 text-xs font-semibold transition {{ $code === app()->getLocale() ? 'bg-brand-800 text-white shadow-sm' : 'text-brand-500 hover:text-brand-800' }}"
+                           class="rounded-md px-2.5 py-1 text-xs font-semibold transition {{ $code === app()->getLocale() ? 'bg-brand-900 text-white shadow-sm' : 'text-brand-500 hover:text-brand-900' }}"
                            @if ($code === app()->getLocale()) aria-current="true" @endif>{{ $info['native'] }}</a>
                     @endforeach
                 </nav>
-                <span class="hidden text-sm text-brand-500 sm:block">{{ auth()->user()->name }}</span>
-                <span class="flex h-9 w-9 items-center justify-center rounded-full bg-teal-700 text-sm font-bold text-white">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
+                <span class="hidden text-sm text-brand-600 sm:block">{{ auth()->user()->name }}</span>
+                <span class="flex h-9 w-9 items-center justify-center rounded-full bg-brand-900 text-sm font-bold text-white ring-2 ring-gold-300/40">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
             </div>
         </header>
 
-        <main class="p-4 sm:p-6">
+        <main class="p-4 pb-10 sm:p-6">
             @if (session('success'))
-                <div data-reveal class="mb-6 rounded-xl bg-green-50 px-4 py-3 text-sm font-medium text-green-800">{{ session('success') }}</div>
+                <div data-reveal role="status" class="mb-6 rounded-lg border-s-2 border-green-600 bg-green-50 px-4 py-3 text-sm font-medium text-green-800">{{ session('success') }}</div>
             @endif
             @if (session('error'))
-                <div data-reveal class="mb-6 rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{{ session('error') }}</div>
+                <div data-reveal role="alert" class="mb-6 rounded-lg border-s-2 border-red-600 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{{ session('error') }}</div>
+            @endif
+            @if ($errors->any())
+                <div data-reveal role="alert" class="mb-6 rounded-lg border-s-2 border-red-600 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+                    <p class="font-semibold">{{ t('admin.common.fix_errors', 'Please fix the following:') }}</p>
+                    <ul class="mt-1 list-inside list-disc">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
             @endif
 
             @yield('content')

@@ -19,8 +19,8 @@ function initDashboardCharts() {
                         label: 'Revenue',
                         data: JSON.parse(trend.dataset.revenue),
                         yAxisID: 'y',
-                        borderColor: '#0f3b39',
-                        backgroundColor: 'rgba(15, 59, 57, 0.08)',
+                        borderColor: '#1b2330',
+                        backgroundColor: 'rgba(27, 35, 48, 0.08)',
                         fill: true,
                         tension: 0.35,
                         pointRadius: 2,
@@ -32,8 +32,8 @@ function initDashboardCharts() {
                         label: 'Orders',
                         data: JSON.parse(trend.dataset.orders),
                         yAxisID: 'y1',
-                        backgroundColor: 'rgba(208, 164, 68, 0.75)',
-                        hoverBackgroundColor: 'rgba(208, 164, 68, 1)',
+                        backgroundColor: 'rgba(198, 122, 52, 0.78)',
+                        hoverBackgroundColor: 'rgba(173, 96, 41, 1)',
                         borderRadius: 6,
                         maxBarThickness: 22,
                     },
@@ -81,12 +81,12 @@ function initDashboardCharts() {
                     {
                         data: JSON.parse(status.dataset.counts),
                         backgroundColor: [
-                            '#ddbd6b', // pending
-                            '#3b82f6', // confirmed
-                            '#6366f1', // in tailoring
-                            '#a855f7', // ready
-                            '#22c55e', // delivered
-                            '#ef4444', // cancelled
+                            '#d69552', // pending
+                            '#3f6f9c', // confirmed
+                            '#6c7f95', // in tailoring
+                            '#9a7bab', // ready
+                            '#5f8a68', // delivered
+                            '#b5524a', // cancelled
                         ],
                         borderWidth: 2,
                         borderColor: '#ffffff',

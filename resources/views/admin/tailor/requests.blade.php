@@ -33,7 +33,7 @@
                 @forelse ($requests as $requestRecord)
                     <tr class="transition hover:bg-brand-50/50">
                         <td class="px-4 py-3">
-                            <a href="{{ route('admin.custom-orders.show', $requestRecord) }}" class="font-semibold text-teal-700 hover:underline">#{{ $requestRecord->id }}</a>
+                            <a href="{{ route('admin.custom-orders.show', $requestRecord) }}" class="font-semibold text-gold-700 hover:underline">#{{ $requestRecord->id }}</a>
                             @if ($requestRecord->convertedOrder)
                                 <p class="text-xs text-brand-400">→ {{ $requestRecord->convertedOrder->order_number }}</p>
                             @endif

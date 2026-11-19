@@ -13,22 +13,22 @@
         <div>
             <label for="items-{{ $index }}-description" class="mb-1 block text-xs font-medium text-brand-600">{{ t('admin.custom_orders.description', 'What to make') }} <span class="text-red-500">*</span></label>
             <input type="text" id="items-{{ $index }}-description" name="items[{{ $index }}][description]" value="{{ $item['description'] ?? '' }}" required placeholder="e.g. 2-piece suit"
-                   class="w-full rounded-lg border border-brand-200 px-3 py-2 text-sm focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                   class="w-full rounded-lg border border-brand-200 px-3 py-2 text-sm focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
         </div>
         <div>
             <label for="items-{{ $index }}-price" class="mb-1 block text-xs font-medium text-brand-600">{{ t('admin.custom_orders.price', 'Price (AFN)') }} <span class="text-red-500">*</span></label>
             <input type="number" id="items-{{ $index }}-price" step="0.01" min="0" name="items[{{ $index }}][price]" value="{{ $item['price'] ?? '' }}" required
-                   class="w-full rounded-lg border border-brand-200 px-3 py-2 text-sm focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                   class="w-full rounded-lg border border-brand-200 px-3 py-2 text-sm focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
         </div>
         <div>
             <label for="items-{{ $index }}-quantity" class="mb-1 block text-xs font-medium text-brand-600">{{ t('admin.common.quantity', 'Quantity') }} <span class="text-red-500">*</span></label>
             <input type="number" id="items-{{ $index }}-quantity" min="1" name="items[{{ $index }}][quantity]" value="{{ $item['quantity'] ?? 1 }}" required
-                   class="w-full rounded-lg border border-brand-200 px-3 py-2 text-sm focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                   class="w-full rounded-lg border border-brand-200 px-3 py-2 text-sm focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
         </div>
         <div>
             <label for="items-{{ $index }}-fabric" class="mb-1 block text-xs font-medium text-brand-600">{{ t('admin.custom_orders.fabric', 'Fabric (optional)') }}</label>
             <input type="text" id="items-{{ $index }}-fabric" name="items[{{ $index }}][fabric]" value="{{ old('items.' . $index . '.fabric') }}" placeholder="Cotton, linen, silk…"
-                   class="w-full rounded-lg border border-brand-200 px-3 py-2 text-sm focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                   class="w-full rounded-lg border border-brand-200 px-3 py-2 text-sm focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
         </div>
     </div>
 
@@ -36,7 +36,7 @@
         <div class="flex items-center justify-between mb-2">
             <span class="text-xs font-medium text-brand-600">{{ t('admin.custom_orders.measurements_optional', 'Measurements (inches, optional)') }}</span>
             @if ($savedProfile)
-                <button type="button" class="text-xs text-teal-700 hover:underline apply-profile-btn" data-index="{{ $index }}">
+                <button type="button" class="text-xs text-gold-700 hover:underline apply-profile-btn" data-index="{{ $index }}">
                     {{ t('admin.custom_orders.apply_saved', 'Apply saved measurements') }}
                 </button>
             @endif
@@ -47,7 +47,7 @@
                     <label for="items-{{ $index }}-measurements-{{ $field }}" class="block text-[11px] font-medium text-brand-500 mb-0.5">{{ $label }}</label>
                     <input type="number" id="items-{{ $index }}-measurements-{{ $field }}" step="0.5" min="0" name="items[{{ $index }}][measurements][{{ $field }}]"
                            value="{{ old('items.' . $index . '.measurements.' . $field, ($item['measurements'] ?? [])[$field] ?? $savedProfile?->$field ?? '') }}"
-                           class="w-full rounded-lg border border-brand-200 px-2 py-1.5 text-sm focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                           class="w-full rounded-lg border border-brand-200 px-2 py-1.5 text-sm focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
                 </div>
             @endforeach
         </div>

@@ -24,40 +24,48 @@
                 ['label' => t('admin.dashboard.products', 'Products'), 'value' => $totalProducts, 'icon' => 'M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m16.5 0h-16.5m16.5 0H3.375c-.621 0-1.125-.504-1.125-1.125V4.875c0-.621.504-1.125 1.125-1.125H20.625c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125z'],
             ];
         @endphp
-        @foreach ($cards as $card)
-            <div data-reveal class="elevated rounded-2xl border border-brand-100 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
-                <div class="flex items-center justify-between">
-                    <p class="text-sm font-medium text-brand-500">{{ $card['label'] }}</p>
-                    <svg class="h-6 w-6 text-teal-700/40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}"/></svg>
+        @foreach ($cards as $index => $card)
+            @php $featured = $index === 0; @endphp
+            <div data-reveal
+                 style="--reveal-delay: {{ $index * 55 }}ms"
+                 class="relative overflow-hidden rounded-xl border p-5 shadow-sm transition duration-200 {{ $featured ? 'border-brand-950 bg-brand-950 text-white' : 'border-brand-100 bg-white hover:-translate-y-0.5 hover:border-gold-300/70 hover:shadow-md' }}">
+                @if ($featured)
+                    <span class="pointer-events-none absolute -end-10 -top-12 h-32 w-32 rounded-full border border-gold-400/20" aria-hidden="true"></span>
+                @endif
+                <div class="relative flex items-start justify-between gap-3">
+                    <p class="text-[11px] font-semibold uppercase tracking-[0.12em] {{ $featured ? 'text-brand-200' : 'text-brand-500' }}">{{ $card['label'] }}</p>
+                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg {{ $featured ? 'bg-white/10 text-gold-300' : 'bg-gold-50 text-gold-700' }}">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}"/></svg>
+                    </span>
                 </div>
-                <p class="mt-2 text-2xl font-bold text-brand-900">{{ $card['value'] }}</p>
+                <p class="relative mt-4 font-display text-3xl leading-none {{ $featured ? 'text-white' : 'text-brand-900' }}">{{ $card['value'] }}</p>
             </div>
         @endforeach
     </div>
 
     <div class="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div data-reveal class="elevated rounded-2xl border border-brand-100 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
-            <p class="text-sm font-medium text-brand-500">{{ t('admin.dashboard.customers', 'Customers') }}</p>
-            <p class="mt-2 text-2xl font-bold text-brand-900">{{ $totalCustomers }}</p>
+        <div data-reveal class="rounded-xl border border-brand-100 bg-white p-5 shadow-sm">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-500">{{ t('admin.dashboard.customers', 'Customers') }}</p>
+            <p class="mt-3 font-display text-2xl leading-none text-brand-900">{{ $totalCustomers }}</p>
         </div>
-        <a href="{{ route('admin.messages.index') }}" data-reveal class="elevated rounded-2xl border border-brand-100 bg-white p-5 shadow-sm transition duration-200 hover:border-teal-300 hover:-translate-y-0.5 hover:shadow-md">
-            <p class="text-sm font-medium text-brand-500">{{ t('admin.dashboard.unread_messages', 'Unread Messages') }}</p>
-            <p class="mt-2 text-2xl font-bold {{ $unreadMessages > 0 ? 'text-gold-600' : 'text-brand-900' }}">{{ $unreadMessages }}</p>
+        <a href="{{ route('admin.messages.index') }}" data-reveal class="group rounded-xl border border-brand-100 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-gold-300/70 hover:shadow-md">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-500">{{ t('admin.dashboard.unread_messages', 'Unread Messages') }}</p>
+            <p class="mt-3 font-display text-2xl leading-none {{ $unreadMessages > 0 ? 'text-gold-700' : 'text-brand-900' }}">{{ $unreadMessages }}</p>
         </a>
-        <a href="{{ route('admin.custom-orders.index') }}" data-reveal class="elevated rounded-2xl border border-brand-100 bg-white p-5 shadow-sm transition duration-200 hover:border-teal-300 hover:-translate-y-0.5 hover:shadow-md">
-            <p class="text-sm font-medium text-brand-500">{{ t('admin.dashboard.pending_custom_requests', 'Pending Custom Requests') }}</p>
-            <p class="mt-2 text-2xl font-bold {{ $pendingCustomRequests > 0 ? 'text-amber-600' : 'text-brand-900' }}">{{ $pendingCustomRequests }}</p>
+        <a href="{{ route('admin.custom-orders.index') }}" data-reveal class="group rounded-xl border border-brand-100 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-gold-300/70 hover:shadow-md">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-500">{{ t('admin.dashboard.pending_custom_requests', 'Pending Custom Requests') }}</p>
+            <p class="mt-3 font-display text-2xl leading-none {{ $pendingCustomRequests > 0 ? 'text-gold-700' : 'text-brand-900' }}">{{ $pendingCustomRequests }}</p>
         </a>
     </div>
 
     <div class="mt-8 grid gap-6 xl:grid-cols-3">
         {{-- Revenue & orders trend --}}
-        <div class="rounded-2xl border border-brand-100 bg-white p-5 shadow-sm xl:col-span-2">
-            <div class="mb-4 flex items-center justify-between">
-                <h2 class="text-base font-bold text-brand-900">{{ t('admin.dashboard.revenue_orders', 'Revenue & Orders') }}</h2>
+        <div class="min-w-0 overflow-hidden rounded-xl border border-brand-100 bg-white p-5 shadow-sm xl:col-span-2">
+            <div class="mb-4 flex flex-wrap items-baseline justify-between gap-2">
+                <h2 class="font-display text-lg font-semibold text-brand-900">{{ t('admin.dashboard.revenue_orders', 'Revenue & Orders') }}</h2>
                 <span class="text-xs font-medium text-brand-400">{{ t('admin.dashboard.trend_note', 'Last 14 days · cancelled orders excluded') }}</span>
             </div>
-            <div class="relative h-72">
+            <div class="relative h-64 sm:h-72">
                 <canvas id="revenueChart"
                         data-labels="{{ json_encode($chart['labels']) }}"
                         data-revenue="{{ json_encode($chart['revenue']) }}"
@@ -66,9 +74,9 @@
         </div>
 
         {{-- Status breakdown --}}
-        <div class="rounded-2xl border border-brand-100 bg-white p-5 shadow-sm">
-            <h2 class="mb-4 text-base font-bold text-brand-900">{{ t('admin.dashboard.orders_by_status', 'Orders by Status') }}</h2>
-            <div class="relative h-72">
+        <div class="min-w-0 overflow-hidden rounded-xl border border-brand-100 bg-white p-5 shadow-sm">
+            <h2 class="mb-4 font-display text-lg font-semibold text-brand-900">{{ t('admin.dashboard.orders_by_status', 'Orders by Status') }}</h2>
+            <div class="relative h-64 sm:h-72">
                 <canvas id="statusChart"
                         data-labels="{{ json_encode($chart['statusLabels']) }}"
                         data-counts="{{ json_encode($chart['statusCounts']) }}"></canvas>
@@ -79,26 +87,26 @@
     <div class="mt-8 grid gap-6 xl:grid-cols-3">
         {{-- Recent orders --}}
         <div class="min-w-0 xl:col-span-2">
-            <div class="mb-4 flex items-center justify-between">
-                <h2 class="text-base font-bold text-brand-900">{{ t('admin.dashboard.recent_orders', 'Recent Orders') }}</h2>
-                <a href="{{ route('admin.orders.index') }}" class="text-sm font-semibold text-teal-700 hover:text-teal-800">{{ t('admin.dashboard.view_all', 'View all') }}</a>
+            <div class="mb-4 flex items-center justify-between gap-3">
+                <h2 class="font-display text-lg font-semibold text-brand-900">{{ t('admin.dashboard.recent_orders', 'Recent Orders') }}</h2>
+                <a href="{{ route('admin.orders.index') }}" class="shrink-0 text-sm font-semibold text-gold-700 transition hover:text-gold-800">{{ t('admin.dashboard.view_all', 'View all') }}</a>
             </div>
-            <div class="overflow-x-auto rounded-2xl border border-brand-100 bg-white shadow-sm">
+            <div class="overflow-x-auto rounded-xl border border-brand-100 bg-white shadow-sm">
                 <table class="w-full min-w-[560px] text-sm">
                     <thead>
-                        <tr class="border-b border-brand-100 bg-brand-50 text-left text-xs font-semibold uppercase tracking-wide text-brand-500">
-                            <th class="px-4 py-3">{{ t('admin.dashboard.order', 'Order') }}</th>
-                            <th class="px-4 py-3">{{ t('admin.common.customer', 'Customer') }}</th>
-                            <th class="px-4 py-3">{{ t('admin.dashboard.items', 'Items') }}</th>
-                            <th class="px-4 py-3">{{ t('admin.common.total', 'Total') }}</th>
-                            <th class="px-4 py-3">{{ t('admin.common.status', 'Status') }}</th>
+                        <tr class="border-b border-brand-100 bg-brand-50/80 text-start text-[11px] font-semibold uppercase tracking-[0.08em] text-brand-500">
+                            <th class="px-4 py-3 text-start">{{ t('admin.dashboard.order', 'Order') }}</th>
+                            <th class="px-4 py-3 text-start">{{ t('admin.common.customer', 'Customer') }}</th>
+                            <th class="px-4 py-3 text-start">{{ t('admin.dashboard.items', 'Items') }}</th>
+                            <th class="px-4 py-3 text-start">{{ t('admin.common.total', 'Total') }}</th>
+                            <th class="px-4 py-3 text-start">{{ t('admin.common.status', 'Status') }}</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-brand-50">
+                    <tbody class="divide-y divide-brand-100/70">
                         @forelse ($recentOrders as $order)
                             <tr class="transition hover:bg-brand-50/50">
                                 <td class="px-4 py-3">
-                                    <a href="{{ route('admin.orders.show', $order) }}" class="font-semibold text-teal-700 hover:underline">{{ $order->order_number }}</a>
+                                    <a href="{{ route('admin.orders.show', $order) }}" class="font-semibold text-gold-700 hover:underline">{{ $order->order_number }}</a>
                                     <p class="text-xs text-brand-400">{{ $order->created_at->locale(app()->getLocale())->translatedFormat('M j, H:i') }}</p>
                                 </td>
                                 <td class="px-4 py-3">{{ $order->customer_name }}</td>
@@ -115,16 +123,16 @@
         </div>
 
         {{-- Low stock --}}
-        <div>
-            <h2 class="mb-4 text-base font-bold text-brand-900">{{ t('admin.dashboard.low_stock', 'Low Stock Alerts') }}</h2>
-            <div class="rounded-2xl border border-brand-100 bg-white p-4 shadow-sm">
+        <div class="min-w-0">
+            <h2 class="mb-4 font-display text-lg font-semibold text-brand-900">{{ t('admin.dashboard.low_stock', 'Low Stock Alerts') }}</h2>
+            <div class="rounded-xl border border-brand-100 bg-white p-4 shadow-sm">
                 @forelse ($lowStock as $product)
-                    <div class="flex items-center justify-between border-b border-brand-50 py-3 last:border-0">
+                    <div class="flex items-center justify-between gap-3 border-b border-brand-100/70 py-3 last:border-0">
                         <div class="min-w-0">
-                            <a href="{{ route('admin.products.edit', $product) }}" class="block truncate text-sm font-semibold text-brand-900 hover:text-teal-700">{{ $product->name }}</a>
+                            <a href="{{ route('admin.products.edit', $product) }}" class="block truncate text-sm font-semibold text-brand-900 hover:text-gold-700">{{ $product->name }}</a>
                             <p class="text-xs text-brand-400">{{ $product->category->name ?? t('admin.dashboard.uncategorized', 'Uncategorized') }}</p>
                         </div>
-                        <span class="ml-3 shrink-0 rounded-full px-2.5 py-1 text-xs font-bold {{ $product->stock === 0 ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-800' }}">
+                        <span class="shrink-0 rounded-full px-2.5 py-1 text-xs font-bold {{ $product->stock === 0 ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-800' }}">
                             {{ $product->stock === 0 ? t('admin.dashboard.out_of_stock', 'Out') : t('admin.dashboard.stock_left', ':count left', ['count' => $product->stock]) }}
                         </span>
                     </div>

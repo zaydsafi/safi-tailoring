@@ -27,7 +27,7 @@
         <div class="space-y-6">
             <div class="rounded-2xl border border-brand-100 bg-white p-6 shadow-sm">
                 <div class="mb-4 flex items-center gap-3">
-                    <span class="flex h-12 w-12 items-center justify-center rounded-full bg-teal-700 text-lg font-bold text-white">{{ strtoupper(substr($customer->name, 0, 1)) }}</span>
+                    <span class="flex h-12 w-12 items-center justify-center rounded-full bg-gold-700 text-lg font-bold text-white">{{ strtoupper(substr($customer->name, 0, 1)) }}</span>
                     <div>
                         <h2 class="flex flex-wrap items-center gap-2 text-base font-bold text-brand-900">
                             {{ $customer->name }}
@@ -66,7 +66,7 @@
                         @csrf
                         @method('PATCH')
                         <input type="text" name="reason" placeholder="{{ t('admin.customers.reason_placeholder', 'Reason (optional, recorded for your team)') }}"
-                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
                         <button type="submit" class="w-full rounded-xl border border-red-300 px-4 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50">{{ t('admin.customers.block', 'Block Account') }}</button>
                     </form>
                 @endif
@@ -108,7 +108,7 @@
                     <tbody class="divide-y divide-brand-50">
                         @forelse ($customer->orders as $order)
                             <tr class="transition hover:bg-brand-50/50">
-                                <td class="px-4 py-3 font-semibold text-teal-700">{{ $order->order_number }}</td>
+                                <td class="px-4 py-3 font-semibold text-gold-700">{{ $order->order_number }}</td>
                                 <td class="px-4 py-3 text-brand-600">{{ $order->created_at->locale(app()->getLocale())->translatedFormat('M j, Y') }}</td>
                                 <td class="px-4 py-3 font-semibold">{{ money($order->total) }}</td>
                                 <td class="px-4 py-3"><span class="rounded-full px-2.5 py-1 text-xs font-semibold {{ status_badge_class($order->payment_status) }}">{{ $paymentStatusLabels[$order->payment_status] ?? ucfirst($order->payment_status) }}</span></td>

@@ -27,8 +27,8 @@
     <div class="mt-6 mb-6 flex flex-wrap items-center justify-between gap-3">
         <form method="GET" class="flex flex-wrap items-center gap-2">
             <input type="text" name="q" value="{{ $q }}" placeholder="{{ t('admin.translations.search_placeholder', 'Search key or translation…') }}"
-                   class="w-56 rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
-            <select name="group" aria-label="{{ t('admin.translations.all_groups', 'Group') }}" class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                   class="w-56 rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
+            <select name="group" aria-label="{{ t('admin.translations.all_groups', 'Group') }}" class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
                 <option value="">{{ t('admin.translations.all_groups', 'All groups') }}</option>
                 @foreach ($groups as $groupOption)
                     <option value="{{ $groupOption }}" @selected($group === $groupOption)>{{ $groupOption }}</option>
@@ -39,7 +39,7 @@
                 <a href="{{ route('admin.translations.index') }}" class="text-sm font-semibold text-brand-500 hover:text-brand-700">{{ t('admin.translations.clear', 'Clear') }}</a>
             @endif
         </form>
-        <a href="{{ route('admin.translations.create') }}" class="rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-800">{{ t('admin.translations.add', '+ Add Translation') }}</a>
+        <a href="{{ route('admin.translations.create') }}" class="rounded-xl bg-gold-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gold-800">{{ t('admin.translations.add', '+ Add Translation') }}</a>
         <a href="{{ route('admin.translations.missing') }}" class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-50">{{ t('admin.translations.view_missing', 'View missing') }}</a>
     </div>
 
@@ -59,7 +59,7 @@
                     <tr class="transition hover:bg-brand-50/50">
                         <td class="px-4 py-3">
                             <p class="font-mono text-xs font-semibold text-brand-900">{{ $translation->key }}</p>
-                            <span class="mt-1 inline-block rounded-full bg-teal-50 px-2.5 py-0.5 text-[11px] font-semibold text-teal-700">{{ $translation->group }}</span>
+                            <span class="mt-1 inline-block rounded-full bg-gold-50 px-2.5 py-0.5 text-[11px] font-semibold text-gold-700">{{ $translation->group }}</span>
                         </td>
                         <td class="px-4 py-3 text-brand-600">{{ $translation->en ? \Illuminate\Support\Str::limit($translation->en, 60) : '—' }}</td>
                         <td class="px-4 py-3">

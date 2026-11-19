@@ -80,7 +80,7 @@
                 <h2 class="mb-4 text-base font-bold text-brand-900">{{ t('admin.common.account', 'Account') }}</h2>
                 <p class="text-sm text-brand-700">
                     @if ($requestRecord->user)
-                        <a href="{{ route('admin.users.edit', $requestRecord->user) }}" class="font-semibold text-teal-700 hover:underline">{{ $requestRecord->user->name }}</a>
+                        <a href="{{ route('admin.users.edit', $requestRecord->user) }}" class="font-semibold text-gold-700 hover:underline">{{ $requestRecord->user->name }}</a>
                         <span class="text-brand-400">·</span> {{ t('admin.custom_orders.registered_customer', 'Registered customer') }}
                     @else
                         {{ t('admin.custom_orders.guest_request', 'Guest request') }}
@@ -117,15 +117,15 @@
                         @method('PATCH')
                         <div>
                             <label for="status" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.custom_orders.status', 'Status') }}</label>
-                            <select name="status" id="status" aria-label="{{ t('admin.orders.update_status', 'Status') }}" class="w-full rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                            <select name="status" id="status" aria-label="{{ t('admin.orders.update_status', 'Status') }}" class="w-full rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
                                 @foreach ($statusLabels as $value => $label)
                                     <option value="{{ $value }}" @selected($requestRecord->status === $value)>{{ $label }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="flex gap-2">
-                            <input type="text" name="assigned_to" value="{{ old('assigned_to', $requestRecord->assigned_to) }}" placeholder="{{ t('admin.custom_orders.assigned_to_placeholder', 'Assigned to (optional)') }}" class="flex-1 rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
-                            <button type="submit" class="rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-800">{{ t('admin.common.update', 'Update') }}</button>
+                            <input type="text" name="assigned_to" value="{{ old('assigned_to', $requestRecord->assigned_to) }}" placeholder="{{ t('admin.custom_orders.assigned_to_placeholder', 'Assigned to (optional)') }}" class="flex-1 rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
+                            <button type="submit" class="rounded-xl bg-gold-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gold-800">{{ t('admin.common.update', 'Update') }}</button>
                         </div>
                     </form>
                 </div>
@@ -139,18 +139,18 @@
                             <div class="rounded-lg border border-brand-100 p-4">
                                 <label class="mb-1 block text-xs font-medium text-brand-600">{{ t('admin.custom_orders.description', 'What to make') }} <span class="text-red-500">*</span></label>
                                 <input type="text" name="items[0][description]" value="{{ old('items.0.description', $requestRecord->request_description) }}" required placeholder="e.g. 2-piece suit"
-                                       class="w-full rounded-lg border border-brand-200 px-3 py-2 text-sm focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                                       class="w-full rounded-lg border border-brand-200 px-3 py-2 text-sm focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
                             </div>
                             <div class="grid gap-3 sm:grid-cols-2">
                                 <div>
                                     <label class="mb-1 block text-xs font-medium text-brand-600">{{ t('admin.custom_orders.price', 'Price (AFN)') }} <span class="text-red-500">*</span></label>
                                     <input type="number" step="0.01" min="0" name="items[0][price]" value="{{ old('items.0.price', 0) }}" required
-                                           class="w-full rounded-lg border border-brand-200 px-3 py-2 text-sm focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                                           class="w-full rounded-lg border border-brand-200 px-3 py-2 text-sm focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
                                 </div>
                                 <div>
                                     <label class="mb-1 block text-xs font-medium text-brand-600">{{ t('admin.common.quantity', 'Quantity') }} <span class="text-red-500">*</span></label>
                                     <input type="number" min="1" name="items[0][quantity]" value="{{ old('items.0.quantity', 1) }}" required
-                                           class="w-full rounded-lg border border-brand-200 px-3 py-2 text-sm focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                                           class="w-full rounded-lg border border-brand-200 px-3 py-2 text-sm focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
                                 </div>
                             </div>
                             <div>
@@ -159,22 +159,22 @@
                                     <div>
                                         <label class="mb-1 block text-[11px] font-medium text-brand-500">{{ $measurementFields['chest'] }}</label>
                                         <input type="number" step="0.5" min="0" name="items[0][measurements][chest]" value="{{ old('items.0.measurements.chest', ($requestRecord->measurements['chest'] ?? null)) }}"
-                                               class="w-full rounded-lg border border-brand-200 px-3 py-2 text-sm focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                                               class="w-full rounded-lg border border-brand-200 px-3 py-2 text-sm focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
                                     </div>
                                     <div>
                                         <label class="mb-1 block text-[11px] font-medium text-brand-500">{{ $measurementFields['waist'] }}</label>
                                         <input type="number" step="0.5" min="0" name="items[0][measurements][waist]" value="{{ old('items.0.measurements.waist', ($requestRecord->measurements['waist'] ?? null)) }}"
-                                               class="w-full rounded-lg border border-brand-200 px-3 py-2 text-sm focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                                               class="w-full rounded-lg border border-brand-200 px-3 py-2 text-sm focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
                                     </div>
                                     <div>
                                         <label class="mb-1 block text-[11px] font-medium text-brand-500">{{ $measurementFields['shirt_length'] }}</label>
                                         <input type="number" step="0.5" min="0" name="items[0][measurements][shirt_length]" value="{{ old('items.0.measurements.shirt_length', ($requestRecord->measurements['shirt_length'] ?? null)) }}"
-                                               class="w-full rounded-lg border border-brand-200 px-3 py-2 text-sm focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                                               class="w-full rounded-lg border border-brand-200 px-3 py-2 text-sm focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
                                     </div>
                                 </div>
                             </div>
                             <div class="mt-2 text-xs text-brand-500">{{ t('admin.custom_orders.convert_note', 'You can edit the item description, price and quantity before the order is created.') }}</div>
-                            <button type="submit" class="w-full rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-800">
+                            <button type="submit" class="w-full rounded-xl bg-gold-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gold-800">
                                 {{ t('admin.custom_orders.convert_to_order', 'Convert to Order') }}
                             </button>
                         </form>

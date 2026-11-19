@@ -22,8 +22,8 @@
     <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
         <form method="GET" class="flex flex-wrap items-center gap-2">
             <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ t('admin.orders.search_placeholder', 'Order #, name or phone…') }}"
-                   class="w-64 rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
-            <select name="status" aria-label="{{ t('admin.common.status', 'Status') }}" class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                   class="w-64 rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
+            <select name="status" aria-label="{{ t('admin.common.status', 'Status') }}" class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
                 <option value="">{{ t('admin.orders.all_statuses', 'All statuses') }}</option>
                 @foreach ($statuses as $value => $label)
                     <option value="{{ $value }}" @selected(request('status') === $value)>{{ $statusLabels[$value] ?? $label }}</option>
@@ -60,7 +60,7 @@
             <tbody class="divide-y divide-brand-50">
                 @forelse ($orders as $order)                        <tr class="transition hover:bg-brand-50/50">
                             <td class="px-4 py-3">
-                                <a href="{{ route('admin.orders.show', $order) }}" class="font-semibold text-teal-700 hover:underline">{{ $order->order_number }}</a>
+                                <a href="{{ route('admin.orders.show', $order) }}" class="font-semibold text-gold-700 hover:underline">{{ $order->order_number }}</a>
                                 <p class="text-xs text-brand-400">{{ payment_method_label($order->payment_method) }}</p>
                             </td>
                             <td class="px-4 py-3">

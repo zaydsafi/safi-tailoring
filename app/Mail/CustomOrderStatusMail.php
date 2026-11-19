@@ -39,7 +39,7 @@ class CustomOrderStatusMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mail.custom-order-status-mail',
+            markdown: 'mail.custom-order-status-mail',
             with: [
                 'statusLabel' => $this->statusLabel,
                 'body' => $this->body,

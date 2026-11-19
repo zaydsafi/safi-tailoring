@@ -16,8 +16,8 @@
     <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
         <form method="GET" class="flex flex-wrap items-center gap-2">
             <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ t('admin.custom_orders.search_placeholder', 'Name, phone, email or description…') }}"
-                   class="w-64 rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
-            <select name="status" aria-label="{{ t('admin.common.status', 'Status') }}" class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                   class="w-64 rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
+            <select name="status" aria-label="{{ t('admin.common.status', 'Status') }}" class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
                 <option value="">{{ t('admin.custom_orders.all_statuses', 'All statuses') }}</option>
                 @foreach ($statusLabels as $value => $label)
                     <option value="{{ $value }}" @selected(request('status') === $value)>{{ $label }}</option>
@@ -31,7 +31,7 @@
         <a href="{{ route('admin.exports.custom_orders', request()->filled('status') ? ['status' => request('status')] : []) }}"
            class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-50">{{ t('admin.reports.export_excel', 'Export (Excel)') }}</a>
         <a href="{{ route('admin.custom-orders.create') }}"
-           class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-800">
+           class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-gold-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gold-800">
             <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
             {{ t('admin.custom_orders.create_for_customer', 'Create Order for Customer') }}
         </a>
@@ -60,7 +60,7 @@
                 @forelse ($requests as $requestRecord)
                     <tr class="transition hover:bg-brand-50/50">
                         <td class="px-4 py-3">
-                            <a href="{{ route('admin.custom-orders.show', $requestRecord) }}" class="font-semibold text-teal-700 hover:underline">#{{ $requestRecord->id }}</a>
+                            <a href="{{ route('admin.custom-orders.show', $requestRecord) }}" class="font-semibold text-gold-700 hover:underline">#{{ $requestRecord->id }}</a>
                             @if ($requestRecord->convertedOrder)
                                 <p class="text-xs text-brand-400">→ {{ $requestRecord->convertedOrder->order_number }}</p>
                             @endif

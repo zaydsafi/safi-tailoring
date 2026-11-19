@@ -25,10 +25,14 @@ class CustomerOrderController extends Controller
 
         $selectedCustomer = null;
 
-        if ($request->filled('customer_id')) {
+        // On a validation redirect the query string is gone, so fall back to
+        // the old input the hidden field submits.
+        $selectedCustomerId = $request->input('customer_id', $request->old('customer_id'));
+
+        if (filled($selectedCustomerId)) {
             $selectedCustomer = User::query()
                 ->where('role', 'customer')
-                ->where('id', (int) $request->input('customer_id'))
+                ->whereKey((int) $selectedCustomerId)
                 ->first();
         }
 

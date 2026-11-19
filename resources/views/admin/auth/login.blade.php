@@ -37,20 +37,20 @@
                 <div>
                     <label for="email" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.auth.email', 'Email Address') }}</label>
                     <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus
-                           class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('email') border-red-400 @enderror">
+                           class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 @error('email') border-red-400 @enderror">
                     @error('email')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                 </div>
                 <div>
                     <label for="password" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.auth.password', 'Password') }}</label>
                     <input type="password" id="password" name="password" required
-                           class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('password') border-red-400 @enderror">
+                           class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 @error('password') border-red-400 @enderror">
                     @error('password')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                 </div>
                 <label class="flex items-center gap-2 text-sm text-brand-600">
-                    <input type="checkbox" name="remember" value="1" class="h-4 w-4 rounded border-brand-300 text-teal-700 focus:ring-teal-600/30">
+                    <input type="checkbox" name="remember" value="1" class="h-4 w-4 rounded border-brand-300 text-gold-700 focus:ring-gold-600/30">
                     {{ t('admin.auth.remember_me', 'Remember me') }}
                 </label>
-                <button type="submit" class="w-full rounded-xl bg-teal-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-teal-800">{{ t('admin.auth.sign_in', 'Sign In') }}</button>
+                <button type="submit" class="w-full rounded-xl bg-gold-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-gold-800">{{ t('admin.auth.sign_in', 'Sign In') }}</button>
             </form>
         </div>
 

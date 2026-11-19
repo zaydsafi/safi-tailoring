@@ -9,7 +9,7 @@
             <p class="mt-1 text-sm text-brand-500">{{ t('admin.roles.subtitle', 'Create staff roles and choose which admin sections each one can manage.') }}</p>
         </div>
         <a href="{{ route('admin.roles.create') }}"
-           class="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-800">
+           class="inline-flex items-center justify-center gap-2 rounded-xl bg-gold-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gold-800">
             <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
             {{ t('admin.roles.add', 'Add Role') }}
         </a>
@@ -45,7 +45,7 @@
                                 @else
                                     <div class="flex flex-wrap gap-1.5">
                                         @forelse ($role->permissions as $permission)
-                                            <span class="rounded-full bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal-700">{{ $permission->label }}</span>
+                                            <span class="rounded-full bg-gold-50 px-2.5 py-1 text-xs font-semibold text-gold-700">{{ $permission->label }}</span>
                                         @empty
                                             <span class="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-500">{{ t('admin.roles.no_permissions', 'No permissions — panel login only') }}</span>
                                         @endforelse
@@ -94,7 +94,7 @@
                 <ul class="mt-3 space-y-2">
                     @foreach ($tailorPermissions as $key => $label)
                         <li class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                            <span class="rounded-full bg-teal-50 px-2.5 py-1 text-xs font-semibold text-teal-700">{{ $label }}</span>
+                            <span class="rounded-full bg-gold-50 px-2.5 py-1 text-xs font-semibold text-gold-700">{{ $label }}</span>
                             <span class="text-xs text-brand-400">{{ t($tailorNotes[$key], $tailorNotes[$key]) }}</span>
                         </li>
                     @endforeach

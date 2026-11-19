@@ -26,7 +26,7 @@
         </div>
         <div class="flex items-center gap-3">
             <a href="{{ route('admin.orders.invoice', $order) }}"
-               class="rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-800">{{ t('admin.reports.download_invoice_pdf', 'Download Invoice (PDF)') }}</a>
+               class="rounded-xl bg-gold-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gold-800">{{ t('admin.reports.download_invoice_pdf', 'Download Invoice (PDF)') }}</a>
             <a href="{{ route('admin.orders.index') }}" class="text-sm font-semibold text-brand-500 hover:text-brand-700">{{ t('admin.orders.back_to_orders', '← Back to orders') }}</a>
         </div>
     </div>
@@ -43,7 +43,7 @@
                                 <div>
                                     <p class="font-semibold text-brand-900">
                                         @if ($item->product)
-                                            <a href="{{ route('admin.products.edit', $item->product) }}" class="text-teal-700 hover:underline">{{ $item->product_name }}</a>
+                                            <a href="{{ route('admin.products.edit', $item->product) }}" class="text-gold-700 hover:underline">{{ $item->product_name }}</a>
                                         @else
                                             {{ $item->product_name }}
                                         @endif
@@ -79,7 +79,7 @@
                 <ol class="relative space-y-4 border-l-2 border-brand-100 pl-5">
                     @foreach ($order->statusHistories as $history)
                         <li class="relative">
-                            <span class="absolute -left-[27px] top-1 h-3 w-3 rounded-full border-2 border-white {{ $history->status === 'cancelled' ? 'bg-red-500' : 'bg-teal-600' }}"></span>
+                            <span class="absolute -left-[27px] top-1 h-3 w-3 rounded-full border-2 border-white {{ $history->status === 'cancelled' ? 'bg-red-500' : 'bg-gold-600' }}"></span>
                             <p class="text-sm font-semibold text-brand-900">{{ $statusLabels[$history->status] ?? ucfirst($history->status) }}</p>
                             <p class="text-xs text-brand-400">{{ $history->created_at->locale(app()->getLocale())->translatedFormat('M j, Y H:i') }}</p>
                             @if ($history->note)
@@ -109,7 +109,7 @@
                         <div><dt class="text-xs font-semibold uppercase tracking-wide text-brand-400">{{ t('admin.orders.order_notes', 'Order Notes') }}</dt><dd class="mt-0.5 rounded-lg bg-brand-50 px-3 py-2 text-brand-700">{{ $order->notes }}</dd></div>
                     @endif
                     @if ($order->user)
-                        <div><dt class="text-xs font-semibold uppercase tracking-wide text-brand-400">{{ t('admin.orders.account', 'Account') }}</dt><dd class="mt-0.5"><a href="{{ route('admin.customers.show', $order->user) }}" class="font-semibold text-teal-700 hover:underline">{{ t('admin.orders.registered_customer', 'Registered customer') }}</a></dd></div>
+                        <div><dt class="text-xs font-semibold uppercase tracking-wide text-brand-400">{{ t('admin.orders.account', 'Account') }}</dt><dd class="mt-0.5"><a href="{{ route('admin.customers.show', $order->user) }}" class="font-semibold text-gold-700 hover:underline">{{ t('admin.orders.registered_customer', 'Registered customer') }}</a></dd></div>
                     @else
                         <div><dt class="text-xs font-semibold uppercase tracking-wide text-brand-400">{{ t('admin.orders.account', 'Account') }}</dt><dd class="mt-0.5 text-brand-500">{{ t('admin.orders.guest_checkout', 'Guest checkout') }}</dd></div>
                     @endif
@@ -131,14 +131,14 @@
                 <form method="POST" action="{{ route('admin.orders.status', $order) }}" class="space-y-3">
                     @csrf
                     @method('PATCH')
-                    <select name="status" aria-label="{{ t('admin.orders.update_status', 'Status') }}" class="w-full rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                    <select name="status" aria-label="{{ t('admin.orders.update_status', 'Status') }}" class="w-full rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
                         @foreach ($statuses as $value => $label)
                             <option value="{{ $value }}" @selected($order->status === $value)>{{ $statusLabels[$value] ?? $label }}</option>
                         @endforeach
                     </select>
                     <input type="text" name="note" aria-label="{{ t('admin.orders.note_placeholder', 'Note') }}" placeholder="{{ t('admin.orders.note_placeholder', 'Note (optional, shown to customer)') }}"
-                           class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
-                    <button type="submit" class="w-full rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-800">{{ t('admin.orders.update_status', 'Update Status') }}</button>
+                           class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
+                    <button type="submit" class="w-full rounded-xl bg-gold-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gold-800">{{ t('admin.orders.update_status', 'Update Status') }}</button>
                 </form>
             </div>
 
@@ -148,7 +148,7 @@
                 <form method="POST" action="{{ route('admin.orders.payment', $order) }}" class="flex gap-2">
                     @csrf
                     @method('PATCH')
-                    <select name="payment_status" aria-label="{{ t('admin.orders.payment', 'Payment status') }}" class="flex-1 rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                    <select name="payment_status" aria-label="{{ t('admin.orders.payment', 'Payment status') }}" class="flex-1 rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
                         @foreach (['pending' => 'Pending', 'paid' => 'Paid', 'refunded' => 'Refunded'] as $value => $label)
                             <option value="{{ $value }}" @selected($order->payment_status === $value)>{{ $paymentStatusLabels[$value] ?? $label }}</option>
                         @endforeach

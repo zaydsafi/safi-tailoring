@@ -31,7 +31,7 @@
                 </div>
 
                 <div class="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 backdrop-blur p-4">
-                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-teal-400/15 text-teal-300">
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gold-400/15 text-gold-300">
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21a8.966 8.966 0 0 0 5.982-2.275M1.5 4.492v10.675a8.25 8.25 0 0 0 8.25 8.25h.378a2.25 2.25 0 0 0 2.184-2.822l-2.239-8.787a1.5 1.5 0 0 0-1.458-1.021L8.25 10.5A2.25 2.25 0 0 1 6 8.25v-.75a2.25 2.25 0 0 1 4.5 0v.75"/></svg>
                     </div>
                     <div>
@@ -172,7 +172,7 @@
                 <ol class="space-y-5">
                     @foreach (['step1', 'step2', 'step3'] as $stepKey)
                         <li class="flex gap-3.5">
-                            <span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-teal-50 text-teal-700 text-sm font-bold">{{ $loop->iteration }}</span>
+                            <span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gold-50 text-gold-700 text-sm font-bold">{{ $loop->iteration }}</span>
                             <div>
                                 <p class="text-sm font-semibold text-brand-900">{{ t('custom_order.' . $stepKey . '_title', 'Step ' . $loop->iteration) }}</p>
                                 <p class="mt-1 text-xs text-brand-500 leading-relaxed">{{ t('custom_order.' . $stepKey . '_text', '') }}</p>

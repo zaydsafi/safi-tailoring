@@ -13,14 +13,14 @@
         <div>
             <label for="name" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.roles.role_name', 'Role name') }} <span class="text-red-500">*</span></label>
             <input type="text" id="name" name="name" value="{{ old('name', $role->name) }}" required placeholder="{{ t('admin.roles.name_placeholder', 'e.g. Manager, Tailor…)') }}"
-                   class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('name') border-red-400 @enderror">
+                   class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 @error('name') border-red-400 @enderror">
             @error('name')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
         </div>
 
         <div>
             <label for="description" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.roles.description', 'Description') }}</label>
             <input type="text" id="description" name="description" value="{{ old('description', $role->description) }}" placeholder="{{ t('admin.roles.description_hint', 'What is this role for?') }}"
-                   class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('description') border-red-400 @enderror">
+                   class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 @error('description') border-red-400 @enderror">
         </div>
     </div>
 
@@ -31,7 +31,7 @@
             @foreach ($generalPermissions as $key => $label)
                 <label class="flex items-center gap-3 rounded-xl border border-brand-100 bg-brand-50/40 px-4 py-3 text-sm transition hover:bg-brand-50 {{ $isBuiltIn ? 'cursor-not-allowed opacity-50' : 'cursor-pointer' }}">
                     <input type="checkbox" name="permissions[]" value="{{ $key }}"
-                           @if ($isBuiltIn) disabled class="pointer-events-none" @checked(true) @else class="h-4 w-4 rounded border-brand-300 text-teal-700 focus:ring-teal-600/30" @checked(in_array($key, $selected) || in_array($key, (array) old('permissions', []))) @endif>
+                           @if ($isBuiltIn) disabled class="pointer-events-none" @checked(true) @else class="h-4 w-4 rounded border-brand-300 text-gold-700 focus:ring-gold-600/30" @checked(in_array($key, $selected) || in_array($key, (array) old('permissions', []))) @endif>
                     <span class="font-medium text-brand-900">{{ $label }}</span>
                 </label>
             @endforeach
@@ -49,7 +49,7 @@
                 <label class="rounded-xl border border-brand-100 bg-brand-50/40 px-4 py-3 text-sm transition hover:bg-brand-50 {{ $isBuiltIn ? 'cursor-not-allowed opacity-50' : 'cursor-pointer' }}">
                     <span class="flex items-center gap-3">
                         <input type="checkbox" name="permissions[]" value="{{ $key }}"
-                               @if ($isBuiltIn) disabled class="pointer-events-none" @checked(true) @else class="h-4 w-4 rounded border-brand-300 text-teal-700 focus:ring-teal-600/30" @checked(in_array($key, $selected) || in_array($key, (array) old('permissions', []))) @endif>
+                               @if ($isBuiltIn) disabled class="pointer-events-none" @checked(true) @else class="h-4 w-4 rounded border-brand-300 text-gold-700 focus:ring-gold-600/30" @checked(in_array($key, $selected) || in_array($key, (array) old('permissions', []))) @endif>
                         <span class="font-medium text-brand-900">{{ $label }}</span>
                     </span>
                     <span class="mt-1.5 block pl-7 text-xs leading-relaxed text-brand-400">{{ t($tailorNotes[$key], $tailorNotes[$key]) }}</span>

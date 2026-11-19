@@ -62,6 +62,13 @@ class CustomOrderRequestController extends Controller
 
     public function convertToOrder(Request $request, CustomOrderRequest $requestRecord)
     {
+        // A converted request already owns an order. Guarding here stops a
+        // double submit (or a stale form) from creating a duplicate order.
+        if ($requestRecord->converted_order_id !== null) {
+            return redirect()->route('admin.custom-orders.show', $requestRecord)
+                ->with('error', t('admin.flash.custom_order_already_converted', 'This request has already been converted to an order.'));
+        }
+
         $data = $request->validate([
             'items' => ['required', 'array', 'min:1'],
             'items.*.description' => ['required', 'string', 'max:255'],

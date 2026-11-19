@@ -6,16 +6,16 @@
     <div class="mb-6 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <form method="GET" class="flex flex-wrap items-center gap-2">
             <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ t('admin.users.search_placeholder', 'Search name, email or phone…') }}"
-                   class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 sm:w-64">
+                   class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 sm:w-64">
             <select name="role" aria-label="{{ t('admin.users.role', 'Role') }}"
-                    class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                    class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
                 <option value="">{{ t('admin.users.all_roles', 'All roles') }}</option>
                 <option value="admin" @selected(request('role') === 'admin')>{{ t('admin.users.admins', 'Admins') }}</option>
                 <option value="customer" @selected(request('role') === 'customer')>{{ t('admin.users.customers', 'Customers') }}</option>
                 @each ('admin.users._role_filter', \App\Models\Role::query()->where('slug', '!=', 'admin')->orderBy('name')->get(), 'staffRole')
             </select>
             <select name="status" aria-label="{{ t('admin.common.status', 'Status') }}"
-                    class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                    class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
                 <option value="">{{ t('admin.users.all_statuses', 'All statuses') }}</option>
                 <option value="active" @selected(request('status') === 'active')>{{ t('admin.users.active', 'Active') }}</option>
                 <option value="blocked" @selected(request('status') === 'blocked')>{{ t('admin.users.blocked', 'Blocked') }}</option>
@@ -28,7 +28,7 @@
         <a href="{{ route('admin.exports.customers') }}"
            class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-50">{{ t('admin.reports.export_customers', 'Export Customers (Excel)') }}</a>
         <a href="{{ route('admin.users.create') }}"
-           class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-800">
+           class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-gold-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gold-800">
             <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
             {{ t('admin.users.add', 'Add User') }}
         </a>
@@ -53,7 +53,7 @@
                         <tr class="transition hover:bg-brand-50/50">
                             <td class="px-4 py-3">
                                 <div class="flex items-center gap-3">
-                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full {{ $user->isAdmin() ? 'bg-brand-900' : 'bg-teal-700' }} text-xs font-bold text-white">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                                    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full {{ $user->isAdmin() ? 'bg-brand-900' : 'bg-gold-700' }} text-xs font-bold text-white">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
                                     <div class="min-w-0">
                                         <p class="truncate font-semibold text-brand-900">{{ $user->name }}</p>
                                         @if ($user->is(auth()->user()))
@@ -67,7 +67,7 @@
                                 <p class="text-xs text-brand-400">{{ $user->phone ?? '—' }}</p>
                             </td>
                             <td class="px-4 py-3">
-                                <span class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $user->isAdmin() ? 'bg-brand-900 text-white' : ($user->assignedRole ? 'bg-teal-50 text-teal-700' : 'bg-brand-100 text-brand-700') }}">
+                                <span class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $user->isAdmin() ? 'bg-brand-900 text-white' : ($user->assignedRole ? 'bg-gold-50 text-gold-700' : 'bg-brand-100 text-brand-700') }}">
                                     {{ $user->isAdmin() ? t('admin.users.role_admin', 'Admin') : ($user->assignedRole?->name ?? t('admin.users.role_customer', 'Customer')) }}
                                 </span>
                             </td>

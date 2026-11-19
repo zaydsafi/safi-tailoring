@@ -75,7 +75,7 @@
     <title>{{ $metaTitle }}</title>
     <meta name="description" content="{{ $metaDescription }}">
     <meta name="robots" content="@yield('robots', 'index, follow')">
-    <meta name="theme-color" content="#0f3b39">
+    <meta name="theme-color" content="#0e1520">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     <link rel="canonical" href="{{ $canonical }}">
     @foreach ($locales as $code => $info)

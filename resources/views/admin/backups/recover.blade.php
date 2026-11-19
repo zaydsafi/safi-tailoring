@@ -28,7 +28,7 @@
                                 <td class="px-4 py-2.5">
                                     <label class="flex items-center gap-3 cursor-pointer">
                                         <input type="checkbox" name="tables[]" value="{{ $table }}" checked
-                                               class="h-4 w-4 rounded border-brand-300 text-teal-700 focus:ring-teal-600/30">
+                                               class="h-4 w-4 rounded border-brand-300 text-gold-700 focus:ring-gold-600/30">
                                         <span class="font-mono text-xs text-brand-900">{{ $table }}</span>
                                     </label>
                                 </td>
@@ -47,7 +47,7 @@
                 <a href="{{ route('admin.backups.index') }}" class="rounded-xl border border-brand-200 px-4 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-50">{{ t('admin.common.cancel', 'Cancel') }}</a>
                 <button type="submit"
                         onsubmit=""
-                        class="rounded-xl bg-teal-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-800"
+                        class="rounded-xl bg-gold-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-gold-800"
                         onclick="return confirm('{!! t('admin.backups.confirm_recover', 'Recover the selected tables from :name? Ticked tables are emptied first and filled with the backup contents.', ['name' => e($name)]) !!}')">
                     {{ t('admin.backups.recover_submit', 'Recover selected tables') }}
                 </button>

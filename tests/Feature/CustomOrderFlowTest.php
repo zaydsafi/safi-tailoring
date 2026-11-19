@@ -221,7 +221,9 @@ class CustomOrderFlowTest extends TestCase
             ->get(route('admin.custom-orders.create', ['customer_id' => $customer->id]))
             ->assertOk()
             ->assertSee('In-store Buyer', false)
-            ->assertSee('In-store Buyer — 0700777888', false);
+            ->assertSee('In-store Buyer — 0700777888', false)
+            // The POST form must carry the customer picked with the GET selector.
+            ->assertSee('name="customer_id" value="'.$customer->id.'"', false);
 
         $this->withSession(['admin_locale' => 'en'])
             ->actingAs($admin)
@@ -241,5 +243,102 @@ class CustomOrderFlowTest extends TestCase
         $this->assertSame(9500.0, (float) $order->subtotal);
         $this->assertSame($customer->id, $order->user_id);
         $this->assertSame('Sherwani', $order->items->first()->product_name);
+    }
+
+    public function test_staff_sees_validation_errors_when_creating_order_without_customer(): void
+    {
+        Setting::set('otp_required', '0');
+
+        $admin = User::create([
+            'name' => 'Admin',
+            'email' => 'admin@example.test',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+            'email_verified_at' => now(),
+        ]);
+
+        $this->withSession(['admin_locale' => 'en'])
+            ->actingAs($admin)
+            ->from(route('admin.custom-orders.create'))
+            ->followingRedirects()
+            ->post(route('admin.custom-orders.store'), [
+                'customer_name' => 'No Customer',
+                'customer_phone' => '0700999000',
+                'customer_address' => 'Kabul',
+                'items' => [
+                    ['description' => 'Kameez', 'price' => '100', 'quantity' => '1'],
+                ],
+            ])
+            ->assertOk()
+            ->assertSee('Please fix the following:', false)
+            ->assertSee('The customer id field is required.', false);
+    }
+
+    public function test_converting_an_already_converted_request_does_not_create_another_order(): void
+    {
+        Setting::set('otp_required', '0');
+
+        $customer = User::create([
+            'name' => 'Repeat Warmi',
+            'email' => 'repeat@example.test',
+            'password' => bcrypt('password'),
+            'role' => 'customer',
+            'phone' => '0700666777',
+            'email_verified_at' => now(),
+        ]);
+
+        $admin = User::create([
+            'name' => 'Admin',
+            'email' => 'admin@example.test',
+            'password' => bcrypt('password'),
+            'role' => 'admin',
+            'email_verified_at' => now(),
+        ]);
+
+        $requestRecord = CustomOrderRequest::create([
+            'user_id' => $customer->id,
+            'customer_name' => 'Repeat Warmi',
+            'customer_phone' => '0700666777',
+            'customer_address' => 'Kabul',
+            'request_description' => 'Waistcoat',
+        ]);
+
+        Mail::fake();
+
+        $payload = [
+            'items' => [
+                ['description' => 'Waistcoat', 'price' => '3000', 'quantity' => '1'],
+            ],
+        ];
+
+        $this->withSession(['admin_locale' => 'en'])
+            ->actingAs($admin)
+            ->post(route('admin.custom-orders.convert', $requestRecord), $payload)
+            ->assertRedirect();
+
+        $this->withSession(['admin_locale' => 'en'])
+            ->actingAs($admin)
+            ->post(route('admin.custom-orders.convert', $requestRecord), $payload)
+            ->assertRedirect()
+            ->assertSessionHas('error');
+
+        $this->assertSame(1, Order::count());
+    }
+
+    public function test_custom_order_status_email_renders_request_details(): void
+    {
+        $requestRecord = CustomOrderRequest::create([
+            'customer_name' => 'Mail Warmi',
+            'customer_phone' => '0700123999',
+            'customer_email' => 'mail@example.test',
+            'customer_address' => 'Kabul',
+            'request_description' => 'Kameez',
+        ]);
+
+        $html = (new CustomOrderStatusMail($requestRecord, 'Assigned', 'Assigned to our tailor.'))->render();
+
+        $this->assertStringContainsString('Your custom order request has been updated', $html);
+        $this->assertStringContainsString('#'.$requestRecord->id, $html);
+        $this->assertStringContainsString('Assigned to our tailor.', $html);
     }
 }

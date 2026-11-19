@@ -22,7 +22,7 @@
     <div class="mb-6 flex items-center justify-between">
         <p class="text-sm text-brand-600">{{ t('account.measurements_intro', 'Save your measurements once and apply them instantly during checkout.') }}</p>
         <button type="button" @click="openForm = !openForm; editId = null"
-                class="rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-800"
+                class="rounded-xl bg-gold-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gold-800"
                 x-text="openForm ? '{{ t('account.close', 'Close') }}' : (editId ? '{{ t('account.close', 'Close') }}' : '{{ t('account.add_new_profile', 'Add New Profile') }}')">
             {{ t('account.add_new_profile', 'Add New Profile') }}
         </button>
@@ -41,23 +41,23 @@
                 <div class="sm:col-span-2">
                     <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('account.profile_label', 'Profile Label') }}</label>
                     <input type="text" name="label" value="{{ old('label') }}" placeholder="{{ t('account.profile_label_placeholder', 'e.g. My usual size') }}"
-                           class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                           class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
                 </div>
                 @foreach ($fields as $field => $label)
                     <div>
                         <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ $measureLabels[$field] ?? $label }} <span class="font-normal text-brand-400">{{ t('account.inches_suffix', '(inches)') }}</span></label>
                         <input type="number" step="0.1" min="1" max="300" name="{{ $field }}" value="{{ old($field) }}"
-                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error($field) border-red-400 @enderror">
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 @error($field) border-red-400 @enderror">
                         @error($field)<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                 @endforeach
                 <div class="sm:col-span-2">
                     <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('account.notes', 'Notes') }}</label>
                     <textarea name="notes" rows="2" placeholder="{{ t('account.notes_placeholder', 'Any fitting preferences...') }}"
-                              class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">{{ old('notes') }}</textarea>
+                              class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">{{ old('notes') }}</textarea>
                 </div>
             </div>
-            <button type="submit" class="mt-5 rounded-xl bg-teal-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-teal-800">{{ t('account.save_profile', 'Save Profile') }}</button>
+            <button type="submit" class="mt-5 rounded-xl bg-gold-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-gold-800">{{ t('account.save_profile', 'Save Profile') }}</button>
         </form>
     </div>
 
@@ -105,21 +105,21 @@
                         <div class="sm:col-span-2 lg:col-span-3">
                             <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('account.profile_label', 'Profile Label') }}</label>
                             <input type="text" name="label" value="{{ $profile->label }}"
-                                   class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                                   class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
                         </div>
                         @foreach ($fields as $field => $label)
                             <div>
                                 <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ $measureLabels[$field] ?? $label }} <span class="font-normal text-brand-400">{{ t('account.inches_suffix', '(inches)') }}</span></label>
                                 <input type="number" step="0.1" min="1" max="300" name="{{ $field }}" value="{{ $profile->$field }}"
-                                       class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                                       class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
                             </div>
                         @endforeach
                         <div class="sm:col-span-2 lg:col-span-3">
                             <label class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('account.notes', 'Notes') }}</label>
-                            <textarea name="notes" rows="2" class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">{{ $profile->notes }}</textarea>
+                            <textarea name="notes" rows="2" class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">{{ $profile->notes }}</textarea>
                         </div>
                     </div>
-                    <button type="submit" class="mt-5 rounded-xl bg-teal-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-teal-800">{{ t('account.update_profile', 'Update Profile') }}</button>
+                    <button type="submit" class="mt-5 rounded-xl bg-gold-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-gold-800">{{ t('account.update_profile', 'Update Profile') }}</button>
                 </form>
             </div>
         </div>

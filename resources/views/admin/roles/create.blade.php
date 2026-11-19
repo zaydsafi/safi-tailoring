@@ -15,7 +15,7 @@
             @include('admin.roles._form')
             <div class="mt-8 flex justify-end gap-3 border-t border-brand-100 pt-5">
                 <a href="{{ route('admin.roles.index') }}" class="rounded-xl border border-brand-200 px-4 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-50">{{ t('admin.common.cancel', 'Cancel') }}</a>
-                <button type="submit" class="rounded-xl bg-teal-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-800">{{ t('admin.roles.create_role', 'Create role') }}</button>
+                <button type="submit" class="rounded-xl bg-gold-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-gold-800">{{ t('admin.roles.create_role', 'Create role') }}</button>
             </div>
         </form>
     </div>

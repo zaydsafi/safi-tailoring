@@ -6,8 +6,8 @@
     <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
         <form method="GET" class="flex flex-wrap items-center gap-2">
             <input type="text" name="q" value="{{ request('q') }}" placeholder="{{ t('admin.products.search_placeholder', 'Search products…') }}"
-                   class="w-56 rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
-            <select name="category" aria-label="{{ t('admin.products.all_categories', 'Category') }}" class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20">
+                   class="w-56 rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
+            <select name="category" aria-label="{{ t('admin.products.all_categories', 'Category') }}" class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
                 <option value="">{{ t('admin.products.all_categories', 'All categories') }}</option>
                 @foreach ($filterCategories as $category)
                     <option value="{{ $category->id }}" @selected(request('category') == $category->id)>{{ $category->name }}</option>
@@ -20,7 +20,7 @@
         </form>
         <a href="{{ route('admin.exports.products') }}"
            class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-50">{{ t('admin.reports.export_excel', 'Export (Excel)') }}</a>
-        <a href="{{ route('admin.products.create') }}" class="rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-800">{{ t('admin.products.add', '+ Add Product') }}</a>
+        <a href="{{ route('admin.products.create') }}" class="rounded-xl bg-gold-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gold-800">{{ t('admin.products.add', '+ Add Product') }}</a>
     </div>
 
     <div class="overflow-x-auto rounded-2xl border border-brand-100 bg-white shadow-sm">

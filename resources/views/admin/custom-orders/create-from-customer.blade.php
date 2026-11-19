@@ -33,16 +33,16 @@
                 <h2 class="mb-4 text-base font-bold text-brand-900">{{ t('admin.custom_orders.select_customer', 'Select Customer') }}</h2>
                 <form method="GET" class="flex flex-wrap items-center gap-3">
                     <select name="customer_id" id="customer_id"
-                            aria-label="{{ t('admin.custom_orders.select_customer', 'Select Customer') }}"class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('customer_id') border-red-400 @enderror">
+                            aria-label="{{ t('admin.custom_orders.select_customer', 'Select Customer') }}"class="rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 @error('customer_id') border-red-400 @enderror">
                         <option value="">{{ t('admin.custom_orders.pick_customer', 'Pick a customer…') }}</option>
                         @foreach ($customers as $customer)
-                            <option value="{{ $customer->id }}" @selected(old('customer_id', $selectedCustomer?->id) === $customer->id)>
+                            <option value="{{ $customer->id }}" @selected((string) old('customer_id', $selectedCustomer?->id) === (string) $customer->id)>
                                 {{ $customer->name }} — {{ $customer->phone }}
                                 @if ($customer->measurementProfiles()->exists()) · {{ t('admin.custom_orders.has_profile', 'has measurements') }} @endif
                             </option>
                         @endforeach
                     </select>
-                    <button type="submit" class="rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-800">{{ t('admin.common.filter', 'Filter') }}</button>
+                    <button type="submit" class="rounded-xl bg-gold-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gold-800">{{ t('admin.common.filter', 'Filter') }}</button>
                 </form>
             </div>
 
@@ -66,43 +66,46 @@
 
             <form method="POST" action="{{ route('admin.custom-orders.store') }}" class="rounded-2xl border border-brand-100 bg-white p-6 shadow-sm">
                 @csrf
+                {{-- The customer is chosen with the GET selector above; the POST form
+                     must carry the selected id or validation rejects the submission. --}}
+                <input type="hidden" name="customer_id" value="{{ old('customer_id', $selectedCustomer?->id) }}">
                 <h2 class="mb-4 text-base font-bold text-brand-900">{{ t('admin.custom_orders.new_order', 'New Order') }}</h2>
 
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div>
                         <label for="customer_name" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.common.name', 'Name') }} <span class="text-red-500">*</span></label>
                         <input type="text" id="customer_name" name="customer_name" value="{{ old('customer_name', $selectedCustomer?->name ?? '') }}" required
-                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('customer_name') border-red-400 @enderror">
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 @error('customer_name') border-red-400 @enderror">
                         @error('customer_name')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div>
                         <label for="customer_phone" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.common.phone', 'Phone') }} <span class="text-red-500">*</span></label>
                         <input type="text" id="customer_phone" name="customer_phone" value="{{ old('customer_phone', $selectedCustomer?->phone ?? '') }}" required
-                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('customer_phone') border-red-400 @enderror">
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 @error('customer_phone') border-red-400 @enderror">
                         @error('customer_phone')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div class="sm:col-span-2">
                         <label for="customer_email" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.common.email', 'Email') }}</label>
                         <input type="email" id="customer_email" name="customer_email" value="{{ old('customer_email', $selectedCustomer?->email ?? '') }}"
-                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('customer_email') border-red-400 @enderror">
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 @error('customer_email') border-red-400 @enderror">
                         @error('customer_email')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div class="sm:col-span-2">
                         <label for="customer_address" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.common.address', 'Address') }} <span class="text-red-500">*</span></label>
                         <input type="text" id="customer_address" name="customer_address" value="{{ old('customer_address', $selectedCustomer?->address ?? '') }}" required
-                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('customer_address') border-red-400 @enderror">
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 @error('customer_address') border-red-400 @enderror">
                         @error('customer_address')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div>
                         <label for="customer_city" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.custom_orders.city', 'City') }}</label>
                         <input type="text" id="customer_city" name="customer_city" value="{{ old('customer_city', $selectedCustomer?->city ?? '') }}"
-                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('customer_city') border-red-400 @enderror">
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 @error('customer_city') border-red-400 @enderror">
                         @error('customer_city')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div class="sm:col-span-2">
                         <label for="notes" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.custom_orders.order_notes', 'Order Notes') }}</label>
                         <input type="text" id="notes" name="notes" value="{{ old('notes') }}" placeholder="{{ t('checkout.notes_placeholder', 'Any special instructions') }}"
-                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 @error('notes') border-red-400 @enderror">
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 @error('notes') border-red-400 @enderror">
                         @error('notes')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                 </div>
@@ -153,7 +156,7 @@
                 @endif
 
                 <div class="mt-6 flex flex-wrap gap-3">
-                    <button type="submit" class="rounded-xl bg-teal-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-teal-800">
+                    <button type="submit" class="rounded-xl bg-gold-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-gold-800">
                         {{ t('admin.custom_orders.create_order', 'Create Order') }}
                     </button>
                     <a href="{{ route('admin.custom-orders.index') }}" class="rounded-xl border border-brand-200 px-6 py-3 text-sm font-semibold text-brand-700 transition hover:bg-brand-50">
