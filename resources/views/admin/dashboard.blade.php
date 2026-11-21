@@ -15,7 +15,7 @@
     @endphp
 
     {{-- Stats --}}
-    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         @php
             $cards = [
                 ['label' => t('admin.dashboard.revenue_paid', 'Revenue (Paid)'), 'value' => money($revenue), 'icon' => 'M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z'],
@@ -28,7 +28,7 @@
             @php $featured = $index === 0; @endphp
             <div data-reveal
                  style="--reveal-delay: {{ $index * 55 }}ms"
-                 class="relative overflow-hidden rounded-xl border p-5 shadow-sm transition duration-200 {{ $featured ? 'border-brand-950 bg-brand-950 text-white' : 'border-brand-100 bg-white hover:-translate-y-0.5 hover:border-gold-300/70 hover:shadow-md' }}">
+                 class="relative overflow-hidden rounded-xl border p-4 shadow-sm transition duration-200 sm:p-5 {{ $featured ? 'border-brand-950 bg-brand-950 text-white' : 'border-brand-100 bg-white hover:-translate-y-0.5 hover:border-gold-300/70 hover:shadow-md' }}">
                 @if ($featured)
                     <span class="pointer-events-none absolute -end-10 -top-12 h-32 w-32 rounded-full border border-gold-400/20" aria-hidden="true"></span>
                 @endif
@@ -38,21 +38,21 @@
                         <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="{{ $card['icon'] }}"/></svg>
                     </span>
                 </div>
-                <p class="relative mt-4 font-display text-3xl leading-none {{ $featured ? 'text-white' : 'text-brand-900' }}">{{ $card['value'] }}</p>
+                <p class="relative mt-4 break-words font-display text-2xl leading-none sm:text-3xl {{ $featured ? 'text-white' : 'text-brand-900' }}">{{ $card['value'] }}</p>
             </div>
         @endforeach
     </div>
 
-    <div class="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <div data-reveal class="rounded-xl border border-brand-100 bg-white p-5 shadow-sm">
+    <div class="mt-3 grid grid-cols-2 gap-3 sm:mt-4 sm:gap-4 xl:grid-cols-4">
+        <div data-reveal class="rounded-xl border border-brand-100 bg-white p-4 shadow-sm sm:p-5">
             <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-500">{{ t('admin.dashboard.customers', 'Customers') }}</p>
             <p class="mt-3 font-display text-2xl leading-none text-brand-900">{{ $totalCustomers }}</p>
         </div>
-        <a href="{{ route('admin.messages.index') }}" data-reveal class="group rounded-xl border border-brand-100 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-gold-300/70 hover:shadow-md">
+        <a href="{{ route('admin.messages.index') }}" data-reveal class="group rounded-xl border border-brand-100 bg-white p-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-gold-300/70 hover:shadow-md sm:p-5">
             <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-500">{{ t('admin.dashboard.unread_messages', 'Unread Messages') }}</p>
             <p class="mt-3 font-display text-2xl leading-none {{ $unreadMessages > 0 ? 'text-gold-700' : 'text-brand-900' }}">{{ $unreadMessages }}</p>
         </a>
-        <a href="{{ route('admin.custom-orders.index') }}" data-reveal class="group rounded-xl border border-brand-100 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-gold-300/70 hover:shadow-md">
+        <a href="{{ route('admin.custom-orders.index') }}" data-reveal class="group col-span-2 rounded-xl border border-brand-100 bg-white p-4 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-gold-300/70 hover:shadow-md sm:p-5 xl:col-span-1">
             <p class="text-[11px] font-semibold uppercase tracking-[0.12em] text-brand-500">{{ t('admin.dashboard.pending_custom_requests', 'Pending Custom Requests') }}</p>
             <p class="mt-3 font-display text-2xl leading-none {{ $pendingCustomRequests > 0 ? 'text-gold-700' : 'text-brand-900' }}">{{ $pendingCustomRequests }}</p>
         </a>

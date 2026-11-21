@@ -3,7 +3,7 @@
 @section('title', t('admin.settings.title', 'Settings'))
 
 @section('content')
-    <div class="max-w-3xl rounded-2xl border border-brand-100 bg-white p-6 shadow-sm sm:p-8">
+    <div class="max-w-3xl rounded-2xl border border-brand-100 bg-white p-4 shadow-sm sm:p-8">
         <form method="POST" action="{{ route('admin.settings.update') }}" class="space-y-8">
             @csrf
             @method('PUT')
@@ -97,13 +97,13 @@
                 <div class="grid gap-5 sm:grid-cols-3">
                     <div>
                         <label for="facebook_url" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.facebook_url', 'Facebook URL') }}</label>
-                        <input type="url" id="facebook_url" name="facebook_url" value="{{ old('facebook_url', $settings['facebook_url']) }}" placeholder="https://facebook.com/…"
+                        <input type="text" inputmode="url" id="facebook_url" name="facebook_url" value="{{ old('facebook_url', $settings['facebook_url']) }}" placeholder="https://facebook.com/…"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 @error('facebook_url') border-red-400 @enderror">
                         @error('facebook_url')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                     <div>
                         <label for="instagram_url" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.instagram_url', 'Instagram URL') }}</label>
-                        <input type="url" id="instagram_url" name="instagram_url" value="{{ old('instagram_url', $settings['instagram_url']) }}" placeholder="https://instagram.com/…"
+                        <input type="text" inputmode="url" id="instagram_url" name="instagram_url" value="{{ old('instagram_url', $settings['instagram_url']) }}" placeholder="https://instagram.com/…"
                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 @error('instagram_url') border-red-400 @enderror">
                         @error('instagram_url')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
@@ -221,18 +221,21 @@
                         @error('mail_from_name')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
                 </div>
+                {{-- The test-email control is tied to a sibling form through the
+                     form="" attribute: nesting a second <form> here would close
+                     the settings form early and the Save button would submit
+                     nothing at all. --}}
                 <div class="mt-5 rounded-xl border border-brand-100 bg-brand-50 p-4">
-                    <form method="POST" action="{{ route('admin.settings.test_email') }}" class="flex flex-wrap items-end gap-3">
-                        @csrf
+                    <div class="flex flex-wrap items-end gap-3">
                         <div class="grow">
                             <label for="test_email_to" class="mb-1.5 block text-sm font-medium text-brand-900">{{ t('admin.settings.test_email_to', 'Send a test email to') }}</label>
-                            <input type="email" id="test_email_to" name="test_email_to" value="{{ old('test_email_to', $settings['shop_email']) }}" required
+                            <input type="email" id="test_email_to" name="test_email_to" form="settings-test-email-form" value="{{ old('test_email_to', $settings['shop_email']) }}" required
                                    class="w-full rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 @error('test_email_to') border-red-400 @enderror">
                         </div>
-                        <button type="submit" class="rounded-xl bg-brand-800 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">
+                        <button type="submit" form="settings-test-email-form" class="rounded-xl bg-brand-800 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">
                             {{ t('admin.settings.send_test_email', 'Send test email') }}
                         </button>
-                    </form>
+                    </div>
                     <p class="mt-2 text-xs text-brand-600">{{ t('admin.settings.test_email_hint', 'Saves are applied immediately — this test uses the settings from the fields above (after you save). If sending fails, the exact error is shown so you can fix host, port or credentials.') }}</p>
                 </div>
             </section>
@@ -410,7 +413,34 @@
                 </div>
             </section>
 
-            <button type="submit" class="rounded-xl bg-gold-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-gold-800">{{ t('admin.settings.save', 'Save Settings') }}</button>
+            <div id="settings-save" class="flex scroll-mt-24 flex-wrap items-center gap-4 border-t border-brand-100 pt-6">
+                <button type="submit" class="rounded-xl bg-gold-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-gold-800">
+                    {{ t('admin.settings.save', 'Save Settings') }}
+                </button>
+
+                {{-- The global flash sits at the top of a very long page, so the
+                     result of a save is repeated here, next to the button the
+                     owner just pressed. --}}
+                @if (session('success'))
+                    <p role="status" class="text-sm font-semibold text-green-700">
+                        {{ session('success') }}
+                    </p>
+                @endif
+                @if (session('error'))
+                    <p role="alert" class="text-sm font-semibold text-red-700">
+                        {{ session('error') }}
+                    </p>
+                @endif
+                @if ($errors->any())
+                    <p role="alert" class="text-sm font-semibold text-red-700">
+                        {{ t('admin.settings.not_saved', 'Not saved — fix the highlighted fields above.') }}
+                    </p>
+                @endif
+            </div>
+        </form>
+
+        <form id="settings-test-email-form" method="POST" action="{{ route('admin.settings.test_email') }}" class="hidden">
+            @csrf
         </form>
     </div>
 @endsection

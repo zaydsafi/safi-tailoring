@@ -1,0 +1,15 @@
+HTTP/1.1 302 Found
+Host: 127.0.0.1:8000
+Connection: close
+X-Powered-By: PHP/8.3.15
+Cache-Control: no-cache, private
+Date: Thu, 19 Nov 2026 22:03:52 GMT
+Location: http://127.0.0.1:8000/admin/settings
+Content-Type: text/html; charset=utf-8
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+Set-Cookie: XSRF-TOKEN=eyJpdiI6IjBzZTJ0ejVhS3lMTGoxaTQvSnZ0YWc9PSIsInZhbHVlIjoiTlprRUpLbFZ5d2VZek1KUVBJeXg3a3U0WjdvSW1ZWnZyUHZjYjdQdmRadmFwV1gxNGlsSFNYRFZTR3YzMm10dHhzU3crSVQ2dnJIZWZlK0p1ZE9zMjZ3bTU5Z3VuK1NFU2dNRnZneEpIQktLa3EwYXdVN3ozTURaZXhNM0lzc08iLCJtYWMiOiI0NDQ4NzZiZDdlZjkwODRmMDRjMjEzMzQ3MTA0OTU5Y2RiMWRjMTQwNTE3Yjc3YWRlNjdlZDAxNjZlZTg4MGM3IiwidGFnIjoiIn0%3D; expires=Fri, 20 Nov 2026 00:03:52 GMT; Max-Age=7200; path=/; samesite=lax
+Set-Cookie: safi-tailoring-shop-session=eyJpdiI6Ik5oMDRnZU5GRy9jNng5R1FGNXlET2c9PSIsInZhbHVlIjoiQ0pUMXR0QUswaG5BZkhCaElGSi9HTERvSThZdlBiOXdvd01NS3dzRmg2d2Fld0NmUVRncHp2TEFhRlMyVS81MlE3b2FXWHREekFGREY5Z1REVktIell0eklsNWZ2QzFZdlJLTElSdjc4MGZtN0lXazNObG9IcFZoSy9RdFdpejEiLCJtYWMiOiIwNjI0YjhmY2ZiMTc2ZjcyN2FlZTRmYmMwODZlMjBjNGY2OTBmNmU2NmQxZDAyYmZiMzkwZDlkNzM3YWU2NDQ0IiwidGFnIjoiIn0%3D; expires=Fri, 20 Nov 2026 00:03:52 GMT; Max-Age=7200; path=/; httponly; samesite=lax
+

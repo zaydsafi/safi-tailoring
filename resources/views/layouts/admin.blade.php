@@ -13,7 +13,9 @@
 <body class="bg-brand-50 font-sans text-brand-900 antialiased">
 <div x-data="{ sidebarOpen: false }"
      @keydown.escape.window="sidebarOpen = false"
+     @resize.window.debounce.200ms="if (window.matchMedia('(min-width: 1024px)').matches) sidebarOpen = false"
      x-effect="document.body.classList.toggle('overflow-hidden', sidebarOpen)"
+     :data-sidebar-open="sidebarOpen ? 'true' : 'false'"
      class="admin-shell">
     {{-- Mobile sidebar backdrop --}}
     <div x-show="sidebarOpen" x-cloak x-transition.opacity.duration.200ms
@@ -23,8 +25,7 @@
     {{-- Sidebar --}}
     <aside id="admin-sidebar"
            aria-label="{{ t('admin.common.admin_navigation', 'Admin navigation') }}"
-           class="fixed inset-y-0 start-0 z-40 flex h-screen max-h-screen h-dvh max-h-dvh w-64 flex-col overflow-hidden border-e border-white/10 bg-brand-950 text-white shadow-2xl shadow-brand-950/30 transition-transform duration-200 lg:translate-x-0!"
-           :class="sidebarOpen ? 'translate-x-0' : 'rtl:translate-x-full -translate-x-full'">
+           class="fixed inset-y-0 start-0 z-40 flex h-screen max-h-screen h-dvh max-h-dvh w-64 flex-col overflow-hidden border-e border-white/10 bg-brand-950 text-white shadow-2xl shadow-brand-950/30">
         <div class="flex h-16 shrink-0 items-center gap-3 border-b border-dashed border-white/15 px-5">
             <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gold-400/40 bg-white/5 text-gold-300">
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
@@ -32,11 +33,11 @@
                 </svg>
             </span>
             <div class="min-w-0">
-                <p class="truncate font-display text-[15px] font-semibold leading-tight tracking-tight">{{ $shopSettings['shop_name'] ?? 'Safi Tailoring' }}</p>
+                <p class="line-clamp-2 font-display text-[15px] font-semibold leading-tight tracking-tight">{{ $shopSettings['shop_name'] ?? 'Safi Tailoring' }}</p>
                 <p class="text-[10px] font-semibold uppercase tracking-[0.16em] text-brand-300">{{ t('admin.common.admin_panel', 'Admin Panel') }}</p>
             </div>
             <button type="button" @click="sidebarOpen = false"
-                    class="ms-auto rounded-lg p-1.5 text-brand-300 transition hover:bg-white/10 hover:text-white lg:hidden"
+                    class="ms-auto flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-brand-300 transition hover:bg-white/10 hover:text-white lg:hidden"
                     aria-label="{{ t('admin.common.close_menu', 'Close menu') }}">
                 <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>

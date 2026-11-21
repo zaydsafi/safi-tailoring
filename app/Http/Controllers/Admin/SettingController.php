@@ -23,6 +23,16 @@ class SettingController extends Controller
 
     public function update(Request $request)
     {
+        // A pasted profile link is often written without a scheme
+        // ("facebook.com/shop"); the browser's url check would then refuse to
+        // submit the whole form with no visible explanation, so normalise the
+        // value here instead of rejecting the save.
+        $request->merge([
+            'facebook_url' => $this->normalizeUrl($request->input('facebook_url')),
+            'instagram_url' => $this->normalizeUrl($request->input('instagram_url')),
+            'shop_email' => trim((string) $request->input('shop_email')) ?: null,
+        ]);
+
         $data = $request->validate([
             'shop_name' => ['required', 'string', 'max:255'],
             'shop_tagline' => ['nullable', 'string', 'max:255'],
@@ -78,7 +88,31 @@ class SettingController extends Controller
             Setting::set($flag, $request->boolean($flag) ? '1' : '0');
         }
 
-        return back()->with('success', t('admin.flash.settings_saved', 'Settings saved.'));
+        // The form is several screens long, so land on the save row itself:
+        // the owner sees the confirmation right where the button was pressed
+        // instead of being dropped back at the top of the page.
+        return redirect()
+            ->to(route('admin.settings.edit').'#settings-save')
+            ->with('success', t('admin.flash.settings_saved', 'Settings saved.'));
+    }
+
+    /**
+     * Turns "facebook.com/page", "//facebook.com/page" or an empty string
+     * into a value the url rule accepts, or null when nothing was entered.
+     */
+    private function normalizeUrl(?string $value): ?string
+    {
+        $value = trim((string) $value);
+
+        if ($value === '') {
+            return null;
+        }
+
+        if (! preg_match('#^https?://#i', $value)) {
+            return 'https://'.ltrim($value, '/');
+        }
+
+        return $value;
     }
 
     /**

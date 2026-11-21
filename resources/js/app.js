@@ -239,9 +239,44 @@ function initAddToCartEvents() {
     });
 }
 
+/*
+ * Long admin forms (Settings especially) take a moment to post. Dim the
+ * pressed submit button so the click is visibly acknowledged, without ever
+ * disabling it — the submission itself stays untouched.
+ */
+function initSubmitFeedback() {
+    document.addEventListener('submit', (event) => {
+        const form = event.target;
+        if (!(form instanceof HTMLFormElement) || event.defaultPrevented) {
+            return;
+        }
+
+        if ((form.getAttribute('target') || '_self') !== '_self') {
+            return;
+        }
+
+        const button = form.querySelector('button[type="submit"]:not([form])');
+        if (!button) {
+            return;
+        }
+
+        button.setAttribute('aria-busy', 'true');
+        button.classList.add('pointer-events-none', 'opacity-70');
+    });
+
+    // Restoring from the back/forward cache must not leave a dimmed button.
+    window.addEventListener('pageshow', () => {
+        document.querySelectorAll('button[aria-busy="true"]').forEach((button) => {
+            button.removeAttribute('aria-busy');
+            button.classList.remove('pointer-events-none', 'opacity-70');
+        });
+    });
+}
+
 initScrollReveal();
 initPointerTilt();
 initResponsiveTables();
 initAddToCartEvents();
+initSubmitFeedback();
 
 Alpine.start();

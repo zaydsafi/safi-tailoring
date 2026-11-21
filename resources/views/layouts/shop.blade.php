@@ -153,7 +153,7 @@
                     <svg class="w-8 h-8 text-brand-700" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-1.488m3.42 3.42a15.995 15.995 0 0 1 1.622 3.395m-2.25 4.764c.101.324.151.66.151 1.001 0 1.036-.313 2-.85 2.8m-5.186-3.023a15.994 15.994 0 0 1-3.388 1.62m5.32-1.168a15.998 15.998 0 0 0-3.42-3.42m1.303 4.764c-.04.322-.06.65-.06.982 0 1.036.313 2 .85 2.8M6.53 9.53a15.994 15.994 0 0 0-1.622 3.395m2.143-4.75A15.995 15.995 0 0 1 12 7.5c.352 0 .697.03 1.032.086"/>
                     </svg>
-                    <span class="font-display font-bold text-lg sm:text-xl text-brand-900 leading-tight max-w-[40vw] truncate sm:max-w-none">
+                    <span class="font-display font-bold text-lg sm:text-xl text-brand-900 leading-tight max-w-[52vw] truncate sm:max-w-none">
                         {{ $shopSettings['shop_name'] }}
                     </span>
                 </a>

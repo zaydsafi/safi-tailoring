@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="description" content="Settings · Safi Tailoring Shop — private administration area.">
+    <meta name="theme-color" content="#0e1520">
+    <link rel="icon" type="image/x-icon" href="http://127.0.0.1:8000/favicon.ico">
+    <title>Settings · Safi Tailoring Shop</title>
+    <link rel="preload" as="style" href="http://127.0.0.1:8000/build/assets/app-Di74mQtO.css" /><link rel="modulepreload" as="script" href="http://127.0.0.1:8000/build/assets/app-DIPojlJb.js" /><link rel="stylesheet" href="http://127.0.0.1:8000/build/assets/app-Di74mQtO.css" /><script type="module" src="http://127.0.0.1:8000/build/assets/app-DIPojlJb.js"></script><script id="browser-logger-active">
+(function() {
+    const ENDPOINT = 'http://127.0.0.1:8000/_boost/browser-logs';
+    const logQueue = [];
+    let flushTimeout = null;
+    const captureTypes = ["error","warning","info","log","debug","table"];
+
+    console.log('🔍 Browser logger active (MCP server detected). Posting to: ' + ENDPOINT);
+
+    // Store original console methods
+    const originalConsole = {
+        log: console.log,
+        debug: console.debug,
+        info: console.info,
+        error: console.error,
+        warn: console.warn,
+        table: console.table
+    };
+
+    // Walk own enumerable keys so JSON.stringify cannot auto-invoke a proxy fake toJSON (e.g. Livewire's `$wire`) and fire a real request.
+    function toSafeValue(value, seen) {
+        if (value === null || typeof value !== 'object') {
+            return value;
+        }
+        if (value instanceof Error) {
+            return { name: value.name, message: value.message, stack: value.stack };
+        }
+        // Date has no own enumerable keys, so the walk below would collapse it to {}.
+        if (value instanceof Date) {
+            return value.toISOString();
+        }
+        if (seen.has(value)) {
+            return '[Circular]';
+        }
+        seen.add(value);
+        if (Array.isArray(value)) {
+            return value.map((item) => toSafeValue(item, seen));
+        }
+        const plain = {};
+        for (const key of Object.keys(value)) {
+            if (key === 'toJSON') continue;
+            try {
+                plain[key] = toSafeValue(value[key], seen);
+            } catch (e) {
+                plain[key] = '[Unreadable]';
+            }
+        }
+        return plain;
+    }
+
+    // Helper to safely stringify values
+    function safeStringify(obj) {
+        return JSON.stringify(toSafeValue(obj, new WeakSet()));
+    }
+
+    // Normalize log type for consistency (e.g., 'warn' to 'warning')
+    function normalizeType(type) {
+        return type === 'warn' ? 'warning' : type;
+    }
+
+    // Determine if a log type should be captured based on configured levels
+    function shouldCapture(type) {
+        return captureTypes.includes(normalizeType(type));
+    }
+
+    // Batch and send logs
+    function flushLogs() {
+        if (logQueue.length === 0) return;
+
+        const batch = logQueue.splice(0, logQueue.length);
+
+        fetch(ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ logs: batch })
+        }).catch(err => {
+            // Silently fail to avoid infinite loops
+            originalConsole.error('Failed to send logs:', err);
+        });
+    }
+
+    // Debounced flush (100ms)
+    function scheduleFlush() {
+        if (flushTimeout) clearTimeout(flushTimeout);
+        flushTimeout = setTimeout(flushLogs, 100);
+    }
+
+    // Intercept console methods
+    ['log', 'debug', 'info', 'error', 'warn', 'table'].forEach(method => {
+        console[method] = function(...args) {
+            // Call original method
+            originalConsole[method].apply(console, args);
+
+            // Capture log data
+            try {
+                if (!shouldCapture(method)) {
+                    return;
+                }
+
+                logQueue.push({
+                    type: method,
+                    timestamp: new Date().toISOString(),
+                    data: args.map(arg => {
+                        try {
+                            return typeof arg === 'object' ? JSON.parse(safeStringify(arg)) : arg;
+                        } catch (e) {
+                            return String(arg);
+                        }
+                    }),
+                    url: window.location.href,
+                    userAgent: navigator.userAgent
+                });
+
+                scheduleFlush();
+            } catch (e) {
+                // Fail silently
+            }
+        };
+    });
+
+    // Global error handlers for uncaught errors
+    const originalOnError = window.onerror;
+    window.onerror = function boostErrorHandler(errorMsg, url, lineNumber, colNumber, error) {
+        try {
+            if (shouldCapture('error')) {
+                logQueue.push({
+                    type: 'uncaught_error',
+                    timestamp: new Date().toISOString(),
+                    data: [{
+                        message: errorMsg,
+                        filename: url,
+                        lineno: lineNumber,
+                        colno: colNumber,
+                        error: error ? {
+                            name: error.name,
+                            message: error.message,
+                            stack: error.stack
+                        } : null
+                    }],
+                    url: window.location.href,
+                    userAgent: navigator.userAgent
+                });
+
+                scheduleFlush();
+            }
+
+        } catch (e) {
+            // Fail silently
+        }
+
+        // Call original handler if it exists
+        if (originalOnError && typeof originalOnError === 'function') {
+            return originalOnError(errorMsg, url, lineNumber, colNumber, error);
+        }
+
+        // Let the error continue to propagate
+        return false;
+    }
+    window.addEventListener('error', (event) => {
+        try {
+            if (!shouldCapture('error')) {
+                return false;
+            }
+
+            logQueue.push({
+                type: 'window_error',
+                timestamp: new Date().toISOString(),
+                data: [{
+                    message: event.message,
+                    filename: event.filename,
+                    lineno: event.lineno,
+                    colno: event.colno,
+                    error: event.error ? {
+                        name: event.error.name,
+                        message: event.error.message,
+                        stack: event.error.stack
+                    } : null
+                }],
+                url: window.location.href,
+                userAgent: navigator.userAgent
+            });
+
+            scheduleFlush();
+        } catch (e) {
+            // Fail silently
+        }
+
+        // Let the error continue to propagate
+        return false;
+    });
+    window.addEventListener('unhandledrejection', (event) => {
+        try {
+            if (!shouldCapture('error')) {
+                return false;
+            }
+
+            logQueue.push({
+                type: 'error',
+                timestamp: new Date().toISOString(),
+                data: [{
+                    message: 'Unhandled Promise Rejection',
+                    reason: toSafeValue(event.reason, new WeakSet())
+                }],
+                url: window.location.href,
+                userAgent: navigator.userAgent
+            });
+
+            scheduleFlush();
+        } catch (e) {
+            // Fail silently
+        }
+
+        // Let the rejection continue to propagate
+        return false;
+    });
+
+    // Flush on page unload
+    window.addEventListener('beforeunload', () => {
+        if (logQueue.length > 0) {
+            navigator.sendBeacon(ENDPOINT, JSON.stringify({ logs: logQueue }));
+        }
+    });
+})();
+</script>
+</head>
+<body class="bg-brand-50 font-sans text-brand-900 antialiased">
+<div x-data="{ sidebarOpen: false }"
+     @keydown.escape.window="sidebarOpen = false"
+     x-effect="document.body.classList.toggle('overflow-hidden', sidebarOpen)"
+     class="admin-shell">
+    
+    <div x-show="sidebarOpen" x-cloak x-transition.opacity.duration.200ms
+         class="fixed inset-0 z-30 bg-brand-950/60 backdrop-blur-sm lg:hidden"
+         @click="sidebarOpen = false" aria-hidden="true"></div>
+
+    
+    <aside id="admin-sidebar"
+           aria-label="Admin navigation"
+           class="fixed inset-y-0 start-0 z-40 flex h-screen max-h-screen h-dvh max-h-dvh w-64 flex-col overflow-hidden border-e border-white/10 bg-brand-950 text-white shadow-2xl shadow-brand-950/30 transition-transform duration-200 lg:translate-x-0!"
+           :class="sidebarOpen ? 'translate-x-0' : 'rtl:translate-x-full -translate-x-full'">
+        <div class="flex h-16 shrink-0 items-center gap-3 border-b border-dashed border-white/15 px-5">
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gold-400/40 bg-white/5 text-gold-300">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/>
+                </svg>
+            </span>
+            <div class="min-w-0">
+                <p class="truncate font-display text-[15px] font-semibold leading-tight tracking-tight">Safi Tailoring Shop</p>
+                <p class="text-[10px] font-semibold uppercase tracking-[0.16em] text-brand-300">Admin Panel</p>
+            </div>
+            <button type="button" @click="sidebarOpen = false"
+                    class="ms-auto rounded-lg p-1.5 text-brand-300 transition hover:bg-white/10 hover:text-white lg:hidden"
+                    aria-label="Close menu">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        
+        <nav class="admin-sidebar-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4"
+             aria-label="Admin navigation">
+                                        
+                
+                <a href="http://127.0.0.1:8000/admin"
+                                      class="group relative flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition text-brand-200 hover:bg-white/5 hover:text-white">
+                                        <svg class="h-5 w-5 shrink-0 text-brand-300 group-hover:text-brand-100"
+                         fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/>
+                    </svg>
+                    <span class="truncate">Dashboard</span>
+                </a>
+                                                <div class="mx-3 my-3 border-t border-white/10" role="presentation"></div>
+                
+                
+                <a href="http://127.0.0.1:8000/admin/orders"
+                                      class="group relative flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition text-brand-200 hover:bg-white/5 hover:text-white">
+                                        <svg class="h-5 w-5 shrink-0 text-brand-300 group-hover:text-brand-100"
+                         fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6M9 8h6M5.25 3h13.5A1.75 1.75 0 0120.5 4.75v14.5A1.75 1.75 0 0118.75 21H5.25a1.75 1.75 0 01-1.75-1.75V4.75A1.75 1.75 0 015.25 3z"/>
+                    </svg>
+                    <span class="truncate">Orders</span>
+                </a>
+                            
+                
+                <a href="http://127.0.0.1:8000/admin/custom-orders"
+                                      class="group relative flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition text-brand-200 hover:bg-white/5 hover:text-white">
+                                        <svg class="h-5 w-5 shrink-0 text-brand-300 group-hover:text-brand-100"
+                         fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM12 15a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <span class="truncate">Custom Orders</span>
+                </a>
+                                                <div class="mx-3 my-3 border-t border-white/10" role="presentation"></div>
+                
+                
+                <a href="http://127.0.0.1:8000/admin/products"
+                                      class="group relative flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition text-brand-200 hover:bg-white/5 hover:text-white">
+                                        <svg class="h-5 w-5 shrink-0 text-brand-300 group-hover:text-brand-100"
+                         fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/>
+                    </svg>
+                    <span class="truncate">Products</span>
+                </a>
+                            
+                
+                <a href="http://127.0.0.1:8000/admin/categories"
+                                      class="group relative flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition text-brand-200 hover:bg-white/5 hover:text-white">
+                                        <svg class="h-5 w-5 shrink-0 text-brand-300 group-hover:text-brand-100"
+                         fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM3.75 12h.007v.008H3.75V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm-.375 5.25h.007v.008H3.75v-.008zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/>
+                    </svg>
+                    <span class="truncate">Categories</span>
+                </a>
+                                                <div class="mx-3 my-3 border-t border-white/10" role="presentation"></div>
+                
+                
+                <a href="http://127.0.0.1:8000/admin/users"
+                                      class="group relative flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition text-brand-200 hover:bg-white/5 hover:text-white">
+                                        <svg class="h-5 w-5 shrink-0 text-brand-300 group-hover:text-brand-100"
+                         fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/>
+                    </svg>
+                    <span class="truncate">Users</span>
+                </a>
+                            
+                
+                <a href="http://127.0.0.1:8000/admin/messages"
+                                      class="group relative flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition text-brand-200 hover:bg-white/5 hover:text-white">
+                                        <svg class="h-5 w-5 shrink-0 text-brand-300 group-hover:text-brand-100"
+                         fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/>
+                    </svg>
+                    <span class="truncate">Messages</span>
+                </a>
+                                                <div class="mx-3 my-3 border-t border-white/10" role="presentation"></div>
+                
+                
+                <a href="http://127.0.0.1:8000/admin/email-log"
+                                      class="group relative flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition text-brand-200 hover:bg-white/5 hover:text-white">
+                                        <svg class="h-5 w-5 shrink-0 text-brand-300 group-hover:text-brand-100"
+                         fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
+                    </svg>
+                    <span class="truncate">Email Log</span>
+                </a>
+                            
+                
+                <a href="http://127.0.0.1:8000/admin/backups"
+                                      class="group relative flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition text-brand-200 hover:bg-white/5 hover:text-white">
+                                        <svg class="h-5 w-5 shrink-0 text-brand-300 group-hover:text-brand-100"
+                         fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"/>
+                    </svg>
+                    <span class="truncate">Backups</span>
+                </a>
+                            
+                
+                <a href="http://127.0.0.1:8000/admin/translations"
+                                      class="group relative flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition text-brand-200 hover:bg-white/5 hover:text-white">
+                                        <svg class="h-5 w-5 shrink-0 text-brand-300 group-hover:text-brand-100"
+                         fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 0 1 6-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 01-3.827-5.802"/>
+                    </svg>
+                    <span class="truncate">Translations</span>
+                </a>
+                            
+                
+                <a href="http://127.0.0.1:8000/admin/roles"
+                                      class="group relative flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition text-brand-200 hover:bg-white/5 hover:text-white">
+                                        <svg class="h-5 w-5 shrink-0 text-brand-300 group-hover:text-brand-100"
+                         fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 0 1 6-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 01-3.827-5.802"/>
+                    </svg>
+                    <span class="truncate">Roles &amp; Permissions</span>
+                </a>
+                            
+                
+                <a href="http://127.0.0.1:8000/admin/settings"
+                    aria-current="page"                    class="group relative flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition bg-white/[0.08] text-white">
+                                            <span class="absolute inset-y-2 start-0 w-[3px] rounded-full bg-gold-400" aria-hidden="true"></span>
+                                        <svg class="h-5 w-5 shrink-0 text-gold-300"
+                         fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281zM15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <span class="truncate">Settings</span>
+                </a>
+                    </nav>
+
+        <div class="shrink-0 border-t border-white/10 p-4">
+            <nav class="mb-3 flex items-center gap-1 rounded-lg bg-white/5 p-1 lg:hidden" aria-label="Language">
+                                    <a href="http://127.0.0.1:8000/admin/lang/en"
+                       class="flex-1 rounded-md px-2 py-1.5 text-center text-xs font-semibold transition bg-gold-600 text-white"
+                        aria-current="true" >EN</a>
+                                    <a href="http://127.0.0.1:8000/admin/lang/ps"
+                       class="flex-1 rounded-md px-2 py-1.5 text-center text-xs font-semibold transition text-brand-200 hover:bg-white/10 hover:text-white"
+                       >پښتو</a>
+                                    <a href="http://127.0.0.1:8000/admin/lang/fa"
+                       class="flex-1 rounded-md px-2 py-1.5 text-center text-xs font-semibold transition text-brand-200 hover:bg-white/10 hover:text-white"
+                       >فارسی</a>
+                            </nav>
+            <a href="http://127.0.0.1:8000/en" target="_blank" class="mb-1 flex min-h-11 items-center gap-2 rounded-lg px-3 py-2 text-sm text-brand-200 transition hover:bg-white/5 hover:text-white">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-4.5-6L21 3m0 0l-3.75 0M21 3v3.75"/></svg>
+                View Storefront
+            </a>
+            <form method="POST" action="http://127.0.0.1:8000/admin/logout">
+                <input type="hidden" name="_token" value="v85xUOvLOnDTr33Z1QqRPJGTKAmxBTcthPsXeMyq" autocomplete="off">                <button type="submit" class="flex min-h-11 w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-brand-200 transition hover:bg-white/5 hover:text-white">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
+                    Sign Out
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    
+    <div class="min-h-dvh lg:ps-64">
+        <header class="sticky top-0 z-20 flex h-16 items-center gap-3 border-b border-brand-100/80 bg-brand-50/85 px-4 backdrop-blur sm:px-6">
+            <button type="button" @click="sidebarOpen = true"
+                    :aria-expanded="sidebarOpen.toString()"
+                    aria-controls="admin-sidebar"
+                    aria-label="Open menu"
+                    class="-ms-1 rounded-lg p-2.5 text-brand-700 transition hover:bg-brand-100/70 lg:hidden">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+            </button>
+            <h1 class="min-w-0 flex-1 truncate font-display text-xl font-semibold tracking-tight text-brand-900">Settings</h1>
+            <div class="ms-auto flex shrink-0 items-center gap-3">
+                <nav class="hidden items-center rounded-lg border border-brand-200/70 bg-white/60 p-0.5 sm:flex" aria-label="Language">
+                                            <a href="http://127.0.0.1:8000/admin/lang/en"
+                           class="rounded-md px-2.5 py-1 text-xs font-semibold transition bg-brand-900 text-white shadow-sm"
+                            aria-current="true" >EN</a>
+                                            <a href="http://127.0.0.1:8000/admin/lang/ps"
+                           class="rounded-md px-2.5 py-1 text-xs font-semibold transition text-brand-500 hover:text-brand-900"
+                           >پښتو</a>
+                                            <a href="http://127.0.0.1:8000/admin/lang/fa"
+                           class="rounded-md px-2.5 py-1 text-xs font-semibold transition text-brand-500 hover:text-brand-900"
+                           >فارسی</a>
+                                    </nav>
+                <span class="hidden text-sm text-brand-600 sm:block">Safi Admin</span>
+                <span class="flex h-9 w-9 items-center justify-center rounded-full bg-brand-900 text-sm font-bold text-white ring-2 ring-gold-300/40">S</span>
+            </div>
+        </header>
+
+        <main class="p-4 pb-10 sm:p-6">
+                            <div data-reveal role="status" class="mb-6 rounded-lg border-s-2 border-green-600 bg-green-50 px-4 py-3 text-sm font-medium text-green-800">Settings saved.</div>
+                                    
+                <div class="max-w-3xl rounded-2xl border border-brand-100 bg-white p-6 shadow-sm sm:p-8">
+        <form method="POST" action="http://127.0.0.1:8000/admin/settings" class="space-y-8">
+            <input type="hidden" name="_token" value="v85xUOvLOnDTr33Z1QqRPJGTKAmxBTcthPsXeMyq" autocomplete="off">            <input type="hidden" name="_method" value="PUT">
+            <section>
+                <h2 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">Shop Information</h2>
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <div><label for="shop_name"
+                        class="mb-1.5 block text-sm font-medium text-brand-900">Shop Name <span class="text-red-500">*</span></label>
+                        <input type="text" id="shop_name" name="shop_name" value="Safi Tailoring Shop" required
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                                            </div>
+                    <div>
+                        <label for="shop_tagline" class="mb-1.5 block text-sm font-medium text-brand-900">Tagline</label>
+                        <input type="text" id="shop_tagline" name="shop_tagline" value="Custom tailoring &amp; fine ready-to-wear"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                                            </div>
+                    <div>
+                        <label for="shop_phone" class="mb-1.5 block text-sm font-medium text-brand-900">Phone</label>
+                        <input type="text" id="shop_phone" name="shop_phone" value="+93 700 000 000"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                                            </div>
+                    <div>
+                        <label for="shop_email" class="mb-1.5 block text-sm font-medium text-brand-900">Email</label>
+                        <input type="email" id="shop_email" name="shop_email" value="sscc.url@gmail.com"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                                            </div>
+                    <div class="sm:col-span-2">
+                        <label for="shop_address" class="mb-1.5 block text-sm font-medium text-brand-900">Address</label>
+                        <textarea id="shop_address" name="shop_address" rows="2"
+                                  class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">Main Bazaar Road, Kabul, Afghanistan</textarea>
+                                            </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">Currency &amp; Delivery</h2>
+                <div class="grid gap-5 sm:grid-cols-3">
+                    <div>
+                        <label for="currency_symbol" class="mb-1.5 block text-sm font-medium text-brand-900">Currency Symbol <span class="text-red-500">*</span></label>
+                        <input type="text" id="currency_symbol" name="currency_symbol" value="AFN" required maxlength="10"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                                            </div>
+                    <div>
+                        <label for="delivery_fee" class="mb-1.5 block text-sm font-medium text-brand-900">Delivery Fee</label>
+                        <input type="number" id="delivery_fee" step="0.01" min="0" name="delivery_fee" value="100"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                                            </div>
+                    <div>
+                        <label for="free_delivery_over" class="mb-1.5 block text-sm font-medium text-brand-900">Free Delivery Over</label>
+                        <input type="number" id="free_delivery_over" step="0.01" min="0" name="free_delivery_over" value="5000"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                                            </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">Homepage</h2>
+                <div class="grid gap-5">
+                    <div>
+                        <label for="hero_title" class="mb-1.5 block text-sm font-medium text-brand-900">Hero Title</label>
+                        <input type="text" id="hero_title" name="hero_title" value="Crafted to Fit, Stitched with Care"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                                            </div>
+                    <div>
+                        <label for="hero_subtitle" class="mb-1.5 block text-sm font-medium text-brand-900">Hero Subtitle</label>
+                        <textarea id="hero_subtitle" name="hero_subtitle" rows="2"
+                                  class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">Bespoke tailoring and quality ready-made garments for men and women. Order online — we stitch to your measurements.</textarea>
+                                            </div>
+                    <div>
+                        <label for="announcement" class="mb-1.5 block text-sm font-medium text-brand-900">Announcement Bar</label>
+                        <input type="text" id="announcement" name="announcement" value="Welcome to Safi Tailoring Shop — free delivery on orders over 5,000 AFN"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                                            </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">Social &amp; Messaging</h2>
+                <div class="grid gap-5 sm:grid-cols-3">
+                    <div>
+                        <label for="facebook_url" class="mb-1.5 block text-sm font-medium text-brand-900">Facebook URL</label>
+                        <input type="url" id="facebook_url" name="facebook_url" value="" placeholder="https://facebook.com/…"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                                            </div>
+                    <div>
+                        <label for="instagram_url" class="mb-1.5 block text-sm font-medium text-brand-900">Instagram URL</label>
+                        <input type="url" id="instagram_url" name="instagram_url" value="" placeholder="https://instagram.com/…"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                                            </div>
+                    <div>
+                        <label for="whatsapp_number" class="mb-1.5 block text-sm font-medium text-brand-900">WhatsApp Number</label>
+                        <input type="text" id="whatsapp_number" name="whatsapp_number" value="" placeholder="+93…"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                                            </div>
+                    <div>
+                        <label for="whatsapp_country_code" class="mb-1.5 block text-sm font-medium text-brand-900">Country Code</label>
+                        <input type="text" id="whatsapp_country_code" name="whatsapp_country_code" value="93" placeholder="93"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                        <p class="mt-1 text-xs text-brand-600">Used to turn local numbers (0700…) into international ones (93700…).</p>
+                                            </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">HesabPay Payments</h2>
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <div class="sm:col-span-2">
+                        <label class="flex items-center gap-2 text-sm font-medium text-brand-900">
+                            <input type="checkbox" name="hesabpay_enabled" value="1" checked                                   class="h-4 w-4 rounded border-brand-200 text-gold-600 focus:ring-gold-600/20">
+                            Enable HesabPay as a checkout payment method
+                        </label>
+                    </div>
+                    <div>
+                        <label for="hesabpay_environment" class="mb-1.5 block text-sm font-medium text-brand-900">Environment</label>
+                        <select id="hesabpay_environment" name="hesabpay_environment"
+                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                            <option value="production" selected>Production (live)</option>
+                            <option value="sandbox" >Sandbox (testing)</option>
+                        </select>
+                                            </div>
+                    <div>
+                        <label for="hesabpay_api_key" class="mb-1.5 block text-sm font-medium text-brand-900">API Key</label>
+                        <input type="text" id="hesabpay_api_key" name="hesabpay_api_key" value="NDc1ZjM3YzQtZjExYi00ZTdmLTk1MWItZjMwN2ZlODA2ZTk2X180NzU0MGZiZGMzM2YxYmYwODdmYQ==" placeholder="From your HesabPay merchant account"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                        <p class="mt-1 text-xs text-brand-600">Keep this private. Rotate it in your HesabPay dashboard if it is ever shared.</p>
+                                            </div>
+                    <div class="sm:col-span-2" x-data="{ gen() { const a = new Uint8Array(24); crypto.getRandomValues(a); return Array.from(a, b => b.toString(16).padStart(2, '0')).join(''); } }">
+                        <label for="hesabpay_webhook_secret" class="mb-1.5 block text-sm font-medium text-brand-900">Webhook Secret (required for webhooks)</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="hesabpay_webhook_secret" name="hesabpay_webhook_secret" x-ref="secret" value="" placeholder="Generate one, then paste the same value into HesabPay"
+                                   class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                            <button type="button" @click="$refs.secret.value = gen()"
+                                    class="shrink-0 rounded-xl border border-brand-200 px-4 py-2.5 text-sm font-semibold text-brand-700 transition hover:bg-brand-50">Generate</button>
+                        </div>
+                        <p class="mt-1 text-xs text-brand-600">
+                            Webhook URL for HesabPay: <code class="rounded bg-brand-50 px-1.5 py-0.5">http://127.0.0.1:8000/webhooks/hesabpay</code>
+                            . Requests must send this value in the <code class="rounded bg-brand-50 px-1.5 py-0.5">X-HesabPay-Secret</code>
+                            header (or sign the raw body with HMAC-SHA256 as <code class="rounded bg-brand-50 px-1.5 py-0.5">signature</code>). Until a secret is set, webhook calls are rejected — payments are then confirmed by the checkout redirect only.
+                        </p>
+                                            </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">Outgoing Email (SMTP)</h2>
+                <p class="mb-4 text-xs text-brand-600">
+                    Fill the host below to send real email through your mail provider (Gmail, Zoho, your hosting…). Save first, then use &quot;Send test email&quot; to confirm delivery. Leave the host empty to keep the mailer from the .env file.
+                </p>
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <div>
+                        <label for="mail_smtp_host" class="mb-1.5 block text-sm font-medium text-brand-900">SMTP Host</label>
+                        <input type="text" id="mail_smtp_host" name="mail_smtp_host" value="" placeholder="e.g. smtp.gmail.com"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                                            </div>
+                    <div>
+                        <label for="mail_smtp_port" class="mb-1.5 block text-sm font-medium text-brand-900">SMTP Port</label>
+                        <input type="number" id="mail_smtp_port" min="1" max="65535" name="mail_smtp_port" value="587" placeholder="587"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                        <p class="mt-1 text-xs text-brand-600">587 for TLS (usual), 465 for SSL.</p>
+                                            </div>
+                    <div>
+                        <label for="mail_smtp_username" class="mb-1.5 block text-sm font-medium text-brand-900">SMTP Username</label>
+                        <input type="text" id="mail_smtp_username" name="mail_smtp_username" value="" placeholder="usually the email address"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                                            </div>
+                    <div>
+                        <label for="mail_smtp_password" class="mb-1.5 block text-sm font-medium text-brand-900">SMTP Password</label>
+                        <input type="password" id="mail_smtp_password" name="mail_smtp_password" value="" placeholder="mail account password or app password"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                                            </div>
+                    <div>
+                        <label for="mail_smtp_encryption" class="mb-1.5 block text-sm font-medium text-brand-900">Encryption</label>
+                        <select id="mail_smtp_encryption" name="mail_smtp_encryption"
+                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                            <option value="tls" selected>TLS (port 587)</option>
+                            <option value="ssl" >SSL (port 465)</option>
+                            <option value="none" >None</option>
+                        </select>
+                                            </div>
+                    <div>
+                        <label for="mail_from_address" class="mb-1.5 block text-sm font-medium text-brand-900">From Address</label>
+                        <input type="email" id="mail_from_address" name="mail_from_address" value="" placeholder="orders@yourdomain.com"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                                            </div>
+                    <div>
+                        <label for="mail_from_name" class="mb-1.5 block text-sm font-medium text-brand-900">From Name</label>
+                        <input type="text" id="mail_from_name" name="mail_from_name" value=""
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                                            </div>
+                </div>
+                
+                <div class="mt-5 rounded-xl border border-brand-100 bg-brand-50 p-4">
+                    <div class="flex flex-wrap items-end gap-3">
+                        <div class="grow">
+                            <label for="test_email_to" class="mb-1.5 block text-sm font-medium text-brand-900">Send a test email to</label>
+                            <input type="email" id="test_email_to" name="test_email_to" form="settings-test-email-form" value="sscc.url@gmail.com" required
+                                   class="w-full rounded-xl border border-brand-200 bg-white px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                        </div>
+                        <button type="submit" form="settings-test-email-form" class="rounded-xl bg-brand-800 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">
+                            Send test email
+                        </button>
+                    </div>
+                    <p class="mt-2 text-xs text-brand-600">Saves are applied immediately — this test uses the settings from the fields above (after you save). If sending fails, the exact error is shown so you can fix host, port or credentials.</p>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">Customer Notifications</h2>
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <div>
+                        <label class="flex items-center gap-2 text-sm font-medium text-brand-900">
+                            <input type="checkbox" name="notify_email_enabled" value="1" checked                                   class="h-4 w-4 rounded border-brand-200 text-gold-600 focus:ring-gold-600/20">
+                            Email customers on order updates (placed, payment, status changes)
+                        </label>
+                        <p class="mt-1 text-xs text-brand-600">Configure the SMTP section above so mail can actually leave the server. Guest orders only get email when they enter one at checkout.</p>
+                    </div>
+                    <div>
+                        <label class="flex items-center gap-2 text-sm font-medium text-brand-900">
+                            <input type="checkbox" name="notify_whatsapp_enabled" value="1" checked                                   class="h-4 w-4 rounded border-brand-200 text-gold-600 focus:ring-gold-600/20">
+                            WhatsApp customers on order updates (placed, payment, status changes)
+                        </label>
+                        <p class="mt-1 text-xs text-brand-600">Uses the WhatsApp Cloud API below.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">Registration Verification (OTP)</h2>
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <div>
+                        <label class="flex items-center gap-2 text-sm font-medium text-brand-900">
+                            <input type="checkbox" name="otp_required" value="1" checked                                   class="h-4 w-4 rounded border-brand-200 text-gold-600 focus:ring-gold-600/20">
+                            New customers must enter a 6-digit code after registering
+                        </label>
+                        <p class="mt-1 text-xs text-brand-600">Unverified accounts cannot open their account pages until they verify. Codes expire after 10 minutes, 5 tries each, resend every 60 s.</p>
+                    </div>
+                    <div></div>
+                    <div>
+                        <label class="flex items-center gap-2 text-sm font-medium text-brand-900">
+                            <input type="checkbox" name="otp_via_whatsapp" value="1" checked                                   class="h-4 w-4 rounded border-brand-200 text-gold-600 focus:ring-gold-600/20">
+                            Send the code to the customer&#039;s WhatsApp number
+                        </label>
+                        <p class="mt-1 text-xs text-brand-600">Needs the WhatsApp Cloud API below. Optionally set an approved authentication template name so codes deliver outside the 24h conversation window.</p>
+                    </div>
+                    <div>
+                        <label class="flex items-center gap-2 text-sm font-medium text-brand-900">
+                            <input type="checkbox" name="otp_via_email" value="1" checked                                   class="h-4 w-4 rounded border-brand-200 text-gold-600 focus:ring-gold-600/20">
+                            Send the code by email
+                        </label>
+                        <p class="mt-1 text-xs text-brand-600">Uses the SMTP section above. With both channels on, the code goes out over both and either one verifies the account.</p>
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label for="whatsapp_auth_template" class="mb-1.5 block text-sm font-medium text-brand-900">WhatsApp authentication template name (optional)</label>
+                        <input type="text" id="whatsapp_auth_template" name="whatsapp_auth_template" value="" placeholder="e.g. otp_authentication"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20">
+                        <p class="mt-1 text-xs text-brand-600">Create a one-time-passcode (OTP) template in your Meta WhatsApp Business dashboard and paste its name here.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">SEO &amp; Analytics</h2>
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <div>
+                        <label for="google_analytics_id" class="mb-1.5 block text-sm font-medium text-brand-900">Google Analytics 4 ID</label>
+                        <input type="text" id="google_analytics_id" name="google_analytics_id" value="" placeholder="G-XXXXXXXXXX"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                        <p class="mt-1 text-xs text-brand-600">Paste your GA4 measurement ID (starts with G-) to count every page view. Find it at analytics.google.com → Admin → Data streams. Leave empty to disable analytics.</p>
+                                            </div>
+                    <div>
+                        <label for="google_site_verification" class="mb-1.5 block text-sm font-medium text-brand-900">Google Search Console verification</label>
+                        <input type="text" id="google_site_verification" name="google_site_verification" value="" placeholder="google-site-verification=…"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                        <p class="mt-1 text-xs text-brand-600">Paste the full content of the meta tag shown when verifying this site in Google Search Console (content=&quot;google-site-verification=…&quot;). Confirms ownership for indexing, coverage reports and ranking performance.</p>
+                                            </div>
+                    <div>
+                        <label for="bing_site_verification" class="mb-1.5 block text-sm font-medium text-brand-900">Bing Webmaster Tools verification</label>
+                        <input type="text" id="bing_site_verification" name="bing_site_verification" value="" placeholder="msvalidate.01 code"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                        <p class="mt-1 text-xs text-brand-600">Verify the site in Bing Webmaster Tools too (it also powers Yahoo) and submit your sitemap there for indexing outside Google.</p>
+                                            </div>
+                </div>
+                <p class="mt-4 text-xs text-brand-600">
+                    <span class="font-semibold">Webmaster &amp; Ranking Tools:</span>
+                    Search Console is the Google tool for indexing and Google ranking reports — verify your site there and submit the sitemap (https://your-domain/sitemap.xml).
+                </p>
+            </section>
+
+            <section>
+                <h2 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">WhatsApp Notifications</h2>
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <div class="sm:col-span-2">
+                        <label class="flex items-center gap-2 text-sm font-medium text-brand-900">
+                            <input type="checkbox" name="whatsapp_cloud_enabled" value="1"                                    class="h-4 w-4 rounded border-brand-200 text-gold-600 focus:ring-gold-600/20">
+                            Send automatic WhatsApp notifications (Meta Cloud API — free tier)
+                        </label>
+                        <p class="mt-1 text-xs text-brand-600">
+                            Without this, customers can still reach you for free through WhatsApp buttons (wa.me links) on every order page.
+                        </p>
+                    </div>
+                    <div>
+                        <label for="whatsapp_phone_number_id" class="mb-1.5 block text-sm font-medium text-brand-900">Phone Number ID</label>
+                        <input type="text" id="whatsapp_phone_number_id" name="whatsapp_phone_number_id" value="" placeholder="From Meta WhatsApp Business setup"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                                            </div>
+                    <div>
+                        <label for="whatsapp_cloud_token" class="mb-1.5 block text-sm font-medium text-brand-900">Access Token</label>
+                        <input type="text" id="whatsapp_cloud_token" name="whatsapp_cloud_token" value="" placeholder="Permanent access token"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                                            </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="mb-4 text-sm font-bold uppercase tracking-wide text-brand-400">Off-Site Backup (cPanel)</h2>
+                <div class="grid gap-5 sm:grid-cols-2">
+                    <div class="sm:col-span-2">
+                        <label class="flex items-center gap-2 text-sm font-medium text-brand-900">
+                            <input type="checkbox" name="offsite_backup_enabled" value="1"                                    class="h-4 w-4 rounded border-brand-200 text-gold-600 focus:ring-gold-600/20">
+                            Store a copy of every new backup on my cPanel hosting
+                        </label>
+                        <p class="mt-1 text-xs text-brand-600">Each backup is uploaded over FTP/FTPS right after it is created (button or nightly 02:00 run), so your data survives even if this server is lost. Get the host, username and password from your cPanel → FTP Accounts page.</p>
+                    </div>
+                    <div>
+                        <label for="offsite_ftp_host" class="mb-1.5 block text-sm font-medium text-brand-900">FTP host</label>
+                        <input type="text" id="offsite_ftp_host" name="offsite_ftp_host" value="" placeholder="e.g. ftp.yourdomain.com"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                                            </div>
+                    <div>
+                        <label for="offsite_ftp_port" class="mb-1.5 block text-sm font-medium text-brand-900">FTP port</label>
+                        <input type="number" id="offsite_ftp_port" name="offsite_ftp_port" value="21" placeholder="21"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                        <p class="mt-1 text-xs text-brand-600">Plain FTP: 21. FTPS on cPanel is usually port 990.</p>
+                                            </div>
+                    <div>
+                        <label for="offsite_ftp_username" class="mb-1.5 block text-sm font-medium text-brand-900">FTP username</label>
+                        <input type="text" id="offsite_ftp_username" name="offsite_ftp_username" value="" placeholder="backupuser@yourdomain.com"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                                            </div>
+                    <div>
+                        <label for="offsite_ftp_password" class="mb-1.5 block text-sm font-medium text-brand-900">FTP password</label>
+                        <input type="password" id="offsite_ftp_password" name="offsite_ftp_password" value="" autocomplete="new-password"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                                            </div>
+                    <div>
+                        <label for="offsite_ftp_secure" class="mb-1.5 block text-sm font-medium text-brand-900">Connection security</label>
+                        <select id="offsite_ftp_secure" name="offsite_ftp_secure"
+                                class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                            <option value="none" selected>Plain FTP (no encryption)</option>
+                            <option value="ssl" >FTPS — encrypted (recommended)</option>
+                        </select>
+                                            </div>
+                    <div>
+                        <label for="offsite_ftp_path" class="mb-1.5 block text-sm font-medium text-brand-900">Folder on the hosting (optional)</label>
+                        <input type="text" id="offsite_ftp_path" name="offsite_ftp_path" value="" placeholder="e.g. backups or public_html/backups"
+                               class="w-full rounded-xl border border-brand-200 px-4 py-2.5 text-sm outline-none transition focus:border-gold-600 focus:ring-2 focus:ring-gold-600/20 ">
+                        <p class="mt-1 text-xs text-brand-600">Created automatically if it does not exist. Keep it out of public_html so the backups are not downloadable by anyone.</p>
+                                            </div>
+                </div>
+            </section>
+
+            <button type="submit" class="rounded-xl bg-gold-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-gold-800">Save Settings</button>
+        </form>
+
+        <form id="settings-test-email-form" method="POST" action="http://127.0.0.1:8000/admin/settings/test-email" class="hidden">
+            <input type="hidden" name="_token" value="v85xUOvLOnDTr33Z1QqRPJGTKAmxBTcthPsXeMyq" autocomplete="off">        </form>
+    </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>

@@ -73,31 +73,33 @@
 
 @section('content')
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <nav class="text-sm text-gray-500 mb-6">
+        {{-- Breadcrumb wraps instead of overflowing: long product names used to
+             push the page wider than a phone viewport. --}}
+        <nav class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-500 mb-6">
             <a href="{{ route('home') }}" class="hover:text-brand-700">{{ t('nav.home', 'Home') }}</a>
-            <span class="mx-2">/</span>
+            <span class="text-gray-300">/</span>
             <a href="{{ route('shop.index') }}" class="hover:text-brand-700">{{ t('nav.shop', 'Shop') }}</a>
-            <span class="mx-2">/</span>
-            <a href="{{ route('shop.index', ['category' => $product->category->slug]) }}" class="hover:text-brand-700">{{ $product->category->name }}</a>
-            <span class="mx-2">/</span>
-            <span class="text-gray-900">{{ $product->name }}</span>
+            <span class="text-gray-300">/</span>
+            <a href="{{ route('shop.index', ['category' => $product->category->slug]) }}" class="hover:text-brand-700 break-words">{{ $product->category->name }}</a>
+            <span class="text-gray-300">/</span>
+            <span class="text-gray-900 break-words">{{ $product->name }}</span>
         </nav>
 
-        <div class="grid md:grid-cols-2 gap-10" x-data="{ selectedImage: '{{ asset('storage/' . $product->image) }}' }">
+        <div class="grid md:grid-cols-2 gap-8 lg:gap-10" x-data="{ selectedImage: '{{ asset('storage/' . $product->image) }}' }">
             {{-- Gallery --}}
-            <div>
+            <div class="min-w-0">
                 <div class="rounded-2xl overflow-hidden border border-gray-200 bg-gray-100 aspect-square">
                     <img :src="selectedImage" alt="{{ $product->name }}" class="w-full h-full object-cover">
                 </div>
                 @if($product->images->isNotEmpty())
-                    <div class="flex gap-3 mt-3">
+                    <div class="flex gap-3 mt-3 overflow-x-auto pb-1">
                         <button type="button" @click="selectedImage = '{{ asset('storage/' . $product->image) }}'"
-                                class="w-20 h-20 rounded-lg overflow-hidden border-2 border-brand-600">
+                                class="w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-lg overflow-hidden border-2 border-brand-600">
                             <img src="{{ asset('storage/' . $product->image) }}" alt="" class="w-full h-full object-cover">
                         </button>
                         @foreach($product->images as $image)
                             <button type="button" @click="selectedImage = '{{ asset('storage/' . $image->image) }}'"
-                                    class="w-20 h-20 rounded-lg overflow-hidden border-2 border-gray-200 hover:border-brand-600">
+                                    class="w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-lg overflow-hidden border-2 border-gray-200 hover:border-brand-600">
                                 <img src="{{ asset('storage/' . $image->image) }}" alt="" class="w-full h-full object-cover">
                             </button>
                         @endforeach
@@ -106,16 +108,16 @@
             </div>
 
             {{-- Info + buy --}}
-            <div>
+            <div class="min-w-0">
                 @if($product->type === 'custom')
                     <span class="inline-block bg-brand-100 text-brand-800 text-xs font-bold px-3 py-1 rounded-full mb-3">{{ t('product.made_to_measure', 'Made to Measure') }}</span>
                 @elseif($product->type === 'service')
                     <span class="inline-block bg-gold-100 text-gold-800 text-xs font-bold px-3 py-1 rounded-full mb-3">{{ t('product.in_shop_service', 'In-Shop Service') }}</span>
                 @endif
 
-                <h1 class="font-display text-3xl font-bold text-gray-900 mb-3">{{ $product->name }}</h1>
+                <h1 class="font-display text-2xl sm:text-3xl font-bold text-gray-900 mb-3 break-words">{{ $product->name }}</h1>
 
-                <div class="flex items-baseline gap-3 mb-4">
+                <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-4">
                     <span class="text-2xl font-bold text-brand-800">{{ money($product->effectivePrice()) }}</span>
                     @if($product->onSale())
                         <span class="text-lg text-gray-400 line-through">{{ money($product->price) }}</span>
@@ -157,8 +159,8 @@
 
                     <div>
                         <label for="qty" class="block text-sm font-semibold text-gray-900 mb-2">{{ t('product.quantity', 'Quantity') }}</label>
-                        <input type="number" name="qty" id="qty" value="1" min="1" max="100"
-                               class="w-24 rounded-lg border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500">
+                        <input type="number" name="qty" id="qty" value="1" min="1" max="100" inputmode="numeric"
+                               class="qty-input h-11 w-24 rounded-lg border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500">
                     </div>
 
                     @if($product->type === 'custom')
@@ -195,7 +197,7 @@
 
                 <div class="mt-8 border-t border-gray-200 pt-6">
                     <h2 class="font-semibold text-gray-900 mb-2">{{ t('product.description_heading', 'Description') }}</h2>
-                    <p class="text-gray-600 text-sm leading-relaxed whitespace-pre-line">{{ $product->description }}</p>
+                    <p class="text-gray-600 text-sm leading-relaxed whitespace-pre-line break-words">{{ $product->description }}</p>
                 </div>
             </div>
         </div>

@@ -118,12 +118,30 @@ class MailerSettingsTest extends TestCase
                 'mail_from_address' => 'orders@example.test',
                 'mail_from_name' => 'Safi Tailoring Shop',
             ]))
-            ->assertRedirect();
+            // The confirmation must land on the save row, not at the top of
+            // a form that is several screens long.
+            ->assertRedirect(route('admin.settings.edit').'#settings-save');
 
         $this->assertSame('smtp.gmail.com', Setting::get('mail_smtp_host'));
         $this->assertSame('587', Setting::get('mail_smtp_port'));
         $this->assertSame('tls', Setting::get('mail_smtp_encryption'));
         $this->assertSame('orders@example.test', Setting::get('mail_from_address'));
+    }
+
+    public function test_settings_update_accepts_a_link_without_a_scheme(): void
+    {
+        $admin = User::factory()->admin()->create();
+
+        $this->actingAs($admin)
+            ->put(route('admin.settings.update'), $this->validSettingsPayload([
+                'facebook_url' => 'facebook.com/safitailoring',
+                'instagram_url' => 'instagram.com/safitailoring',
+            ]))
+            ->assertRedirect()
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame('https://facebook.com/safitailoring', Setting::get('facebook_url'));
+        $this->assertSame('https://instagram.com/safitailoring', Setting::get('instagram_url'));
     }
 
     /**

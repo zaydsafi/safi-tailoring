@@ -13,7 +13,16 @@
         <div class="flex flex-col lg:flex-row gap-8">
             {{-- Sidebar filters --}}
             <aside class="lg:w-64 shrink-0">
-                <form method="GET" action="{{ route('shop.index') }}" class="space-y-6 lg:sticky lg:top-24">
+                {{-- Collapsed below lg so the grid starts on the first screen; --}}
+                {{-- the summary is hidden and the form always shown on desktop. --}}
+                <details class="shop-filters">
+                    <summary class="mb-4 flex cursor-pointer items-center justify-between gap-2 rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-semibold text-gray-900 lg:hidden">
+                        {{ t('shop.filters', 'Filters') }}
+                        <svg class="h-4 w-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
+                        </svg>
+                    </summary>
+                    <form method="GET" action="{{ route('shop.index') }}" class="space-y-6 lg:sticky lg:top-24">
                     <div>
                         <label for="q" class="block text-sm font-semibold text-gray-900 mb-2">{{ t('shop.search_label', 'Search') }}</label>
                         <input type="text" name="q" id="q" value="{{ request('q') }}" placeholder="{{ t('shop.search_placeholder', 'Search products...') }}"
@@ -59,7 +68,8 @@
                     <button type="submit" class="w-full bg-brand-800 text-white font-medium py-2.5 rounded-lg hover:bg-brand-700 text-sm">
                         {{ t('shop.apply_filters', 'Apply Filters') }}
                     </button>
-                </form>
+                    </form>
+                </details>
             </aside>
 
             {{-- Product grid --}}

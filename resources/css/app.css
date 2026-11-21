@@ -43,6 +43,83 @@ html {
 }
 
 /* ------------------------------------------------------------------ */
+/* Form controls                                                       */
+/* ------------------------------------------------------------------ */
+
+/*
+ * Preflight resets every element with `border: 0 solid`, and the forms
+ * plugin is not installed, so a colour utility such as `border-gray-300`
+ * left inputs, selects and textareas with no visible edge at all — they
+ * read as plain text on the storefront. Give them a real 1px border; any
+ * `border-*` utility still overrides the colour.
+ */
+@layer base {
+    input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]):not([type="button"]):not([type="reset"]):not([type="file"]):not([type="range"]):not([type="image"]),
+    select,
+    textarea {
+        border-width: 1px;
+        border-style: solid;
+        border-color: var(--color-brand-200);
+        /* Preflight also zeroes padding, so a control written without
+           spacing utilities (the quantity boxes) collapsed to a 22px
+           hairline. Utilities still win wherever they are used. */
+        padding-block: 0.5rem;
+        padding-inline: 0.75rem;
+        border-radius: 0.5rem;
+        background-color: #fff;
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* Shop filters                                                        */
+/* ------------------------------------------------------------------ */
+
+/*
+ * Quantity steppers: keep the native spinner out of the way so the number
+ * stays centred in the small box on touch screens.
+ */
+input[type="number"].qty-input {
+    text-align: center;
+    padding-inline: 0.5rem;
+}
+
+input[type="number"].qty-input::-webkit-outer-spin-button,
+input[type="number"].qty-input::-webkit-inner-spin-button {
+    margin: 0;
+}
+
+/*
+ * Below the lg breakpoint the filter column is a collapsed <details> panel
+ * so the product grid starts on the first screen. From lg up the summary
+ * disappears and the form is always rendered, exactly as before.
+ */
+.shop-filters > summary {
+    list-style: none;
+}
+
+.shop-filters > summary::-webkit-details-marker {
+    display: none;
+}
+
+.shop-filters > summary svg {
+    transition: transform 0.2s ease;
+}
+
+.shop-filters[open] > summary svg {
+    transform: rotate(180deg);
+}
+
+@media (min-width: 1024px) {
+    .shop-filters > summary {
+        display: none;
+    }
+
+    .shop-filters:not([open]) > form {
+        display: block;
+    }
+}
+
+/* ------------------------------------------------------------------ */
 /* Motion & interactive effects                                        */
 /* ------------------------------------------------------------------ */
 
@@ -206,6 +283,40 @@ html {
 .admin-sidebar-scroll::-webkit-scrollbar-thumb {
     background: rgb(219 202 178 / 0.32);
     border-radius: 9999px;
+}
+
+/*
+ * Mobile drawer: the sidebar is hidden by CSS, not by swapping utility
+ * classes. Closing it also drops its hit area (visibility + pointer-events),
+ * so a drawer that is being animated — or one left open by a browser that
+ * paused animations — can never sit over the page and swallow taps meant
+ * for the form underneath it. Desktop always pins it in place.
+ */
+.admin-shell #admin-sidebar {
+    transform: translateX(-100%);
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform 0.2s ease, visibility 0s linear 0.2s;
+}
+
+[dir="rtl"] .admin-shell #admin-sidebar {
+    transform: translateX(100%);
+}
+
+.admin-shell[data-sidebar-open="true"] #admin-sidebar {
+    transform: translateX(0);
+    visibility: visible;
+    pointer-events: auto;
+    transition: transform 0.2s ease, visibility 0s;
+}
+
+@media (min-width: 1024px) {
+    .admin-shell #admin-sidebar {
+        transform: none;
+        visibility: visible;
+        pointer-events: auto;
+        transition: none;
+    }
 }
 
 /* Content fades up gently when a page loads. */
@@ -486,6 +597,10 @@ html {
 
     .admin-shell main > *:not([x-cloak]) {
         animation: none;
+    }
+
+    .admin-shell #admin-sidebar {
+        transition: none;
     }
 
     .admin-shell nav a,

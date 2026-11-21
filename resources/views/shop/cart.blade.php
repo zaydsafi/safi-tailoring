@@ -6,7 +6,7 @@
 
 @section('content')
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <h1 class="font-display text-3xl font-bold text-brand-900 mb-8">{{ t('cart.heading', 'Your Cart') }}</h1>
+        <h1 class="font-display text-2xl sm:text-3xl font-bold text-brand-900 mb-6 sm:mb-8">{{ t('cart.heading', 'Your Cart') }}</h1>
 
         @if($cartItems->isEmpty())
             <div class="text-center py-20 bg-gray-50 rounded-xl border border-dashed border-gray-300">
@@ -18,13 +18,13 @@
         @else
             <div class="space-y-4">
                 @foreach($cartItems as $item)
-                    <div class="flex gap-4 bg-white border border-gray-200 rounded-xl p-4">
+                    <div class="flex gap-3 sm:gap-4 bg-white border border-gray-200 rounded-xl p-3 sm:p-4">
                         <a href="{{ route('shop.show', $item->product->slug) }}" class="shrink-0">
                             <img src="{{ asset('storage/' . $item->product->image) }}" alt="{{ $item->product->name }}"
-                                 class="w-24 h-24 rounded-lg object-cover">
+                                 class="w-20 h-20 sm:w-24 sm:h-24 rounded-lg object-cover">
                         </a>
                         <div class="flex-1 min-w-0">
-                            <a href="{{ route('shop.show', $item->product->slug) }}" class="font-semibold text-gray-900 hover:text-brand-700">
+                            <a href="{{ route('shop.show', $item->product->slug) }}" class="font-semibold text-gray-900 hover:text-brand-700 break-words">
                                 {{ $item->product->name }}
                             </a>
                             <p class="text-sm text-gray-500 mt-1">
@@ -34,32 +34,36 @@
                             </p>
                             <p class="text-sm font-medium text-gray-700 mt-1">{{ money($item->price) }} {{ t('cart.each', 'each') }}</p>
 
-                            <div class="flex flex-wrap items-center gap-4 mt-3">
-                                <form method="POST" action="{{ route('cart.update', $item->key) }}" class="flex items-center gap-2">
-                                    @csrf
-                                    @method('PATCH')
-                                    <label class="text-xs text-gray-500">{{ t('cart.qty', 'Qty') }}</label>
-                                    <input type="number" name="qty" value="{{ $item->qty }}" min="1" max="100"
-                                           class="w-16 rounded-lg border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500"
-                                           onchange="this.form.submit()">
-                                </form>
+                            {{-- Controls and line total share one wrapping row so the
+                                 price never squeezes the name on a narrow phone. --}}
+                            <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 mt-3">
+                                <div class="flex flex-wrap items-center gap-4">
+                                    <form method="POST" action="{{ route('cart.update', $item->key) }}" class="flex items-center gap-2">
+                                        @csrf
+                                        @method('PATCH')
+                                        <label for="qty-{{ $item->key }}" class="text-xs text-gray-500">{{ t('cart.qty', 'Qty') }}</label>
+                                        <input type="number" name="qty" id="qty-{{ $item->key }}" value="{{ $item->qty }}" min="1" max="100"
+                                               class="qty-input h-10 w-16 rounded-lg border-gray-300 text-sm focus:border-brand-500 focus:ring-brand-500"
+                                               onchange="this.form.submit()">
+                                    </form>
 
-                                <form method="POST" action="{{ route('cart.remove', $item->key) }}"
-                                      onsubmit="return confirm('{{ t('cart.confirm_remove', 'Remove this item from your cart?') }}')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-sm text-red-600 hover:underline">{{ t('cart.remove', 'Remove') }}</button>
-                                </form>
+                                    <form method="POST" action="{{ route('cart.remove', $item->key) }}"
+                                          onsubmit="return confirm('{{ t('cart.confirm_remove', 'Remove this item from your cart?') }}')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-sm text-red-600 hover:underline">{{ t('cart.remove', 'Remove') }}</button>
+                                    </form>
+                                </div>
+                                {{-- ms-auto keeps the line total against the end
+                                     edge when the controls above it wrap. --}}
+                                <p class="ms-auto font-bold text-brand-800">{{ money($item->line_total) }}</p>
                             </div>
-                        </div>
-                        <div class="text-right shrink-0">
-                            <p class="font-bold text-brand-800">{{ money($item->line_total) }}</p>
                         </div>
                     </div>
                 @endforeach
             </div>
 
-            <div class="mt-8 bg-gray-50 rounded-xl p-6 border border-gray-200 max-w-md ml-auto">
+            <div class="mt-8 bg-gray-50 rounded-xl p-5 sm:p-6 border border-gray-200 w-full sm:max-w-md sm:ms-auto">
                 <div class="flex justify-between text-gray-700 mb-2">
                     <span>{{ t('common.subtotal', 'Subtotal') }}</span>
                     <span class="font-semibold">{{ money($subtotal) }}</span>

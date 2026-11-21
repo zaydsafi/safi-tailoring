@@ -19,17 +19,14 @@
             </span>
         @endif
     </a>
-    <div class="p-4 flex flex-col flex-1">
-        <p class="text-xs text-gray-500 mb-1">{{ $product->category->name }}</p>
-        <a href="{{ route('shop.show', $product->slug) }}" class="link-underline font-semibold text-gray-900 hover:text-brand-700 leading-snug inline-block">
-            {{ $product->name }}
-        </a>
-        <div class="mt-auto pt-3 flex items-center justify-between">
+    <div class="p-4 flex flex-col flex-1">        <p class="text-xs text-gray-500 mb-1 break-words">{{ $product->category->name }}</p>
+        <a href="{{ route('shop.show', $product->slug) }}" class="link-underline font-semibold text-gray-900 hover:text-brand-700 leading-snug inline-block break-words">{{ $product->name }}</a>
+        <div class="mt-auto pt-3 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
             <div>
                 @if($product->onSale())
-                    <span class="text-gray-400 line-through text-sm mr-1">{{ money($product->price) }}</span>
+                    <span class="text-gray-400 line-through text-sm me-1">{{ money($product->price) }}</span>
                 @endif
-                <span class="font-bold text-brand-800">{{ money($product->effectivePrice()) }}</span>
+                <span class="font-bold text-brand-800 whitespace-nowrap">{{ money($product->effectivePrice()) }}</span>
             </div>
             @if($product->type === 'ready' && $product->track_stock && $product->stock <= 0)
                 <span class="text-xs text-red-600 font-medium">{{ t('product.out_of_stock_short', 'Out of stock') }}</span>
